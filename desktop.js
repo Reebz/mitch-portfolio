@@ -1144,6 +1144,158 @@
     }
   }
 
+  // --- Context Menus ---
+  var elCtxDesktop, elCtxTitlebar;
+  var ctxTargetWindowId = null;
+
+  function showContextMenu(menuEl, x, y) {
+    hideAllContextMenus();
+    menuEl.style.left = x + 'px';
+    menuEl.style.top = y + 'px';
+    menuEl.classList.add('open');
+    var firstItem = menuEl.querySelector('[role="menuitem"]');
+    if (firstItem) firstItem.focus();
+  }
+
+  function hideAllContextMenus() {
+    if (elCtxDesktop) elCtxDesktop.classList.remove('open');
+    if (elCtxTitlebar) elCtxTitlebar.classList.remove('open');
+    ctxTargetWindowId = null;
+  }
+
+  function setupContextMenus() {
+    elCtxDesktop = document.getElementById('context-menu-desktop');
+    elCtxTitlebar = document.getElementById('context-menu-titlebar');
+
+    // Right-click on desktop
+    elDesktop.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      // Title bar right-click
+      var titleBar = e.target.closest('.title-bar');
+      if (titleBar) {
+        var winEl = titleBar.closest('.window');
+        if (winEl && windows.has(winEl.id)) {
+          ctxTargetWindowId = winEl.id;
+          showContextMenu(elCtxTitlebar, e.clientX, e.clientY);
+        }
+        return;
+      }
+      // Desktop right-click (not on a window)
+      if (!e.target.closest('.window')) {
+        showContextMenu(elCtxDesktop, e.clientX, e.clientY);
+      }
+    });
+
+    // Close context menus on any click
+    document.addEventListener('click', function() {
+      hideAllContextMenus();
+    });
+
+    // Context menu actions
+    document.addEventListener('click', function(e) {
+      var action = e.target.closest('[data-action]');
+      if (!action) return;
+      var act = action.getAttribute('data-action');
+
+      switch (act) {
+        case 'refresh': location.reload(); break;
+        case 'properties': openWindow('window-my-computer'); break;
+        case 'arrange-icons': break; // Icons snap to grid already
+        case 'ctx-minimize':
+          if (ctxTargetWindowId) minimizeWindow(ctxTargetWindowId);
+          break;
+        case 'ctx-maximize':
+          if (ctxTargetWindowId) toggleMaximize(ctxTargetWindowId);
+          break;
+        case 'ctx-close':
+          if (ctxTargetWindowId) closeWindow(ctxTargetWindowId);
+          break;
+      }
+      hideAllContextMenus();
+    });
+
+    // Keyboard in context menus
+    [elCtxDesktop, elCtxTitlebar].forEach(function(menu) {
+      if (!menu) return;
+      menu.addEventListener('keydown', function(e) {
+        var items = Array.from(menu.querySelectorAll('[role="menuitem"]'));
+        var idx = items.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown') { e.preventDefault(); items[(idx + 1) % items.length].focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); items[(idx - 1 + items.length) % items.length].focus(); }
+        else if (e.key === 'Escape') { hideAllContextMenus(); }
+      });
+    });
+  }
+
+  // --- Selection Rectangle ---
+  var selectionState = { active: false, startX: 0, startY: 0, rafId: null };
+  var elSelectionRect;
+
+  function setupSelectionRect() {
+    elSelectionRect = document.getElementById('selection-rect');
+    if (!elSelectionRect) return;
+
+    elDesktop.addEventListener('pointerdown', function(e) {
+      // Only start selection on empty desktop space (not on icons, windows, taskbar)
+      if (e.target !== elDesktop && e.target !== elIconGrid) return;
+      if (e.button !== 0) return;
+
+      var rect = elDesktop.getBoundingClientRect();
+      selectionState.active = true;
+      selectionState.startX = e.clientX - rect.left;
+      selectionState.startY = e.clientY - rect.top;
+
+      elSelectionRect.style.left = selectionState.startX + 'px';
+      elSelectionRect.style.top = selectionState.startY + 'px';
+      elSelectionRect.style.width = '0';
+      elSelectionRect.style.height = '0';
+      elSelectionRect.style.display = 'block';
+    });
+
+    elDesktop.addEventListener('pointermove', function(e) {
+      if (!selectionState.active) return;
+      // Don't interfere with window drag
+      if (dragState.windowId) { selectionState.active = false; elSelectionRect.style.display = 'none'; return; }
+
+      var rect = elDesktop.getBoundingClientRect();
+      var curX = e.clientX - rect.left;
+      var curY = e.clientY - rect.top;
+
+      var x = Math.min(selectionState.startX, curX);
+      var y = Math.min(selectionState.startY, curY);
+      var w = Math.abs(curX - selectionState.startX);
+      var h = Math.abs(curY - selectionState.startY);
+
+      elSelectionRect.style.left = x + 'px';
+      elSelectionRect.style.top = y + 'px';
+      elSelectionRect.style.width = w + 'px';
+      elSelectionRect.style.height = h + 'px';
+    });
+
+    elDesktop.addEventListener('pointerup', function(e) {
+      if (!selectionState.active) return;
+      selectionState.active = false;
+
+      // Check which icons intersect the selection rect
+      var selRect = elSelectionRect.getBoundingClientRect();
+      if (selRect.width > 5 || selRect.height > 5) {
+        var icons = elIconGrid.querySelectorAll('.desktop-icon');
+        icons.forEach(function(ic) {
+          ic.setAttribute('data-selected', 'false');
+        });
+        icons.forEach(function(ic) {
+          var icRect = ic.getBoundingClientRect();
+          if (icRect.right > selRect.left && icRect.left < selRect.right &&
+              icRect.bottom > selRect.top && icRect.top < selRect.bottom) {
+            ic.setAttribute('data-selected', 'true');
+          }
+        });
+      }
+
+      elSelectionRect.style.display = 'none';
+    });
+  }
+
   // --- Init ---
   function init() {
     // Cache DOM references
@@ -1173,6 +1325,8 @@
     initContactEmail();
     initMyComputer();
     setupSystemTrayClicks();
+    setupContextMenus();
+    setupSelectionRect();
 
     // Apply hash on load
     applyHashState();

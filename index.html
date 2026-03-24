@@ -271,6 +271,25 @@ on. Double-click any icon to explore.
         </div>
       </div>
     </template>
+
+    <!-- Context Menus -->
+    <div id="context-menu-desktop" class="context-menu" role="menu" aria-label="Desktop context menu">
+      <button class="context-menu-item" role="menuitem" data-action="arrange-icons">Arrange Icons</button>
+      <div class="context-menu-separator" role="separator"></div>
+      <button class="context-menu-item" role="menuitem" data-action="refresh">Refresh</button>
+      <div class="context-menu-separator" role="separator"></div>
+      <button class="context-menu-item" role="menuitem" data-action="properties">Properties</button>
+    </div>
+
+    <div id="context-menu-titlebar" class="context-menu" role="menu" aria-label="Window context menu">
+      <button class="context-menu-item" role="menuitem" data-action="ctx-minimize">Minimize</button>
+      <button class="context-menu-item" role="menuitem" data-action="ctx-maximize">Maximize</button>
+      <div class="context-menu-separator" role="separator"></div>
+      <button class="context-menu-item" role="menuitem" data-action="ctx-close">Close</button>
+    </div>
+
+    <!-- Selection Rectangle -->
+    <div id="selection-rect"></div>
   </div>
 
   <div id="mobile-view">

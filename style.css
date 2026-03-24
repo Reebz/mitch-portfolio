@@ -517,6 +517,60 @@ body {
   line-height: 1.4;
 }
 
+/* === Context Menus === */
+.context-menu {
+  position: fixed;
+  display: none;
+  background: var(--win98-silver);
+  border: 1px solid;
+  border-color: var(--win98-white) var(--win98-dark) var(--win98-dark) var(--win98-white);
+  box-shadow: inset 1px 1px var(--win98-light), inset -1px -1px var(--win98-grey);
+  padding: 2px;
+  z-index: 9600;
+  min-width: 140px;
+}
+
+.context-menu.open {
+  display: block;
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  padding: 4px 24px 4px 8px;
+  cursor: default;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  border: none;
+  background: none;
+  text-align: left;
+  color: var(--win98-black);
+}
+
+.context-menu-item:hover,
+.context-menu-item:focus-visible {
+  background: var(--win98-navy);
+  color: var(--win98-white);
+  outline: none;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background: var(--win98-grey);
+  margin: 2px 0;
+  box-shadow: 0 1px 0 var(--win98-white);
+}
+
+/* === Selection Rectangle === */
+#selection-rect {
+  position: absolute;
+  border: 1px dotted var(--win98-navy);
+  background: rgba(0, 0, 128, 0.08);
+  pointer-events: none;
+  display: none;
+  z-index: 5;
+}
+
 /* === Title Bar Icons === */
 .title-bar-icon {
   width: 16px;
