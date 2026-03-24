@@ -422,8 +422,10 @@ html, body {
   line-height: 1.4;
 }
 
-/* === Mobile / Touch === */
-@media (pointer: coarse), (max-width: 768px) {
+/* === Mobile / Touch ===
+   Only trigger mobile view for actual touch devices (no hover + coarse pointer).
+   Desktop browsers keep the full experience at ANY window width. */
+@media (hover: none) and (pointer: coarse) {
   #desktop {
     overflow: auto;
   }
@@ -447,13 +449,14 @@ html, body {
   }
 }
 
-@media (pointer: fine) and (min-width: 769px) {
+/* Desktop: always show desktop UI when hover+fine pointer (mouse) is available */
+@media (hover: hover) and (pointer: fine) {
   #mobile-view {
-    display: none;
+    display: none !important;
   }
 
   .desktop-notice {
-    display: none;
+    display: none !important;
   }
 }
 

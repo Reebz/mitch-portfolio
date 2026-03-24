@@ -699,7 +699,7 @@
   }
 
   function isMobile() {
-    return window.matchMedia('(pointer: coarse), (max-width: 768px)').matches;
+    return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   }
 
   function getIconColumns() {
