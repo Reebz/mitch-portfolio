@@ -50,7 +50,7 @@
   ];
 
   // Non-project windows (hand-authored in HTML)
-  var SYSTEM_WINDOWS = ['about', 'guestbook', 'contact', 'visitor-counter', 'clock'];
+  var SYSTEM_WINDOWS = ['about', 'guestbook', 'contact', 'my-computer', 'recycle-bin', 'visitor-counter', 'clock'];
 
   // All valid window IDs (for hash routing whitelist)
   var VALID_WINDOWS = new Set();
@@ -1061,6 +1061,8 @@
 
     // Add system icons to icon grid
     var systemIcons = [
+      { id: 'window-my-computer', title: 'My Computer', icon: 'img/icons/mycomputer.svg' },
+      { id: 'window-recycle-bin', title: 'Recycle Bin', icon: 'img/icons/recyclebin.svg' },
       { id: 'window-about', title: 'About Me', icon: 'img/icons/notepad.svg' },
       { id: 'window-guestbook', title: 'Guestbook', icon: 'img/icons/guestbook.svg' },
       { id: 'window-contact', title: 'Contact', icon: 'img/icons/contact.svg' }
@@ -1105,6 +1107,33 @@
     });
   }
 
+  // --- My Computer System Info ---
+  function initMyComputer() {
+    var info = document.getElementById('system-info');
+    if (!info) return;
+    var lines = [
+      ['Computer:', 'Mitch\'s Portfolio PC'],
+      ['OS:', 'Portfolio 98 (Build 2026)'],
+      ['Browser:', navigator.userAgent.split(' ').slice(-1)[0] || 'Unknown'],
+      ['Screen:', screen.width + ' x ' + screen.height + ' (' + (window.devicePixelRatio || 1) + 'x DPI)'],
+      ['Colors:', (Math.pow(2, screen.colorDepth || 24) / 1000000).toFixed(1) + ' million'],
+      ['Platform:', navigator.platform || 'Unknown'],
+      ['Language:', navigator.language || 'en-US'],
+      ['Cookies:', navigator.cookieEnabled ? 'Enabled' : 'Disabled']
+    ];
+    lines.forEach(function(pair) {
+      var row = document.createElement('div');
+      row.className = 'field-row';
+      var label = document.createElement('strong');
+      label.textContent = pair[0];
+      label.style.display = 'inline-block';
+      label.style.width = '80px';
+      row.appendChild(label);
+      row.appendChild(document.createTextNode(' ' + pair[1]));
+      info.appendChild(row);
+    });
+  }
+
   // --- Contact Email Obfuscation ---
   function initContactEmail() {
     var link = document.getElementById('contact-email');
@@ -1142,6 +1171,7 @@
     startClock();
     initVisitorCounter();
     initContactEmail();
+    initMyComputer();
     setupSystemTrayClicks();
 
     // Apply hash on load

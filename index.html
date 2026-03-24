@@ -127,6 +127,80 @@ on. Double-click any icon to explore.
       </div>
     </div>
 
+    <!-- My Computer -->
+    <div id="window-my-computer" class="window" data-state="closed" role="dialog" aria-labelledby="title-my-computer" tabindex="-1">
+      <div class="title-bar">
+        <img src="img/icons/mycomputer.svg" class="title-bar-icon" alt="" aria-hidden="true">
+        <div class="title-bar-text" id="title-my-computer">My Computer</div>
+        <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body" role="document">
+        <fieldset>
+          <legend>System Properties</legend>
+          <div id="system-info" style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;line-height:2;">
+            <!-- Populated by JS -->
+          </div>
+        </fieldset>
+        <fieldset style="margin-top:8px;">
+          <legend>Storage</legend>
+          <div style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span style="font-weight:bold;">Drive C:</span>
+              <div style="flex:1;height:16px;background:#000080;border:1px solid grey;">
+                <div style="height:100%;width:23%;background:#ff00ff;"></div>
+              </div>
+              <span>23% used</span>
+            </div>
+            <div style="color:grey;">Total: 2.1 GB | Free: 1.6 GB</div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="status-bar">
+        <p class="status-bar-field">5 object(s)</p>
+      </div>
+    </div>
+
+    <!-- Recycle Bin -->
+    <div id="window-recycle-bin" class="window" data-state="closed" role="dialog" aria-labelledby="title-recycle-bin" tabindex="-1">
+      <div class="title-bar">
+        <img src="img/icons/recyclebin.svg" class="title-bar-icon" alt="" aria-hidden="true">
+        <div class="title-bar-text" id="title-recycle-bin">Recycle Bin</div>
+        <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body" role="document" style="padding:0;">
+        <table style="width:100%;font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Name</th>
+              <th style="text-align:left;">Type</th>
+              <th style="text-align:right;">Size</th>
+              <th style="text-align:left;">Date Deleted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>sleep schedule.exe</td><td>Application</td><td style="text-align:right;">8 KB</td><td>01/15/2024</td></tr>
+            <tr><td>free time.dll</td><td>System File</td><td style="text-align:right;">404 KB</td><td>06/03/2024</td></tr>
+            <tr><td>social life.bat</td><td>Batch File</td><td style="text-align:right;">2 KB</td><td>09/21/2024</td></tr>
+            <tr><td>inbox zero.txt</td><td>Text File</td><td style="text-align:right;">0 KB</td><td>11/30/2024</td></tr>
+            <tr><td>TODO list (final) (FINAL) (2).doc</td><td>Document</td><td style="text-align:right;">56 KB</td><td>02/14/2025</td></tr>
+            <tr><td>work-life balance.cfg</td><td>Config File</td><td style="text-align:right;">1 KB</td><td>03/01/2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="status-bar">
+        <p class="status-bar-field">6 object(s)</p>
+        <p class="status-bar-field">471 KB</p>
+      </div>
+    </div>
+
     <!-- Visitor Counter Properties -->
     <div id="window-visitor-counter" class="window" data-state="closed" role="dialog" aria-labelledby="title-visitor-counter" tabindex="-1" style="width:280px;height:auto;min-height:auto;">
       <div class="title-bar">
