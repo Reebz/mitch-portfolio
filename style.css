@@ -26,6 +26,10 @@ html, body {
   overflow: hidden;
 }
 
+body {
+  zoom: 1.5; /* Scale everything 150% to mimic 1024x768-era low-res feel */
+}
+
 /* === Screen Reader Only === */
 .sr-only {
   position: absolute;
@@ -164,7 +168,6 @@ html, body {
 
 .window .window-body {
   overflow: auto;
-  max-height: calc(100vh - var(--taskbar-height) - 60px);
 }
 
 /* === Project Window Content === */
