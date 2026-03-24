@@ -10,7 +10,7 @@
   <meta property="og:title" content="Mitch's Desktop">
   <meta property="og:description" content="A Windows 98 desktop experience showcasing software and AI projects.">
   <meta property="og:type" content="website">
-  <link rel="preload" as="image" type="image/webp" href="img/clouds.webp">
+  <link rel="preload" as="image" type="image/svg+xml" href="img/clouds.svg">
   <link rel="stylesheet" href="vendor/98.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -124,6 +124,54 @@ on. Double-click any icon to explore.
             <a id="contact-email" href="#">Loading...</a>
           </div>
         </fieldset>
+      </div>
+    </div>
+
+    <!-- Visitor Counter Properties -->
+    <div id="window-visitor-counter" class="window" data-state="closed" role="dialog" aria-labelledby="title-visitor-counter" tabindex="-1" style="width:280px;height:auto;min-height:auto;">
+      <div class="title-bar">
+        <div class="title-bar-text" id="title-visitor-counter">Visitor Counter Properties</div>
+        <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body" role="document" style="text-align:center;padding:16px;">
+        <div style="font-size:10px;color:grey;margin-bottom:8px;">~ Welcome to Mitch's Portfolio ~</div>
+        <div style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;margin-bottom:4px;">You are visitor number</div>
+        <div id="counter-display" style="font-family:monospace;font-size:24px;letter-spacing:2px;background:#000;color:#0f0;padding:6px 12px;display:inline-block;margin:8px 0;"></div>
+        <div style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;margin-top:8px;">Site online since</div>
+        <div style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;font-weight:bold;">April 1, 2026</div>
+      </div>
+    </div>
+
+    <!-- Date/Time Properties (Analogue Clock) -->
+    <div id="window-clock" class="window" data-state="closed" role="dialog" aria-labelledby="title-clock" tabindex="-1" style="width:340px;height:auto;min-height:auto;">
+      <div class="title-bar">
+        <div class="title-bar-text" id="title-clock">Date/Time Properties</div>
+        <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body" role="document" style="padding:12px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div>
+            <canvas id="analogue-clock" width="160" height="160" style="background:#fff;border:1px solid grey;"></canvas>
+          </div>
+          <div style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
+            <fieldset style="margin:0;">
+              <legend>Time Zone</legend>
+              <div style="padding:4px;">
+                <div style="font-weight:bold;" id="clock-timezone-name">Australia/Sydney</div>
+                <div id="clock-timezone-offset" style="margin-top:4px;color:grey;">AEST (UTC+10:00)</div>
+                <div id="clock-digital-time" style="margin-top:8px;font-size:14px;font-family:monospace;"></div>
+                <div id="clock-date" style="margin-top:4px;"></div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right;padding:0 12px 12px;">
+        <button data-close-window="window-clock" style="min-width:60px;">OK</button>
       </div>
     </div>
 

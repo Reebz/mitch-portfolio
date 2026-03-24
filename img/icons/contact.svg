@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
+  <!-- Win98 email/contact icon -->
+  <!-- Envelope body -->
+  <rect x="4" y="12" width="40" height="28" fill="#fff" stroke="#000" stroke-width="2"/>
+  <!-- Envelope flap -->
+  <polygon points="4,12 24,28 44,12" fill="#e0e0e0" stroke="#000" stroke-width="2"/>
+  <!-- Blue accent stripe -->
+  <rect x="4" y="36" width="40" height="4" fill="#000080"/>
+  <!-- Address lines -->
+  <line x1="12" y1="30" x2="28" y2="30" stroke="#808080" stroke-width="1"/>
+  <line x1="12" y1="34" x2="24" y2="34" stroke="#808080" stroke-width="1"/>
+  <!-- Stamp -->
+  <rect x="32" y="16" width="8" height="8" fill="#ff4040" stroke="#808080" stroke-width="1"/>
+</svg>

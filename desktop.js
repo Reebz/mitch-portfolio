@@ -50,7 +50,7 @@
   ];
 
   // Non-project windows (hand-authored in HTML)
-  var SYSTEM_WINDOWS = ['about', 'guestbook', 'contact'];
+  var SYSTEM_WINDOWS = ['about', 'guestbook', 'contact', 'visitor-counter', 'clock'];
 
   // All valid window IDs (for hash routing whitelist)
   var VALID_WINDOWS = new Set();
@@ -172,9 +172,16 @@
     var win = windows.get(id);
     if (!win || win.state === 'closed') return;
 
+    // Stop analogue clock if closing the clock window
+    if (id === 'window-clock') stopAnalogueClock();
+
     win.state = 'closed';
     win.el.setAttribute('data-state', 'closed');
     win.el.style.transform = '';
+    // Reset any fixed positioning from system tray popups
+    win.el.style.position = '';
+    win.el.style.right = '';
+    win.el.style.bottom = '';
 
     // Remove taskbar button
     if (win.taskbarBtn) {
@@ -449,23 +456,145 @@
     }
   }
 
-  // --- Clock ---
+  // --- Clock (Sydney, Australia timezone) ---
+  var TIMEZONE = 'Australia/Sydney';
+
+  function getSydneyTime() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: TIMEZONE }));
+  }
+
+  function formatTime12h(date) {
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    m = m < 10 ? '0' + m : m;
+    return h + ':' + m + ' ' + ampm;
+  }
+
   function startClock() {
     function tick() {
       if (!elClock) return;
-      var now = new Date();
-      var h = now.getHours();
-      var m = now.getMinutes();
-      var ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-      m = m < 10 ? '0' + m : m;
-      elClock.textContent = h + ':' + m + ' ' + ampm;
+      var syd = getSydneyTime();
+      elClock.textContent = formatTime12h(syd);
 
       // Schedule next tick at start of next minute
+      var now = new Date();
       var msUntilNext = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
       setTimeout(tick, msUntilNext);
     }
     tick();
+  }
+
+  // --- Analogue Clock ---
+  var analogueClockInterval = null;
+
+  function startAnalogueClock() {
+    var canvas = document.getElementById('analogue-clock');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width;
+    var h = canvas.height;
+    var cx = w / 2;
+    var cy = h / 2;
+    var r = Math.min(cx, cy) - 8;
+
+    function draw() {
+      var syd = getSydneyTime();
+      var hrs = syd.getHours() % 12;
+      var mins = syd.getMinutes();
+      var secs = syd.getSeconds();
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Clock face
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Hour markers
+      for (var i = 0; i < 12; i++) {
+        var angle = (i * Math.PI / 6) - Math.PI / 2;
+        var inner = r - 10;
+        var outer = r - 2;
+        ctx.beginPath();
+        ctx.moveTo(cx + inner * Math.cos(angle), cy + inner * Math.sin(angle));
+        ctx.lineTo(cx + outer * Math.cos(angle), cy + outer * Math.sin(angle));
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      // Hour numbers
+      ctx.fillStyle = '#000';
+      ctx.font = '11px "Pixelated MS Sans Serif", Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for (var n = 1; n <= 12; n++) {
+        var na = (n * Math.PI / 6) - Math.PI / 2;
+        ctx.fillText(n, cx + (r - 20) * Math.cos(na), cy + (r - 20) * Math.sin(na));
+      }
+
+      // Hour hand
+      var hAngle = ((hrs + mins / 60) * Math.PI / 6) - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + (r * 0.5) * Math.cos(hAngle), cy + (r * 0.5) * Math.sin(hAngle));
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Minute hand
+      var mAngle = ((mins + secs / 60) * Math.PI / 30) - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + (r * 0.7) * Math.cos(mAngle), cy + (r * 0.7) * Math.sin(mAngle));
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Second hand
+      var sAngle = (secs * Math.PI / 30) - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + (r * 0.75) * Math.cos(sAngle), cy + (r * 0.75) * Math.sin(sAngle));
+      ctx.strokeStyle = '#ff0000';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Center dot
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#000';
+      ctx.fill();
+
+      // Update digital readout
+      var digitalEl = document.getElementById('clock-digital-time');
+      if (digitalEl) digitalEl.textContent = formatTime12h(syd) + ':' + (secs < 10 ? '0' : '') + secs;
+      var dateEl = document.getElementById('clock-date');
+      if (dateEl) dateEl.textContent = syd.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+      // Update timezone offset display
+      var tzOffsetEl = document.getElementById('clock-timezone-offset');
+      if (tzOffsetEl) {
+        var isDST = syd.toLocaleString('en-US', { timeZone: TIMEZONE, timeZoneName: 'short' }).includes('DT');
+        tzOffsetEl.textContent = isDST ? 'AEDT (UTC+11:00)' : 'AEST (UTC+10:00)';
+      }
+    }
+
+    draw();
+    analogueClockInterval = setInterval(draw, 1000);
+  }
+
+  function stopAnalogueClock() {
+    if (analogueClockInterval) {
+      clearInterval(analogueClockInterval);
+      analogueClockInterval = null;
+    }
   }
 
   // --- Visitor Counter ---
@@ -482,6 +611,56 @@
     }
 
     elVisitorCounter.textContent = count.toLocaleString();
+
+    // Update the counter display in the popup too
+    var counterDisplay = document.getElementById('counter-display');
+    if (counterDisplay) counterDisplay.textContent = count.toLocaleString();
+  }
+
+  // --- System Tray Click Handlers ---
+  function setupSystemTrayClicks() {
+    if (elVisitorCounter) {
+      elVisitorCounter.style.cursor = 'default';
+      elVisitorCounter.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var win = windows.get('window-visitor-counter');
+        if (win && (win.state === 'open' || win.state === 'maximized')) {
+          closeWindow('window-visitor-counter');
+        } else {
+          // Position near the system tray
+          openWindow('window-visitor-counter');
+          if (win && win.el) {
+            win.el.style.left = 'auto';
+            win.el.style.right = '80px';
+            win.el.style.top = 'auto';
+            win.el.style.bottom = (TASKBAR_HEIGHT + 4) + 'px';
+            win.el.style.position = 'fixed';
+          }
+        }
+      });
+    }
+
+    if (elClock) {
+      elClock.style.cursor = 'default';
+      elClock.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var win = windows.get('window-clock');
+        if (win && (win.state === 'open' || win.state === 'maximized')) {
+          closeWindow('window-clock');
+          stopAnalogueClock();
+        } else {
+          openWindow('window-clock');
+          startAnalogueClock();
+          if (win && win.el) {
+            win.el.style.left = 'auto';
+            win.el.style.right = '4px';
+            win.el.style.top = 'auto';
+            win.el.style.bottom = (TASKBAR_HEIGHT + 4) + 'px';
+            win.el.style.position = 'fixed';
+          }
+        }
+      });
+    }
   }
 
   // --- Desktop Icon Events ---
@@ -518,6 +697,13 @@
       if (icon) {
         var windowId = icon.getAttribute('data-window-id');
         if (windowId) handleIconClick(icon, windowId);
+        return;
+      }
+
+      // Explicit close buttons (data-close-window)
+      var explicitClose = e.target.closest('[data-close-window]');
+      if (explicitClose) {
+        closeWindow(explicitClose.getAttribute('data-close-window'));
         return;
       }
 
@@ -819,7 +1005,7 @@
       icon.setAttribute('aria-label', 'Open ' + project.title);
 
       var img = document.createElement('img');
-      img.src = project.icon || 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect fill="#c0c0c0" width="48" height="48" rx="2"/><rect fill="#000080" x="4" y="4" width="40" height="8"/><rect fill="#fff" x="4" y="14" width="40" height="30"/><text x="24" y="33" text-anchor="middle" font-size="12" fill="#000">' + (project.title.charAt(0) || '?') + '</text></svg>');
+      img.src = project.icon || 'img/icons/project-default.svg';
       img.alt = '';
       img.setAttribute('aria-hidden', 'true');
       img.width = 48;
@@ -877,9 +1063,9 @@
 
     // Add system icons to icon grid
     var systemIcons = [
-      { id: 'window-about', title: 'About Me', letter: '?' },
-      { id: 'window-guestbook', title: 'Guestbook', letter: 'G' },
-      { id: 'window-contact', title: 'Contact', letter: '@' }
+      { id: 'window-about', title: 'About Me', icon: 'img/icons/notepad.svg' },
+      { id: 'window-guestbook', title: 'Guestbook', icon: 'img/icons/guestbook.svg' },
+      { id: 'window-contact', title: 'Contact', icon: 'img/icons/contact.svg' }
     ];
 
     systemIcons.forEach(function(sys) {
@@ -893,7 +1079,7 @@
       icon.setAttribute('aria-label', 'Open ' + sys.title);
 
       var img = document.createElement('img');
-      img.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect fill="#c0c0c0" width="48" height="48" rx="2"/><rect fill="#000080" x="4" y="4" width="40" height="8"/><rect fill="#fff" x="4" y="14" width="40" height="30"/><text x="24" y="33" text-anchor="middle" font-size="16" fill="#000080">' + sys.letter + '</text></svg>');
+      img.src = sys.icon;
       img.alt = '';
       img.setAttribute('aria-hidden', 'true');
       img.width = 48;
@@ -958,6 +1144,7 @@
     startClock();
     initVisitorCounter();
     initContactEmail();
+    setupSystemTrayClicks();
 
     // Apply hash on load
     applyHashState();
