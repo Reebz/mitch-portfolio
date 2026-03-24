@@ -59,6 +59,7 @@
   var windows = new Map(); // id -> { state, prevRect, el, taskbarBtn }
   var zCounter = 10;
   var activeWindowId = null;
+  var cascadeIndex = 0;
   var clickTimeouts = new Map(); // iconId -> timeout
 
   // --- DOM References (cached at init) ---
@@ -142,12 +143,9 @@
       return;
     }
 
-    // Position window (cascade from top-left)
-    var openCount = 0;
-    windows.forEach(function(w) {
-      if (w.state === 'open' || w.state === 'maximized') openCount++;
-    });
-    var offset = 30 + (openCount * 25);
+    // Position window (cascade from top-left, wrap at 10)
+    var offset = 30 + (cascadeIndex * 22);
+    cascadeIndex = (cascadeIndex + 1) % 10;
     win.el.style.left = offset + 'px';
     win.el.style.top = offset + 'px';
     win.el.style.width = '500px';

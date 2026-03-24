@@ -254,8 +254,9 @@ body {
 
 .taskbar-window-btn {
   height: 22px;
-  min-width: 100px;
+  min-width: 60px;
   max-width: 160px;
+  flex: 1 1 auto;
   padding: 0 6px;
   text-align: left;
   overflow: hidden;
@@ -514,6 +515,21 @@ body {
   margin: 4px 0;
   font-size: 11px;
   line-height: 1.4;
+}
+
+/* === Title Bar Icons === */
+.title-bar-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+/* === Firefox Scrollbar Compatibility === */
+* {
+  scrollbar-color: #dfdfdf silver;
+  scrollbar-width: auto;
 }
 
 /* === Focus Indicators (Win98 dotted outline) === */
