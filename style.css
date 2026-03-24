@@ -193,10 +193,12 @@ html, body {
 
 .tech-pill {
   background: var(--win98-silver);
-  border: 1px solid var(--win98-grey);
+  border: 1px solid;
+  border-color: var(--win98-white) var(--win98-dark) var(--win98-dark) var(--win98-white);
+  box-shadow: inset 1px 1px var(--win98-light), inset -1px -1px var(--win98-grey);
   padding: 1px 6px;
   font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .project-links {
@@ -386,8 +388,8 @@ html, body {
 .notepad-content {
   background: var(--win98-white);
   padding: 4px;
-  font-family: monospace;
-  font-size: 12px;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 13px;
   line-height: 1.5;
   min-height: 200px;
   white-space: pre-wrap;
@@ -398,8 +400,8 @@ html, body {
 .guestbook-entry {
   border-bottom: 1px solid var(--win98-grey);
   padding: 8px 0;
-  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
-  font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12px;
 }
 
 .guestbook-entry:last-child {
@@ -408,7 +410,7 @@ html, body {
 
 .guestbook-name {
   font-weight: bold;
-  color: var(--win98-navy);
+  color: #0000ff;
 }
 
 .guestbook-date {
@@ -510,10 +512,46 @@ html, body {
   line-height: 1.4;
 }
 
+/* === Focus Indicators (Win98 dotted outline) === */
+button:focus-visible,
+a:focus-visible,
+[role="menuitem"]:focus-visible {
+  outline: 1px dotted var(--win98-black);
+  outline-offset: -1px;
+}
+
+.desktop-icon:focus-visible {
+  outline: 1px dotted var(--win98-white);
+  outline-offset: -1px;
+}
+
+.window:focus-visible {
+  outline: none;
+}
+
 /* === Reduced Motion === */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* === High Contrast / Forced Colors === */
+@media (forced-colors: active) {
+  .desktop-icon-label {
+    text-shadow: none;
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .desktop-icon[data-selected="true"] .desktop-icon-label {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .start-menu-sidebar {
+    background: Highlight;
   }
 }

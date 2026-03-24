@@ -434,7 +434,12 @@
 
     if (startBtn && startBtn.contains(e.target)) {
       menu.classList.toggle('open');
-      startBtn.setAttribute('aria-expanded', menu.classList.contains('open'));
+      var isOpen = menu.classList.contains('open');
+      startBtn.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        var firstItem = menu.querySelector('[role="menuitem"]');
+        if (firstItem) firstItem.focus();
+      }
       return;
     }
 
@@ -598,10 +603,18 @@
 
     // Keyboard
     document.addEventListener('keydown', function(e) {
-      // Escape closes topmost window
-      if (e.key === 'Escape' && activeWindowId) {
-        closeWindow(activeWindowId);
-        return;
+      // Escape closes start menu first, then topmost window
+      if (e.key === 'Escape') {
+        if (elStartMenu.classList.contains('open')) {
+          elStartMenu.classList.remove('open');
+          elStartButton.setAttribute('aria-expanded', 'false');
+          elStartButton.focus();
+          return;
+        }
+        if (activeWindowId) {
+          closeWindow(activeWindowId);
+          return;
+        }
       }
 
       // Enter on focused icon opens it
@@ -641,6 +654,28 @@
         var nextWin = windows.get(openIds[next]);
         if (nextWin && nextWin.el) nextWin.el.focus();
         announce(getTitleText(nextWin.el) + ' activated');
+      }
+    });
+
+    // Start menu keyboard navigation
+    elStartMenu.addEventListener('keydown', function(e) {
+      var items = Array.from(elStartMenu.querySelectorAll('[role="menuitem"]'));
+      var currentIdx = items.indexOf(document.activeElement);
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        var next = currentIdx < items.length - 1 ? currentIdx + 1 : 0;
+        items[next].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        var prev = currentIdx > 0 ? currentIdx - 1 : items.length - 1;
+        items[prev].focus();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        items[0].focus();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        items[items.length - 1].focus();
       }
     });
 
