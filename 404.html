@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>Error</title>
+  <meta name="theme-color" content="#008080">
+  <link rel="stylesheet" href="vendor/98.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #008080;
+      background-image: url('img/clouds.webp');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+    }
+    .error-dialog {
+      max-width: 400px;
+      width: 90%;
+    }
+    .error-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 8px;
+    }
+    .error-icon {
+      font-size: 32px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .error-text {
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .error-buttons {
+      text-align: center;
+      padding: 0 8px 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="window error-dialog" role="alertdialog" aria-labelledby="error-title" aria-describedby="error-desc">
+    <div class="title-bar">
+      <div class="title-bar-text" id="error-title">mitch-portfolio.exe</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="window.location.href='/'"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="error-body">
+        <span class="error-icon" aria-hidden="true">&#9888;</span>
+        <div class="error-text" id="error-desc">
+          This program has performed an illegal operation and will be shut down.<br><br>
+          If the problem persists, contact the system administrator.<br><br>
+          <strong>PORTFOLIO caused a Page Fault (404) in module INTERNET.DLL</strong>
+        </div>
+      </div>
+      <div class="error-buttons">
+        <a href="/mitch-portfolio/"><button class="default">OK</button></a>
+      </div>
+    </div>
+  </div>
+  <script>
+    if (window.top !== window.self) { window.top.location = window.self.location; }
+  </script>
+</body>
+</html>

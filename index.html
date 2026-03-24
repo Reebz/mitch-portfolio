@@ -3,9 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mitch — Portfolio</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>Mitch's Desktop</title>
+  <meta name="description" content="Mitch's portfolio -- a Windows 98 desktop experience showcasing software and AI projects.">
+  <meta name="theme-color" content="#008080">
+  <meta property="og:title" content="Mitch's Desktop">
+  <meta property="og:description" content="A Windows 98 desktop experience showcasing software and AI projects.">
+  <meta property="og:type" content="website">
+  <link rel="preload" as="image" type="image/webp" href="img/clouds.webp">
+  <link rel="stylesheet" href="vendor/98.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world.</h1>
+  <nav class="skip-links" aria-label="Skip navigation">
+    <a href="#icon-grid">Skip to desktop icons</a>
+    <a href="#taskbar">Skip to taskbar</a>
+  </nav>
+
+  <div id="desktop" role="application" aria-label="Windows 98 desktop" aria-roledescription="desktop" aria-describedby="desktop-instructions">
+    <div id="desktop-instructions" class="sr-only">
+      This is an interactive Windows 98 desktop simulation.
+      Use Tab to move between desktop icons, open windows, and the taskbar.
+      Use arrow keys to navigate desktop icons.
+      Press Enter to open an icon. Press Escape to close a window.
+      Press Ctrl+F6 to switch between open windows.
+    </div>
+
+    <div id="window-announcer" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    <div id="icon-grid" role="grid" aria-label="Desktop icons"></div>
+
+    <!-- About Me -->
+    <div id="window-about" class="window" data-state="closed" role="dialog" aria-labelledby="title-about" tabindex="-1">
+      <div class="title-bar">
+        <div class="title-bar-text" id="title-about">About Me - Notepad</div>
+        <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="notepad-menu-bar" aria-hidden="true">
+        <span>File</span><span>Edit</span><span>Format</span><span>Help</span>
+      </div>
+      <div class="window-body" role="document">
+        <div class="notepad-content">I build software and AI systems.
+
+Sometimes I make things look good too.
+
+This desktop is a portfolio of projects I've
+built, contributed to, or am currently working
+on. Double-click any icon to explore.
+
+-- Mitch</div>
+      </div>
+      <div class="status-bar">
+        <p class="status-bar-field">Ln 1, Col 1</p>
+      </div>
+    </div>
+
+    <!-- Guestbook -->
+    <div id="window-guestbook" class="window" data-state="closed" role="dialog" aria-labelledby="title-guestbook" tabindex="-1">
+      <div class="title-bar">
+        <div class="title-bar-text" id="title-guestbook">Guestbook</div>
+        <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body" role="document">
+        <h2 style="margin:0 0 8px;font-size:14px;">Sign My Guestbook!</h2>
+        <div class="guestbook-entry">
+          <span class="guestbook-name">CoolDude99</span>
+          <span class="guestbook-date">03/15/1999</span>
+          <div class="guestbook-message">Awesome homepage dude!! Check out mine at geocities.com/~cooldude99 I have a MIDI player!!</div>
+        </div>
+        <div class="guestbook-entry">
+          <span class="guestbook-name">xX_WebMaster_Xx</span>
+          <span class="guestbook-date">06/22/1999</span>
+          <div class="guestbook-message">Nice page. How did you get the animated backgrounds? Please email me the HTML code. Thx!</div>
+        </div>
+        <div class="guestbook-entry">
+          <span class="guestbook-name">~*SuRfErGrL*~</span>
+          <span class="guestbook-date">09/03/1999</span>
+          <div class="guestbook-message">OMG luv ur site!! The projects are so cool. Bookmarked!! &lt;3 &lt;3 &lt;3</div>
+        </div>
+        <div class="guestbook-entry">
+          <span class="guestbook-name">hackerman_2600</span>
+          <span class="guestbook-date">11/11/1999</span>
+          <div class="guestbook-message">Viewing source... clean code. Respect. But you should add a visitor counter.</div>
+        </div>
+        <div class="guestbook-entry">
+          <span class="guestbook-name">FutureBoy2000</span>
+          <span class="guestbook-date">12/31/1999</span>
+          <div class="guestbook-message">Great site! See you on the other side of Y2K!! If your computer still works lol</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div id="window-contact" class="window" data-state="closed" role="dialog" aria-labelledby="title-contact" tabindex="-1">
+      <div class="title-bar">
+        <div class="title-bar-text" id="title-contact">Contact</div>
+        <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body" role="document">
+        <fieldset>
+          <legend>Get in Touch</legend>
+          <div class="field-row" style="margin-bottom:8px;">
+            <label style="width:60px;">GitHub:</label>
+            <a href="https://github.com/Reebz" target="_blank" rel="noopener">github.com/Reebz</a>
+          </div>
+          <div class="field-row">
+            <label style="width:60px;">Email:</label>
+            <a id="contact-email" href="#">Loading...</a>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+
+    <template id="project-window-template">
+      <div class="window" data-state="closed" role="dialog" tabindex="-1">
+        <div class="title-bar">
+          <div class="title-bar-text"></div>
+          <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="window-body" role="document">
+          <img class="project-screenshot" loading="lazy" decoding="async" alt="">
+          <div class="project-description"></div>
+          <div class="tech-stack"></div>
+          <div class="project-links"></div>
+        </div>
+        <div class="status-bar">
+          <p class="status-bar-field"></p>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <div id="mobile-view">
+    <div class="desktop-notice">
+      <strong>Best experienced on a desktop with a mouse.</strong>
+      <p>You're getting the simplified view. The full site is a Windows 98 desktop with draggable windows.</p>
+      <button onclick="this.parentElement.style.display='none'">OK</button>
+    </div>
+    <div class="mobile-header">Mitch's Portfolio</div>
+    <div id="mobile-projects"></div>
+  </div>
+
+  <div id="start-menu" role="menu" aria-label="Start menu">
+    <div class="start-menu-sidebar" aria-hidden="true">Portfolio 98</div>
+    <ul class="start-menu-items">
+      <li><button class="start-menu-item" role="menuitem" data-window="window-about">About Me</button></li>
+      <li class="start-menu-separator" role="separator"></li>
+      <li id="start-menu-projects"></li>
+      <li class="start-menu-separator" role="separator"></li>
+      <li><button class="start-menu-item" role="menuitem" data-window="window-guestbook">Guestbook</button></li>
+      <li><button class="start-menu-item" role="menuitem" data-window="window-contact">Contact</button></li>
+    </ul>
+  </div>
+
+  <div id="taskbar" role="toolbar" aria-label="Taskbar" aria-orientation="horizontal">
+    <button id="start-button" aria-haspopup="menu" aria-expanded="false" aria-controls="start-menu">Start</button>
+    <div id="taskbar-buttons"></div>
+    <div id="system-tray" role="group" aria-label="System tray">
+      <span id="visitor-counter" role="status" aria-live="polite" aria-atomic="true" aria-label="Visitor counter"></span>
+      <span id="clock" role="timer" aria-live="off" aria-atomic="true" aria-label="System clock"></span>
+    </div>
+  </div>
+
+  <script defer src="desktop.js"></script>
 </body>
 </html>
