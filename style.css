@@ -486,54 +486,52 @@ body {
   }
 }
 
-/* === Mobile View === */
+/* === Mobile View (DOS Terminal) === */
 #mobile-view {
   display: none;
-  padding: 16px;
-  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
-  font-size: 11px;
 }
 
-.desktop-notice {
-  display: none;
-  background: var(--win98-silver);
-  border: 1px solid;
-  border-color: var(--win98-white) var(--win98-dark) var(--win98-dark) var(--win98-white);
-  padding: 12px;
-  margin-bottom: 16px;
-}
-
-.desktop-notice button {
-  margin-top: 8px;
-  min-width: 60px;
-}
-
-.mobile-header {
-  background: var(--win98-silver);
-  border-bottom: 1px solid var(--win98-grey);
-  padding: 8px 16px;
-  font-weight: bold;
+#dos-terminal {
+  background: #000000;
+  color: #AAAAAA;
+  font-family: "Perfect DOS VGA 437", "Lucida Console", "Courier New", monospace;
   font-size: 14px;
-  margin: -16px -16px 16px;
-}
-
-.mobile-project-card {
-  background: var(--win98-silver);
-  border: 1px solid;
-  border-color: var(--win98-white) var(--win98-dark) var(--win98-dark) var(--win98-white);
-  padding: 12px;
-  margin-bottom: 8px;
-}
-
-.mobile-project-card h3 {
-  margin: 0 0 4px;
-  font-size: 12px;
-}
-
-.mobile-project-card p {
-  margin: 4px 0;
-  font-size: 11px;
   line-height: 1.4;
+  padding: 16px;
+  min-height: 100vh;
+}
+
+.dos-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.dos-file-entry {
+  color: #FFFFFF;
+  display: block;
+  padding: 2px 0;
+  text-decoration: none;
+  white-space: pre;
+}
+
+.dos-file-entry:active {
+  background: #0000AA;
+  color: #FFFFFF;
+}
+
+.dos-blink {
+  animation: dos-cursor-blink 1s step-end infinite;
+}
+
+@keyframes dos-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.dos-easter-egg {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #333;
 }
 
 /* === Context Menus === */

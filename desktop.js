@@ -1027,35 +1027,19 @@
       li.appendChild(menuItem);
       startMenuProjects.appendChild(li);
 
-      // Mobile card
-      if (elMobileProjects) {
-        var card = document.createElement('div');
-        card.className = 'mobile-project-card';
-        card.innerHTML = '';
-        var h3 = document.createElement('h3');
-        h3.textContent = project.title;
-        card.appendChild(h3);
-        var p = document.createElement('p');
-        p.textContent = project.description;
-        card.appendChild(p);
-        var techDiv = document.createElement('div');
-        techDiv.className = 'tech-stack';
-        project.tech.forEach(function(t) {
-          var pill = document.createElement('span');
-          pill.className = 'tech-pill';
-          pill.textContent = t;
-          techDiv.appendChild(pill);
-        });
-        card.appendChild(techDiv);
-        if (project.github) {
-          var link = document.createElement('a');
-          link.href = project.github;
-          link.target = '_blank';
-          link.rel = 'noopener';
-          link.textContent = 'GitHub';
-          card.appendChild(link);
-        }
-        elMobileProjects.appendChild(card);
+      // DOS terminal file entry
+      var dosFileList = document.getElementById('dos-file-list');
+      if (dosFileList) {
+        var dosName = project.title.toUpperCase().replace(/\s+/g, '').substring(0, 8);
+        var dosExt = 'EXE';
+        var size = String(Math.floor(Math.random() * 9000 + 1024)).padStart(9, ' ');
+        var entry = document.createElement('a');
+        entry.className = 'dos-file-entry';
+        entry.href = project.github || '#';
+        entry.target = '_blank';
+        entry.rel = 'noopener';
+        entry.textContent = dosName.padEnd(12, ' ') + dosExt + size + '  ' + project.updated;
+        dosFileList.appendChild(entry);
       }
     });
 
@@ -1315,7 +1299,7 @@
     elClock = document.getElementById('clock');
     elVisitorCounter = document.getElementById('visitor-counter');
     elAnnouncer = document.getElementById('window-announcer');
-    elMobileProjects = document.getElementById('mobile-projects');
+    // elMobileProjects removed — using DOS terminal view instead
 
     // Register system windows first
     registerSystemWindows();
