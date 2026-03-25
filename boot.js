@@ -7,10 +7,9 @@
       window.matchMedia('(hover: none) and (pointer: coarse)').matches ||
       window.location.hash) return;
 
-  // --- CGA Colors ---
-  var GRAY  = '#AAAAAA';
-  var WHITE = '#FFFFFF';
-  var YELLOW = '#FFFF55';
+  // --- BIOS Colors (amber/yellow on black, per reference) ---
+  var AMBER  = '#FFFF55'; // Standard BIOS amber text
+  var BRIGHT = '#FFFFFF'; // Highlighted text (DEL, etc.)
 
   // --- DOS Beep ---
   function dosBeep() {
@@ -33,7 +32,7 @@
   overlay.id = 'boot-overlay';
   overlay.style.cssText =
     'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;' +
-    'background:#000000;color:' + GRAY + ';' +
+    'background:#000000;color:' + AMBER + ';' +
     'font-family:"Perfect DOS VGA 437","Lucida Console","Courier New",monospace;' +
     'font-size:16px;line-height:1.35;cursor:default;overflow:hidden;padding:0;margin:0;';
   overlay.setAttribute('role', 'status');
@@ -53,29 +52,28 @@
   var lineIndex;
   var outputEl;
 
-  function w(text) { return '<span style="color:' + WHITE + '">' + text + '</span>'; }
-  function y(text) { return '<span style="color:' + YELLOW + '">' + text + '</span>'; }
+  function hi(text) { return '<span style="color:' + BRIGHT + '">' + text + '</span>'; }
 
   // --- POST Lines ---
   var postLines = [
-    { html: w('Award Modular BIOS v4.51PG') + ', An Energy Star Ally', delay: 200 },
+    { html: hi('Award Modular BIOS v4.51PG') + ', An Energy Star Ally', delay: 200 },
     { html: 'Copyright (C) 1984-98, Award Software, Inc.', delay: 300 },
     { html: '&nbsp;', delay: 150 },
-    { html: w('PENTIUM II CPU at 233 MHz') + '         , Host Bus  66MHz', delay: 500 },
-    { html: 'Memory Test :   ' + w('32768K') + ' OK', delay: 800 },
+    { html: 'PENTIUM II CPU at 233 MHz' + '         , Host Bus  66MHz', delay: 500 },
+    { html: 'Memory Test :   ' + '32768K' + ' OK', delay: 800 },
     { html: '&nbsp;', delay: 200 },
     { html: 'Award Plug and Play BIOS Extension v1.0A', delay: 300 },
     { html: 'Initialize Plug and Play Cards...', delay: 400 },
     { html: 'PNP Init Completed', delay: 300 },
     { html: '&nbsp;', delay: 150 },
-    { html: '  Detecting IDE Primary Master   ... ' + w('QUANTUM FIREBALL 4.3GB'), delay: 400 },
-    { html: '  Detecting IDE Primary Slave    ... ' + w('CREATIVE 24X CD-ROM'), delay: 400 },
+    { html: '  Detecting IDE Primary Master   ... ' + 'QUANTUM FIREBALL 4.3GB', delay: 400 },
+    { html: '  Detecting IDE Primary Slave    ... ' + 'CREATIVE 24X CD-ROM', delay: 400 },
     { html: '  Detecting IDE Secondary Master ... None', delay: 300 },
     { html: '  Detecting IDE Secondary Slave  ... None', delay: 300 },
     { html: '&nbsp;', delay: 200 },
     { html: 'PCI device listing:', delay: 300 },
-    { html: '  Bus  0 Device  9: 3Dfx Voodoo2 (' + w('Creative Labs 3D Blaster') + ')', delay: 400 },
-    { html: '  Bus  0 Device 11: Creative ' + w('Sound Blaster 16') + ' at IRQ 5', delay: 400 },
+    { html: '  Bus  0 Device  9: 3Dfx Voodoo2 (' + 'Creative Labs 3D Blaster' + ')', delay: 400 },
+    { html: '  Bus  0 Device 11: Creative ' + 'Sound Blaster 16' + ' at IRQ 5', delay: 400 },
     { html: '&nbsp;', delay: 200 },
     { html: 'Trend ChipAwayVirus(R) On Guard_', delay: 500 }
   ];
@@ -96,7 +94,7 @@
           '<div id="post-output" style="max-width:calc(100% - 140px);"></div>' +
           // Bottom section (press DEL + BIOS ID) — positioned at bottom
           '<div id="post-bottom" style="position:absolute;bottom:16px;left:20px;display:none;">' +
-            '<div>Press ' + w('DEL') + ' to enter SETUP</div>' +
+            '<div>Press ' + hi('DEL') + ' to enter SETUP</div>' +
             '<div style="color:#555555;">03/25/2026-i440BX-W977-2A69KM4NC-00</div>' +
           '</div>' +
         '</div>';
@@ -128,8 +126,8 @@
             '<span style="display:inline-block;width:16px;height:16px;background:#0000FF;margin:2px;"></span>' +
             '<span style="display:inline-block;width:16px;height:16px;background:#FFFF00;margin:2px;"></span>' +
           '</div>' +
-          '<div style="color:' + WHITE + ';font-size:22px;font-weight:bold;letter-spacing:6px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Portfolio 98</div>' +
-          '<div style="color:' + GRAY + ';font-size:11px;margin-top:12px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Starting Portfolio 98...</div>' +
+          '<div style="color:' + BRIGHT + ';font-size:22px;font-weight:bold;letter-spacing:6px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Portfolio 98</div>' +
+          '<div style="color:' + AMBER + ';font-size:11px;margin-top:12px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Starting Portfolio 98...</div>' +
           '<div style="margin-top:28px;width:220px;height:18px;border:1px solid #555555;background:#000;">' +
             '<div id="boot-progress" style="height:100%;width:0%;background:#000080;transition:width 1.8s linear;"></div>' +
           '</div>' +
