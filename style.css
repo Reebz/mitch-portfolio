@@ -1,3 +1,12 @@
+/* === DOS VGA Font (for BIOS boot + mobile DOS view) === */
+@font-face {
+  font-family: "Perfect DOS VGA 437";
+  src: url("vendor/PerfectDOSVGA437.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* === Custom Properties === */
 :root {
   --win98-teal: #008080;

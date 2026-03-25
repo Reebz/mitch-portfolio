@@ -2,38 +2,48 @@
   'use strict';
 
   // Skip boot on touch devices, reduced motion, hash deep links, or repeat visits
-  var skipBoot = sessionStorage.getItem('booted') ||
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-    window.matchMedia('(hover: none) and (pointer: coarse)').matches ||
-    window.location.hash;
+  if (sessionStorage.getItem('booted') ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      window.matchMedia('(hover: none) and (pointer: coarse)').matches ||
+      window.location.hash) return;
 
-  if (skipBoot) return;
+  // --- BIOS Color Attributes (CGA 16-color palette) ---
+  var C = {
+    BLACK:   '#000000', BLUE:    '#0000AA', GREEN:   '#00AA00', CYAN:    '#00AAAA',
+    RED:     '#AA0000', MAGENTA: '#AA00AA', BROWN:   '#AA5500', LGRAY:   '#AAAAAA',
+    DGRAY:   '#555555', LBLUE:   '#5555FF', LGREEN:  '#55FF55', LCYAN:   '#55FFFF',
+    LRED:    '#FF5555', LMAGENTA:'#FF55FF', YELLOW:  '#FFFF55', WHITE:   '#FFFFFF'
+  };
 
-  // --- DOS beep via Web Audio API ---
+  // --- DOS Beep ---
   function dosBeep() {
     try {
       var ctx = new (window.AudioContext || window.webkitAudioContext)();
       var osc = ctx.createOscillator();
       var gain = ctx.createGain();
       osc.type = 'square';
-      osc.frequency.value = 1000; // Classic POST beep frequency
-      gain.gain.value = 0.08; // Quiet
+      osc.frequency.value = 1000;
+      gain.gain.value = 0.06;
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.15); // Short beep
-    } catch (e) { /* Audio not available, skip silently */ }
+      osc.stop(ctx.currentTime + 0.15);
+    } catch (e) {}
   }
 
-  // Create boot overlay
+  // --- Create overlay ---
   var overlay = document.createElement('div');
   overlay.id = 'boot-overlay';
-  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:#000;color:#c0c0c0;font-family:"Lucida Console","Courier New",monospace;font-size:13px;cursor:pointer;';
+  overlay.style.cssText =
+    'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;' +
+    'background:' + C.BLUE + ';color:' + C.LGRAY + ';' +
+    'font-family:"Perfect DOS VGA 437","Lucida Console","Courier New",monospace;' +
+    'font-size:16px;line-height:1.4;cursor:default;overflow:hidden;padding:0;margin:0;';
   overlay.setAttribute('role', 'status');
   overlay.setAttribute('aria-label', 'System startup');
   document.body.appendChild(overlay);
 
-  // Hide desktop until boot completes
+  // Hide desktop
   var desktop = document.getElementById('desktop');
   var taskbar = document.getElementById('taskbar');
   var startMenu = document.getElementById('start-menu');
@@ -45,95 +55,131 @@
   var timer;
   var postLines;
   var lineIndex;
+  var outputEl;
 
+  // --- Helpers ---
+  function span(text, color) {
+    return '<span style="color:' + color + '">' + text + '</span>';
+  }
+
+  function addLine(text, color) {
+    if (!outputEl) return;
+    var div = document.createElement('div');
+    if (color) {
+      div.innerHTML = text; // already has spans
+    } else {
+      div.textContent = text;
+    }
+    if (color === true) {
+      div.innerHTML = text;
+    }
+    outputEl.appendChild(div);
+  }
+
+  // --- Stages ---
   function nextStage() {
     stage++;
 
     if (stage === 1) {
-      // === BIOS POST Screen ===
+      // =============== POST SCREEN ===============
+      overlay.style.background = C.BLUE;
       overlay.innerHTML =
-        '<div style="padding:20px 40px;width:100%;line-height:1.6;">' +
-          // Energy Star logo area (ASCII art style)
-          '<div style="color:#00aa00;margin-bottom:16px;white-space:pre;font-size:11px;">' +
-            '  ___________\n' +
-            ' /  ENERGY   \\\n' +
-            '|   ★ STAR    |\n' +
-            ' \\___________/\n' +
+        '<div style="position:relative;padding:16px 24px;height:100%;box-sizing:border-box;">' +
+          // Energy Star logo top-right
+          '<div style="position:absolute;top:12px;right:24px;text-align:center;">' +
+            '<div style="color:' + C.LGREEN + ';font-size:12px;white-space:pre;line-height:1.2;">' +
+              '  ___________\n' +
+              ' /           \\\n' +
+              '|  ' + span('energy', C.YELLOW) + '    |\n' +
+              '|    ' + span('\\u2605', C.YELLOW) + '       |\n' +
+              '|   ' + span('STAR', C.YELLOW) + '     |\n' +
+              ' \\___________/' +
+            '</div>' +
+            '<div style="color:' + C.LGREEN + ';font-size:10px;margin-top:2px;">EPA POLLUTION</div>' +
+            '<div style="color:' + C.LGREEN + ';font-size:10px;">PREVENTER</div>' +
           '</div>' +
-          '<div style="color:#fff;font-size:14px;font-weight:bold;">Award Modular BIOS v4.51PG</div>' +
-          '<div style="color:#fff;">Copyright (C) 1998 Award Software, Inc.</div>' +
-          '<div style="margin-top:12px;" id="post-output"></div>' +
-          '<div style="margin-top:16px;color:#808080;font-size:11px;">Press any key to skip...</div>' +
+          '<div id="post-output" style="max-width:calc(100% - 180px);"></div>' +
         '</div>';
 
-      // Typewriter POST lines
+      outputEl = document.getElementById('post-output');
+
+      // POST lines with typewriter timing
       postLines = [
-        { text: 'Intel Pentium II 233MHz Processor', color: '#fff', delay: 300 },
-        { text: 'Memory Test: 32768K OK', color: '#fff', delay: 600 },
-        { text: '', color: '', delay: 100 },
-        { text: 'Award Plug and Play BIOS Extension v1.0A', color: '#fff', delay: 300 },
-        { text: 'Detecting Primary IDE Master... QUANTUM FIREBALL 4.3GB', color: '#fff', delay: 400 },
-        { text: 'Detecting Primary IDE Slave... CREATIVE CD-ROM 48X', color: '#fff', delay: 300 },
-        { text: '', color: '', delay: 100 },
-        { text: '3Dfx Voodoo2 8MB Detected', color: '#00aa00', delay: 300 },
-        { text: 'SB16 Audio Blaster Detected at IRQ 5', color: '#fff', delay: 300 },
-        { text: '', color: '', delay: 200 },
-        { text: 'Press DEL to enter SETUP', color: '#808080', delay: 400 }
+        { html: span('Award Modular BIOS v4.51PG', C.WHITE) + ', An Energy Star Ally', delay: 300 },
+        { html: 'Copyright (C) 1984-98, Award Software, Inc.', delay: 400 },
+        { html: '', delay: 200 },
+        { html: span('PENTIUM II CPU at 233 MHz', C.WHITE) + '         , Host Bus  66MHz', delay: 500 },
+        { html: 'Memory Test :   ' + span('32768K OK', C.WHITE), delay: 700 },
+        { html: '', delay: 200 },
+        { html: 'Award Plug and Play BIOS Extension v1.0A', delay: 300 },
+        { html: 'Copyright (C) 1998, Award Software, Inc.', delay: 300 },
+        { html: '  Detecting IDE Primary Master   ... ' + span('QUANTUM FIREBALL 4.3GB', C.WHITE), delay: 400 },
+        { html: '  Detecting IDE Primary Slave    ... ' + span('CREATIVE 24X CD-ROM', C.WHITE), delay: 400 },
+        { html: '  Detecting IDE Secondary Master ... None', delay: 300 },
+        { html: '  Detecting IDE Secondary Slave  ... None', delay: 300 },
+        { html: '', delay: 200 },
+        { html: 'PCI device listing:', delay: 300 },
+        { html: '  3Dfx Interactive - ' + span('Creative Labs 3D Blaster Voodoo2 8MB', C.WHITE), delay: 400 },
+        { html: '  Creative Labs ' + span('Sound Blaster 16', C.WHITE) + ' at IRQ 5', delay: 400 },
+        { html: '', delay: 300 },
+        { html: '', delay: 200 },
+        { html: 'Press ' + span('F1', C.WHITE) + ' to continue, ' + span('DEL', C.WHITE) + ' to enter SETUP', delay: 0 }
       ];
       lineIndex = 0;
       typeNextLine();
-      return; // Don't set a timeout here — typeNextLine handles timing
+      return;
+
     } else if (stage === 2) {
-      // === POST beep ===
+      // =============== POST BEEP + BLACK SCREEN ===============
       dosBeep();
-      // Brief black screen after beep
       overlay.innerHTML = '';
-      timer = setTimeout(nextStage, 500);
+      overlay.style.background = C.BLACK;
+      timer = setTimeout(nextStage, 600);
+
     } else if (stage === 3) {
-      // === Windows logo ===
+      // =============== WINDOWS 98 LOGO ===============
+      overlay.style.background = C.BLACK;
       overlay.innerHTML =
         '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;">' +
-          '<div style="margin-bottom:16px;">' +
-            '<div style="display:inline-block;width:12px;height:12px;background:#ff0000;margin:2px;"></div>' +
-            '<div style="display:inline-block;width:12px;height:12px;background:#00aa00;margin:2px;"></div>' +
-            '<div style="display:inline-block;width:12px;height:12px;background:#0000ff;margin:2px;"></div>' +
-            '<div style="display:inline-block;width:12px;height:12px;background:#ffcc00;margin:2px;"></div>' +
+          '<div style="margin-bottom:20px;">' +
+            '<span style="display:inline-block;width:16px;height:16px;background:#FF0000;margin:2px;"></span>' +
+            '<span style="display:inline-block;width:16px;height:16px;background:#00AA00;margin:2px;"></span>' +
+            '<span style="display:inline-block;width:16px;height:16px;background:#0000FF;margin:2px;"></span>' +
+            '<span style="display:inline-block;width:16px;height:16px;background:#FFFF00;margin:2px;"></span>' +
           '</div>' +
-          '<div style="color:#fff;font-size:20px;font-weight:bold;letter-spacing:4px;">Portfolio 98</div>' +
-          '<div style="color:#808080;font-size:11px;margin-top:12px;">Starting Portfolio 98...</div>' +
-          '<div style="margin-top:24px;width:200px;height:16px;border:1px solid #808080;background:#000;">' +
-            '<div id="boot-progress" style="height:100%;width:0%;background:#000080;transition:width 1.5s linear;"></div>' +
+          '<div style="color:' + C.WHITE + ';font-size:22px;font-weight:bold;letter-spacing:6px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Portfolio 98</div>' +
+          '<div style="color:' + C.LGRAY + ';font-size:11px;margin-top:12px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Starting Portfolio 98...</div>' +
+          '<div style="margin-top:28px;width:220px;height:18px;border:1px solid ' + C.DGRAY + ';background:' + C.BLACK + ';">' +
+            '<div id="boot-progress" style="height:100%;width:0%;background:' + C.BLUE + ';transition:width 1.8s linear;"></div>' +
           '</div>' +
         '</div>';
       requestAnimationFrame(function() {
         var bar = document.getElementById('boot-progress');
         if (bar) bar.style.width = '100%';
       });
-      timer = setTimeout(nextStage, 2000);
+      timer = setTimeout(nextStage, 2200);
+
     } else {
       completeBoot();
     }
   }
 
   function typeNextLine() {
-    if (stage !== 1) return; // Boot was skipped
+    if (stage !== 1) return;
     if (lineIndex >= postLines.length) {
-      // All lines typed — move to next stage after a pause
-      timer = setTimeout(nextStage, 800);
+      timer = setTimeout(nextStage, 1000);
       return;
     }
 
     var line = postLines[lineIndex];
-    var output = document.getElementById('post-output');
-    if (output) {
+    if (outputEl) {
       var div = document.createElement('div');
-      if (line.text) {
-        div.textContent = line.text;
-        div.style.color = line.color;
+      if (line.html) {
+        div.innerHTML = line.html;
       } else {
         div.innerHTML = '&nbsp;';
       }
-      output.appendChild(div);
+      outputEl.appendChild(div);
     }
     lineIndex++;
     timer = setTimeout(typeNextLine, line.delay);
@@ -142,17 +188,15 @@
   function completeBoot() {
     clearTimeout(timer);
     sessionStorage.setItem('booted', '1');
-    overlay.style.transition = 'opacity 0.3s';
+    overlay.style.transition = 'opacity 0.4s';
     overlay.style.opacity = '0';
     if (desktop) desktop.style.visibility = '';
     if (taskbar) taskbar.style.visibility = '';
     if (startMenu) startMenu.style.visibility = '';
-    setTimeout(function() {
-      overlay.remove();
-    }, 300);
+    setTimeout(function() { overlay.remove(); }, 400);
   }
 
-  // Skip on any click or keypress
+  // Skip on click or keypress
   overlay.addEventListener('click', completeBoot);
   document.addEventListener('keydown', function onKey() {
     if (document.getElementById('boot-overlay')) {
@@ -161,6 +205,5 @@
     }
   });
 
-  // Start boot sequence
   nextStage();
 })();
