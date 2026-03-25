@@ -788,9 +788,14 @@
         openWindow(windowId);
       } else if (action === 'shutdown') {
         openWindow('window-shutdown');
-      } else if (app) {
-        // App launch handling (Webamp, Paint, Minesweeper, Calculator)
-        announce(app + ' launched');
+      } else if (app === 'winamp') {
+        launchWebamp();
+      } else if (app === 'paint') {
+        launchPaint();
+      } else if (app === 'minesweeper') {
+        launchMinesweeper();
+      } else if (app === 'calculator') {
+        launchCalculator();
       }
 
       elStartMenu.classList.remove('open');
@@ -1388,6 +1393,81 @@
         minimizeWindow(id);
       }
     });
+  }
+
+  // --- Embedded App Launchers ---
+
+  var webampInstance = null;
+
+  function launchWebamp() {
+    if (webampInstance) return;
+    if (typeof Webamp === 'undefined') {
+      announce('Webamp failed to load');
+      return;
+    }
+    webampInstance = new Webamp({
+      windowLayout: { main: { position: { top: 100, left: 300 } } },
+      zIndex: 9000
+    });
+    webampInstance.renderWhenReady(document.getElementById('desktop'));
+    webampInstance.onClose(function() {
+      webampInstance.dispose();
+      webampInstance = null;
+    });
+    announce('Winamp opened');
+  }
+
+  function createAppWindow(id, title, bodyHtml, opts) {
+    opts = opts || {};
+    var existing = document.getElementById(id);
+    if (existing) {
+      openWindow(id);
+      return;
+    }
+
+    var win = document.createElement('div');
+    win.id = id;
+    win.className = 'window';
+    win.setAttribute('data-state', 'closed');
+    win.setAttribute('role', 'dialog');
+    win.setAttribute('aria-labelledby', 'title-' + id.replace('window-', ''));
+    win.setAttribute('tabindex', '-1');
+    if (opts.width) win.style.width = opts.width;
+    if (opts.height) win.style.height = opts.height;
+
+    win.innerHTML =
+      '<div class="title-bar">' +
+        '<img src="img/icons/project-sm.png" class="title-bar-icon" alt="" aria-hidden="true">' +
+        '<div class="title-bar-text" id="title-' + id.replace('window-', '') + '">' + title + '</div>' +
+        '<div class="title-bar-controls" role="toolbar" aria-label="Window controls">' +
+          '<button aria-label="Minimize"></button>' +
+          '<button aria-label="Maximize"></button>' +
+          '<button aria-label="Close"></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="window-body" role="document">' + bodyHtml + '</div>';
+
+    elDesktop.appendChild(win);
+    VALID_WINDOWS.add(id);
+    windows.set(id, { state: 'closed', prevRect: null, el: win, taskbarBtn: null });
+    openWindow(id);
+  }
+
+  function launchPaint() {
+    createAppWindow('window-paint', 'untitled - Paint',
+      '<iframe src="https://jspaint.app" style="width:100%;height:400px;border:none;"></iframe>');
+  }
+
+  function launchMinesweeper() {
+    createAppWindow('window-minesweeper', 'Minesweeper',
+      '<iframe src="apps/minesweeper/index.html" style="width:100%;height:300px;border:none;"></iframe>',
+      { width: '260px', height: '380px' });
+  }
+
+  function launchCalculator() {
+    createAppWindow('window-calculator', 'Calculator',
+      '<iframe src="apps/calculator/index.html" style="width:100%;height:340px;border:none;"></iframe>',
+      { width: '250px', height: '410px' });
   }
 
   // --- Init ---
