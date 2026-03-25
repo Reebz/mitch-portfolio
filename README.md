@@ -24,6 +24,10 @@ A portfolio site disguised as a Windows 98 desktop. Built with static HTML, CSS,
 ## Acknowledgements
 
 - **Icons:** [Win98 Icons](https://win98icons.alexmeub.com/) by Alex Meub
-- **CSS Framework:** [98.css](https://jdan.github.io/98.css/) by Jordan Scales
-- **Font:** [Perfect DOS VGA 437](https://www.dafont.com/perfect-dos-vga-437.font) for BIOS boot sequence
+- **CSS Framework:** [98.css](https://jdan.github.io/98.css/) by Jordan Scales (MIT)
+- **Font:** [Perfect DOS VGA 437](https://www.dafont.com/perfect-dos-vga-437.font)
+- **Webamp:** [Webamp](https://webamp.org/) by Jordan Eldredge (MIT)
+- **jspaint:** [JS Paint](https://jspaint.app/) by Isaiah Odhner (MIT)
 - **Wallpaper:** Office Space x Windows XP "Bliss" mashup
+- **Contact Form:** [Formspree](https://formspree.io/)
+- **Inspiration:** [win98ge](https://github.com/gelasioebel/win98ge) by Gelasio Ebel (BSD), [window98-html-css-js](https://github.com/lolstring/window98-html-css-js) (MIT)

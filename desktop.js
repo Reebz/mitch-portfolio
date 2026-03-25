@@ -1139,13 +1139,14 @@
     });
   }
 
-  // --- Contact Email Obfuscation ---
-  function initContactEmail() {
-    var link = document.getElementById('contact-email');
-    if (link) {
-      // Replace with actual email when ready
-      link.textContent = 'hello@example.com';
-      link.href = 'mailto:hello@example.com';
+  // --- Contact Form ---
+  function initContactForm() {
+    var form = document.getElementById('contact-form');
+    if (form) {
+      form.addEventListener('submit', function() {
+        document.getElementById('contact-replyto').value = document.getElementById('contact-from').value;
+        document.getElementById('contact-subject-hidden').value = document.getElementById('contact-subject').value;
+      });
     }
   }
 
@@ -1415,7 +1416,7 @@
     // Start system tray
     startClock();
     initVisitorCounter();
-    initContactEmail();
+    initContactForm();
     initMyComputer();
     setupSystemTrayClicks();
     setupContextMenus();
