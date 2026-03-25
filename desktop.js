@@ -1003,7 +1003,7 @@
       icon.setAttribute('aria-label', 'Open ' + project.title);
 
       var img = document.createElement('img');
-      img.src = project.icon || 'img/icons/project-default.svg';
+      img.src = project.icon || 'img/icons/project-default.png';
       img.alt = '';
       img.setAttribute('aria-hidden', 'true');
       img.width = 48;
@@ -1061,11 +1061,11 @@
 
     // Add system icons to icon grid
     var systemIcons = [
-      { id: 'window-my-computer', title: 'My Computer', icon: 'img/icons/mycomputer.svg' },
-      { id: 'window-recycle-bin', title: 'Recycle Bin', icon: 'img/icons/recyclebin.svg' },
-      { id: 'window-about', title: 'About Me', icon: 'img/icons/notepad.svg' },
-      { id: 'window-guestbook', title: 'Guestbook', icon: 'img/icons/guestbook.svg' },
-      { id: 'window-contact', title: 'Contact', icon: 'img/icons/contact.svg' }
+      { id: 'window-my-computer', title: 'My Computer', icon: 'img/icons/mycomputer.png' },
+      { id: 'window-recycle-bin', title: 'Recycle Bin', icon: 'img/icons/recyclebin.png' },
+      { id: 'window-about', title: 'About Me', icon: 'img/icons/notepad.png' },
+      { id: 'window-guestbook', title: 'Guestbook', icon: 'img/icons/guestbook.png' },
+      { id: 'window-contact', title: 'Contact', icon: 'img/icons/contact.png' }
     ];
 
     systemIcons.forEach(function(sys) {
