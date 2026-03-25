@@ -926,11 +926,46 @@
     return Math.max(1, Math.floor(gridHeight / 80));
   }
 
-  // --- Generate Project Windows + Icons ---
+  // --- Generate Desktop Icons + Project Windows ---
   function generateProjects() {
     var template = document.getElementById('project-window-template');
     var startMenuProjects = document.getElementById('start-menu-projects');
 
+    // System icons FIRST (My Computer, Recycle Bin, About Me, etc.)
+    var systemIcons = [
+      { id: 'window-my-computer', title: 'My Computer', icon: 'img/icons/mycomputer.png' },
+      { id: 'window-recycle-bin', title: 'Recycle Bin', icon: 'img/icons/recyclebin.png' },
+      { id: 'window-about', title: 'About Me', icon: 'img/icons/notepad.png' },
+      { id: 'window-guestbook', title: 'Guestbook', icon: 'img/icons/guestbook.png' },
+      { id: 'window-contact', title: 'Contact', icon: 'img/icons/contact.png' }
+    ];
+
+    systemIcons.forEach(function(sys, i) {
+      var icon = document.createElement('div');
+      icon.className = 'desktop-icon';
+      icon.setAttribute('role', 'gridcell');
+      icon.setAttribute('tabindex', i === 0 ? '0' : '-1');
+      icon.setAttribute('data-window-id', sys.id);
+      icon.setAttribute('data-selected', 'false');
+      icon.setAttribute('aria-label', 'Open ' + sys.title);
+
+      var img = document.createElement('img');
+      img.src = sys.icon;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      img.width = 48;
+      img.height = 48;
+      icon.appendChild(img);
+
+      var label = document.createElement('span');
+      label.className = 'desktop-icon-label';
+      label.textContent = sys.title;
+      icon.appendChild(label);
+
+      elIconGrid.appendChild(icon);
+    });
+
+    // Then project icons
     PROJECTS.forEach(function(project, i) {
       var id = 'window-' + project.id;
       VALID_WINDOWS.add(id);
@@ -997,7 +1032,7 @@
       var icon = document.createElement('div');
       icon.className = 'desktop-icon';
       icon.setAttribute('role', 'gridcell');
-      icon.setAttribute('tabindex', i === 0 ? '0' : '-1');
+      icon.setAttribute('tabindex', '-1');
       icon.setAttribute('data-window-id', id);
       icon.setAttribute('data-selected', 'false');
       icon.setAttribute('aria-label', 'Open ' + project.title);
@@ -1043,40 +1078,6 @@
       }
     });
 
-    // Add system icons to icon grid
-    var systemIcons = [
-      { id: 'window-my-computer', title: 'My Computer', icon: 'img/icons/mycomputer.png' },
-      { id: 'window-recycle-bin', title: 'Recycle Bin', icon: 'img/icons/recyclebin.png' },
-      { id: 'window-about', title: 'About Me', icon: 'img/icons/notepad.png' },
-      { id: 'window-guestbook', title: 'Guestbook', icon: 'img/icons/guestbook.png' },
-      { id: 'window-contact', title: 'Contact', icon: 'img/icons/contact.png' }
-    ];
-
-    systemIcons.forEach(function(sys) {
-      var iconIdx = elIconGrid.children.length;
-      var icon = document.createElement('div');
-      icon.className = 'desktop-icon';
-      icon.setAttribute('role', 'gridcell');
-      icon.setAttribute('tabindex', '-1');
-      icon.setAttribute('data-window-id', sys.id);
-      icon.setAttribute('data-selected', 'false');
-      icon.setAttribute('aria-label', 'Open ' + sys.title);
-
-      var img = document.createElement('img');
-      img.src = sys.icon;
-      img.alt = '';
-      img.setAttribute('aria-hidden', 'true');
-      img.width = 48;
-      img.height = 48;
-      icon.appendChild(img);
-
-      var label = document.createElement('span');
-      label.className = 'desktop-icon-label';
-      label.textContent = sys.title;
-      icon.appendChild(label);
-
-      elIconGrid.appendChild(icon);
-    });
   }
 
   // --- Register System Windows ---
