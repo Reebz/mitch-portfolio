@@ -50,7 +50,7 @@
   ];
 
   // Non-project windows (hand-authored in HTML)
-  var SYSTEM_WINDOWS = ['about', 'guestbook', 'contact', 'my-computer', 'recycle-bin', 'visitor-counter', 'clock'];
+  var SYSTEM_WINDOWS = ['about', 'guestbook', 'contact', 'my-computer', 'recycle-bin', 'visitor-counter', 'clock', 'shutdown'];
 
   // All valid window IDs (for hash routing whitelist)
   var VALID_WINDOWS = new Set();
@@ -451,6 +451,7 @@
     if (menu && !menu.contains(e.target)) {
       menu.classList.remove('open');
       if (startBtn) startBtn.setAttribute('aria-expanded', 'false');
+      closeAllSubmenus();
     }
   }
 
@@ -773,14 +774,43 @@
 
     // Start menu item clicks
     elStartMenu.addEventListener('click', function(e) {
-      var item = e.target.closest('[data-window]');
+      var item = e.target.closest('[data-window], [data-action], [data-app]');
       if (!item) return;
 
+      // Don't close menu if clicking a has-submenu parent
+      if (item.closest('.has-submenu') && item.getAttribute('aria-haspopup')) return;
+
       var windowId = item.getAttribute('data-window');
-      openWindow(windowId);
+      var action = item.getAttribute('data-action');
+      var app = item.getAttribute('data-app');
+
+      if (windowId) {
+        openWindow(windowId);
+      } else if (action === 'shutdown') {
+        openWindow('window-shutdown');
+      } else if (app) {
+        // App launch handling (Webamp, Paint, Minesweeper, Calculator)
+        announce(app + ' launched');
+      }
+
       elStartMenu.classList.remove('open');
       elStartButton.setAttribute('aria-expanded', 'false');
+      closeAllSubmenus();
     });
+
+    // Quick launch clicks
+    document.getElementById('quick-launch').addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-window], [data-action]');
+      if (!btn) return;
+      var windowId = btn.getAttribute('data-window');
+      var action = btn.getAttribute('data-action');
+      if (windowId) openWindow(windowId);
+      else if (action === 'show-desktop') showDesktop();
+    });
+
+    // Shutdown OK button
+    var shutdownOk = document.getElementById('shutdown-ok');
+    if (shutdownOk) shutdownOk.addEventListener('click', handleShutdown);
 
     // Global click for start menu
     document.addEventListener('click', handleGlobalClick);
@@ -1288,6 +1318,87 @@
     });
   }
 
+  // --- Cascading Submenus ---
+  var submenuTimeout = null;
+
+  function openSubmenu(li) {
+    var parent = li.parentElement;
+    if (parent) {
+      parent.querySelectorAll(':scope > .has-submenu.submenu-open').forEach(function(sib) {
+        if (sib !== li) closeSubmenu(sib);
+      });
+    }
+    li.classList.add('submenu-open');
+    var trigger = li.querySelector(':scope > [aria-haspopup]');
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeSubmenu(li) {
+    li.classList.remove('submenu-open');
+    var trigger = li.querySelector(':scope > [aria-haspopup]');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    li.querySelectorAll('.submenu-open').forEach(function(nested) {
+      nested.classList.remove('submenu-open');
+      var t = nested.querySelector(':scope > [aria-haspopup]');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function closeAllSubmenus() {
+    document.querySelectorAll('.has-submenu.submenu-open').forEach(function(li) {
+      closeSubmenu(li);
+    });
+  }
+
+  function initSubmenus() {
+    document.querySelectorAll('.has-submenu').forEach(function(li) {
+      li.addEventListener('mouseenter', function() {
+        clearTimeout(submenuTimeout);
+        var target = li;
+        submenuTimeout = setTimeout(function() { openSubmenu(target); }, 350);
+      });
+      li.addEventListener('mouseleave', function() {
+        clearTimeout(submenuTimeout);
+        var target = li;
+        submenuTimeout = setTimeout(function() { closeSubmenu(target); }, 200);
+      });
+    });
+  }
+
+  // --- Shut Down ---
+  function handleShutdown() {
+    var option = document.querySelector('input[name="shutdown-option"]:checked');
+    if (!option) return;
+
+    closeWindow('window-shutdown');
+    elStartMenu.classList.remove('open');
+    elStartButton.setAttribute('aria-expanded', 'false');
+
+    if (option.id === 'sd-shutdown') {
+      // Show "safe to turn off" screen
+      var overlay = document.createElement('div');
+      overlay.id = 'shutdown-overlay';
+      overlay.innerHTML = '<div>It\'s now safe to turn off<br>your computer.</div>';
+      document.body.appendChild(overlay);
+      setTimeout(function() {
+        sessionStorage.removeItem('booted');
+        location.reload();
+      }, 3000);
+    } else if (option.id === 'sd-restart' || option.id === 'sd-dos') {
+      sessionStorage.removeItem('booted');
+      location.reload();
+    }
+  }
+
+  // --- Quick Launch: Show Desktop ---
+  function showDesktop() {
+    windows.forEach(function(win, id) {
+      if (win.state === 'open' || win.state === 'maximized') {
+        minimizeWindow(id);
+      }
+    });
+  }
+
   // --- Init ---
   function init() {
     // Cache DOM references
@@ -1319,6 +1430,7 @@
     setupSystemTrayClicks();
     setupContextMenus();
     setupSelectionRect();
+    initSubmenus();
 
     // Apply hash on load
     applyHashState();
