@@ -1148,10 +1148,17 @@
   var elCtxDesktop, elCtxTitlebar;
   var ctxTargetWindowId = null;
 
+  function getZoom() {
+    var z = parseFloat(getComputedStyle(document.body).zoom);
+    return isNaN(z) ? 1 : z;
+  }
+
   function showContextMenu(menuEl, x, y) {
     hideAllContextMenus();
-    menuEl.style.left = x + 'px';
-    menuEl.style.top = y + 'px';
+    // Divide by zoom factor since CSS position uses unzoomed coordinates
+    var z = getZoom();
+    menuEl.style.left = (x / z) + 'px';
+    menuEl.style.top = (y / z) + 'px';
     menuEl.classList.add('open');
     var firstItem = menuEl.querySelector('[role="menuitem"]');
     if (firstItem) firstItem.focus();
