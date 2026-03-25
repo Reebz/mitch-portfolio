@@ -91,7 +91,7 @@
       overlay.innerHTML =
         '<div style="position:relative;padding:8px 16px;height:100%;box-sizing:border-box;">' +
           // Energy Star logo — top right, LARGE per reference
-          '<div style="position:absolute;top:8px;right:16px;text-align:center;">' +
+          '<div style="position:absolute;top:0;right:0;text-align:center;">' +
             '<img src="img/energystar.png" alt="Energy Star"' +
             ' style="width:400px;height:auto;image-rendering:auto;opacity:0.95;">' +
           '</div>' +
