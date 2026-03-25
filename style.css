@@ -433,17 +433,17 @@ body {
    Only trigger mobile view for actual touch devices (no hover + coarse pointer).
    Desktop browsers keep the full experience at ANY window width. */
 @media (hover: none) and (pointer: coarse) {
-  #desktop {
+  body {
     overflow: auto;
+    zoom: 1; /* Reset zoom for touch devices — 1.5x makes content too large */
   }
 
-  #icon-grid,
-  #start-menu,
-  #taskbar {
+  #desktop {
     display: none !important;
   }
 
-  .window {
+  #start-menu,
+  #taskbar {
     display: none !important;
   }
 
