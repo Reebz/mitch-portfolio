@@ -767,3 +767,144 @@ a:focus-visible,
     background: Highlight;
   }
 }
+
+/* === System Properties Dialog === */
+.sysprop-window {
+  min-width: 360px;
+  min-height: auto;
+}
+
+.sysprop-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  margin: 0 0 -1px 0;
+  list-style: none;
+}
+
+.sysprop-tabs [role="tab"] {
+  padding: 4px 12px;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  cursor: default;
+  background: var(--win98-silver);
+  border: 1px solid var(--win98-grey);
+  border-bottom: none;
+  margin-right: 1px;
+  position: relative;
+  top: 1px;
+  border-radius: 2px 2px 0 0;
+}
+
+.sysprop-tabs [role="tab"][aria-selected="true"] {
+  background: var(--win98-white);
+  border-bottom: 1px solid var(--win98-white);
+  z-index: 1;
+  font-weight: bold;
+  top: 0;
+  padding-top: 5px;
+}
+
+.sysprop-panel-area {
+  background: var(--win98-white);
+  border: 1px solid var(--win98-grey);
+  min-height: 200px;
+  padding: 12px;
+}
+
+.sysprop-panel {
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.sysprop-general {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.sysprop-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.sysprop-monitor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sysprop-monitor-screen {
+  width: 72px;
+  height: 56px;
+  background: #000080;
+  border: 3px solid #808080;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sysprop-flag {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 28px;
+  height: 28px;
+  gap: 2px;
+  transform: rotate(-8deg);
+}
+
+.flag-r { background: #ff0000; border-radius: 1px; }
+.flag-g { background: #00a800; border-radius: 1px; }
+.flag-b { background: #0000ff; border-radius: 1px; }
+.flag-y { background: #ffff00; border-radius: 1px; }
+
+.sysprop-monitor-stand {
+  width: 30px;
+  height: 6px;
+  background: #808080;
+  border-radius: 0 0 3px 3px;
+  margin-top: -1px;
+}
+
+.sysprop-logo-text {
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 10px;
+  text-align: center;
+  color: var(--win98-black);
+  line-height: 1.3;
+}
+
+.sysprop-info {
+  flex: 1;
+}
+
+.sysprop-section {
+  margin: 0;
+}
+
+.sysprop-hr {
+  border: none;
+  border-top: 1px solid var(--win98-grey);
+  margin: 8px 0;
+}
+
+.sysprop-unavailable {
+  text-align: center;
+  color: var(--win98-grey);
+  margin-top: 72px;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+}
+
+.sysprop-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 8px;
+}

@@ -1122,30 +1122,20 @@
     });
   }
 
-  // --- My Computer System Info ---
+  // --- System Properties Tab Switching ---
   function initMyComputer() {
-    var info = document.getElementById('system-info');
-    if (!info) return;
-    var lines = [
-      ['Computer:', 'Mitch\'s Portfolio PC'],
-      ['OS:', 'Portfolio 98 (Build 2026)'],
-      ['Browser:', navigator.userAgent.split(' ').slice(-1)[0] || 'Unknown'],
-      ['Screen:', screen.width + ' x ' + screen.height + ' (' + (window.devicePixelRatio || 1) + 'x DPI)'],
-      ['Colors:', (Math.pow(2, screen.colorDepth || 24) / 1000000).toFixed(1) + ' million'],
-      ['Platform:', navigator.platform || 'Unknown'],
-      ['Language:', navigator.language || 'en-US'],
-      ['Cookies:', navigator.cookieEnabled ? 'Enabled' : 'Disabled']
-    ];
-    lines.forEach(function(pair) {
-      var row = document.createElement('div');
-      row.className = 'field-row';
-      var label = document.createElement('strong');
-      label.textContent = pair[0];
-      label.style.display = 'inline-block';
-      label.style.width = '80px';
-      row.appendChild(label);
-      row.appendChild(document.createTextNode(' ' + pair[1]));
-      info.appendChild(row);
+    var tablist = document.querySelector('#window-my-computer menu[role="tablist"]');
+    if (!tablist) return;
+    var tabs = tablist.querySelectorAll('[role="tab"]');
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) { t.setAttribute('aria-selected', 'false'); });
+        tab.setAttribute('aria-selected', 'true');
+        var panels = document.querySelectorAll('#window-my-computer .sysprop-panel');
+        panels.forEach(function(p) { p.style.display = 'none'; });
+        var target = document.getElementById(tab.getAttribute('aria-controls'));
+        if (target) target.style.display = 'block';
+      });
     });
   }
 

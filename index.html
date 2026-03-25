@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://formspree.io;">
   <title>Mitch's Desktop</title>
   <meta name="description" content="Mitch's portfolio -- a Windows 98 desktop experience showcasing software and AI projects.">
   <meta name="theme-color" content="#008080">
@@ -112,55 +112,107 @@ on. Double-click any icon to explore.
           <button aria-label="Close"></button>
         </div>
       </div>
-      <div class="window-body" role="document">
-        <fieldset>
-          <legend>Get in Touch</legend>
-          <div class="field-row" style="margin-bottom:8px;">
-            <label style="width:60px;">GitHub:</label>
-            <a href="https://github.com/Reebz" target="_blank" rel="noopener">github.com/Reebz</a>
+      <div class="window-body" role="document" style="padding:0;">
+        <!-- Toolbar-like header -->
+        <div style="background:var(--win98-silver);padding:4px 8px;border-bottom:1px solid var(--win98-grey);font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
+          <div style="display:flex;align-items:center;margin-bottom:4px;">
+            <label style="width:50px;font-weight:bold;">To:</label>
+            <input type="text" value="mitch@reebz.dev" readonly style="flex:1;font-size:11px;">
           </div>
-          <div class="field-row">
-            <label style="width:60px;">Email:</label>
-            <a id="contact-email" href="#">Loading...</a>
+          <div style="display:flex;align-items:center;margin-bottom:4px;">
+            <label style="width:50px;font-weight:bold;">From:</label>
+            <input type="email" id="contact-from" placeholder="your@email.com" style="flex:1;font-size:11px;" required>
           </div>
-        </fieldset>
+          <div style="display:flex;align-items:center;">
+            <label style="width:50px;font-weight:bold;">Subject:</label>
+            <input type="text" id="contact-subject" placeholder="Hello from your portfolio!" style="flex:1;font-size:11px;">
+          </div>
+        </div>
+        <!-- Message body -->
+        <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <input type="hidden" name="_replyto" id="contact-replyto">
+          <input type="hidden" name="_subject" id="contact-subject-hidden">
+          <textarea name="message" id="contact-message" placeholder="Type your message here..." style="width:100%;min-height:200px;border:none;padding:8px;font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;resize:none;box-sizing:border-box;"></textarea>
+          <div style="background:var(--win98-silver);padding:4px 8px;text-align:left;border-top:1px solid var(--win98-grey);">
+            <button type="submit" style="min-width:75px;">Send</button>
+          </div>
+        </form>
       </div>
     </div>
 
-    <!-- My Computer -->
-    <div id="window-my-computer" class="window" data-state="closed" role="dialog" aria-labelledby="title-my-computer" tabindex="-1">
+    <!-- My Computer (System Properties) -->
+    <div id="window-my-computer" class="window sysprop-window" data-state="closed" role="dialog" aria-labelledby="title-my-computer" tabindex="-1">
       <div class="title-bar">
         <img src="img/icons/mycomputer-sm.png" class="title-bar-icon" alt="" aria-hidden="true">
-        <div class="title-bar-text" id="title-my-computer">My Computer</div>
+        <div class="title-bar-text" id="title-my-computer">System Properties</div>
         <div class="title-bar-controls" role="toolbar" aria-label="Window controls">
-          <button aria-label="Minimize"></button>
-          <button aria-label="Maximize"></button>
           <button aria-label="Close"></button>
         </div>
       </div>
-      <div class="window-body" role="document">
-        <fieldset>
-          <legend>System Properties</legend>
-          <div id="system-info" style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;line-height:2;">
-            <!-- Populated by JS -->
-          </div>
-        </fieldset>
-        <fieldset style="margin-top:8px;">
-          <legend>Storage</legend>
-          <div style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-              <span style="font-weight:bold;">Drive C:</span>
-              <div style="flex:1;height:16px;background:#000080;border:1px solid grey;">
-                <div style="height:100%;width:23%;background:#ff00ff;"></div>
+      <div class="window-body" role="document" style="background:var(--win98-silver);padding:8px;">
+        <menu role="tablist" class="sysprop-tabs">
+          <li role="tab" aria-selected="true" aria-controls="sysprop-panel-general">General</li>
+          <li role="tab" aria-selected="false" aria-controls="sysprop-panel-device">Device Manager</li>
+          <li role="tab" aria-selected="false" aria-controls="sysprop-panel-hardware">Hardware Profiles</li>
+          <li role="tab" aria-selected="false" aria-controls="sysprop-panel-perf">Performance</li>
+        </menu>
+        <div class="sysprop-panel-area">
+          <!-- General tab -->
+          <div role="tabpanel" id="sysprop-panel-general" class="sysprop-panel" style="display:block;">
+            <div class="sysprop-general">
+              <div class="sysprop-logo" aria-hidden="true">
+                <div class="sysprop-monitor">
+                  <div class="sysprop-monitor-screen">
+                    <div class="sysprop-flag">
+                      <span class="flag-r"></span><span class="flag-g"></span>
+                      <span class="flag-b"></span><span class="flag-y"></span>
+                    </div>
+                  </div>
+                  <div class="sysprop-monitor-stand"></div>
+                </div>
+                <div class="sysprop-logo-text">Microsoft<br>Windows 98</div>
               </div>
-              <span>23% used</span>
+              <div class="sysprop-info">
+                <div class="sysprop-section">
+                  <strong>System:</strong><br>
+                  Microsoft Windows 98<br>
+                  4.10.1998
+                </div>
+                <hr class="sysprop-hr">
+                <div class="sysprop-section">
+                  <strong>Registered to:</strong><br>
+                  Mitch<br>
+                  Portfolio 98<br>
+                  12345-OEM-6789012-34567
+                </div>
+                <hr class="sysprop-hr">
+                <div class="sysprop-section" id="system-info">
+                  <strong>Computer:</strong><br>
+                  GenuineIntel<br>
+                  Pentium(r) II Processor<br>
+                  Intel MMX(TM) Technology<br>
+                  32.0MB RAM
+                </div>
+              </div>
             </div>
-            <div style="color:grey;">Total: 2.1 GB | Free: 1.6 GB</div>
           </div>
-        </fieldset>
-      </div>
-      <div class="status-bar">
-        <p class="status-bar-field">5 object(s)</p>
+          <!-- Device Manager tab -->
+          <div role="tabpanel" id="sysprop-panel-device" class="sysprop-panel" style="display:none;">
+            <p class="sysprop-unavailable">This feature is not available in Portfolio 98.</p>
+          </div>
+          <!-- Hardware Profiles tab -->
+          <div role="tabpanel" id="sysprop-panel-hardware" class="sysprop-panel" style="display:none;">
+            <p class="sysprop-unavailable">This feature is not available in Portfolio 98.</p>
+          </div>
+          <!-- Performance tab -->
+          <div role="tabpanel" id="sysprop-panel-perf" class="sysprop-panel" style="display:none;">
+            <p class="sysprop-unavailable">This feature is not available in Portfolio 98.</p>
+          </div>
+        </div>
+        <div class="sysprop-buttons">
+          <button data-close-window="window-my-computer" style="min-width:75px;">OK</button>
+          <button data-close-window="window-my-computer" style="min-width:75px;">Cancel</button>
+        </div>
       </div>
     </div>
 
