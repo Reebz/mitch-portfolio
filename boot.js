@@ -7,13 +7,10 @@
       window.matchMedia('(hover: none) and (pointer: coarse)').matches ||
       window.location.hash) return;
 
-  // --- BIOS Color Attributes (CGA 16-color palette) ---
-  var C = {
-    BLACK:   '#000000', BLUE:    '#0000AA', GREEN:   '#00AA00', CYAN:    '#00AAAA',
-    RED:     '#AA0000', MAGENTA: '#AA00AA', BROWN:   '#AA5500', LGRAY:   '#AAAAAA',
-    DGRAY:   '#555555', LBLUE:   '#5555FF', LGREEN:  '#55FF55', LCYAN:   '#55FFFF',
-    LRED:    '#FF5555', LMAGENTA:'#FF55FF', YELLOW:  '#FFFF55', WHITE:   '#FFFFFF'
-  };
+  // --- CGA Colors ---
+  var GRAY  = '#AAAAAA';
+  var WHITE = '#FFFFFF';
+  var YELLOW = '#FFFF55';
 
   // --- DOS Beep ---
   function dosBeep() {
@@ -36,9 +33,9 @@
   overlay.id = 'boot-overlay';
   overlay.style.cssText =
     'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;' +
-    'background:' + C.BLUE + ';color:' + C.LGRAY + ';' +
+    'background:#000000;color:' + GRAY + ';' +
     'font-family:"Perfect DOS VGA 437","Lucida Console","Courier New",monospace;' +
-    'font-size:16px;line-height:1.4;cursor:default;overflow:hidden;padding:0;margin:0;';
+    'font-size:16px;line-height:1.35;cursor:default;overflow:hidden;padding:0;margin:0;';
   overlay.setAttribute('role', 'status');
   overlay.setAttribute('aria-label', 'System startup');
   document.body.appendChild(overlay);
@@ -53,92 +50,76 @@
 
   var stage = 0;
   var timer;
-  var postLines;
   var lineIndex;
   var outputEl;
 
-  // --- Helpers ---
-  function span(text, color) {
-    return '<span style="color:' + color + '">' + text + '</span>';
-  }
+  function w(text) { return '<span style="color:' + WHITE + '">' + text + '</span>'; }
+  function y(text) { return '<span style="color:' + YELLOW + '">' + text + '</span>'; }
 
-  function addLine(text, color) {
-    if (!outputEl) return;
-    var div = document.createElement('div');
-    if (color) {
-      div.innerHTML = text; // already has spans
-    } else {
-      div.textContent = text;
-    }
-    if (color === true) {
-      div.innerHTML = text;
-    }
-    outputEl.appendChild(div);
-  }
+  // --- POST Lines ---
+  var postLines = [
+    { html: w('Award Modular BIOS v4.51PG') + ', An Energy Star Ally', delay: 200 },
+    { html: 'Copyright (C) 1984-98, Award Software, Inc.', delay: 300 },
+    { html: '&nbsp;', delay: 150 },
+    { html: w('PENTIUM II CPU at 233 MHz') + '         , Host Bus  66MHz', delay: 500 },
+    { html: 'Memory Test :   ' + w('32768K') + ' OK', delay: 800 },
+    { html: '&nbsp;', delay: 200 },
+    { html: 'Award Plug and Play BIOS Extension v1.0A', delay: 300 },
+    { html: 'Initialize Plug and Play Cards...', delay: 400 },
+    { html: 'PNP Init Completed', delay: 300 },
+    { html: '&nbsp;', delay: 150 },
+    { html: '  Detecting IDE Primary Master   ... ' + w('QUANTUM FIREBALL 4.3GB'), delay: 400 },
+    { html: '  Detecting IDE Primary Slave    ... ' + w('CREATIVE 24X CD-ROM'), delay: 400 },
+    { html: '  Detecting IDE Secondary Master ... None', delay: 300 },
+    { html: '  Detecting IDE Secondary Slave  ... None', delay: 300 },
+    { html: '&nbsp;', delay: 200 },
+    { html: 'PCI device listing:', delay: 300 },
+    { html: '  Bus  0 Device  9: 3Dfx Voodoo2 (' + w('Creative Labs 3D Blaster') + ')', delay: 400 },
+    { html: '  Bus  0 Device 11: Creative ' + w('Sound Blaster 16') + ' at IRQ 5', delay: 400 },
+    { html: '&nbsp;', delay: 200 },
+    { html: 'Trend ChipAwayVirus(R) On Guard_', delay: 500 }
+  ];
 
   // --- Stages ---
   function nextStage() {
     stage++;
 
     if (stage === 1) {
-      // =============== POST SCREEN ===============
-      overlay.style.background = C.BLUE;
+      // =============== POST SCREEN (BLACK background) ===============
       overlay.innerHTML =
-        '<div style="position:relative;padding:16px 24px;height:100%;box-sizing:border-box;">' +
-          // Energy Star logo top-right
-          '<div style="position:absolute;top:12px;right:24px;text-align:center;">' +
-            '<div style="color:' + C.LGREEN + ';font-size:12px;white-space:pre;line-height:1.2;">' +
-              '  ___________\n' +
-              ' /           \\\n' +
-              '|  ' + span('energy', C.YELLOW) + '    |\n' +
-              '|    ' + span('\\u2605', C.YELLOW) + '       |\n' +
-              '|   ' + span('STAR', C.YELLOW) + '     |\n' +
-              ' \\___________/' +
-            '</div>' +
-            '<div style="color:' + C.LGREEN + ';font-size:10px;margin-top:2px;">EPA POLLUTION</div>' +
-            '<div style="color:' + C.LGREEN + ';font-size:10px;">PREVENTER</div>' +
+        '<div style="position:relative;padding:12px 20px;height:100%;box-sizing:border-box;">' +
+          // Energy Star logo — top right
+          '<div style="position:absolute;top:12px;right:20px;">' +
+            '<img src="img/energystar.png" alt="Energy Star" style="width:100px;height:auto;image-rendering:pixelated;">' +
           '</div>' +
-          '<div id="post-output" style="max-width:calc(100% - 180px);"></div>' +
+          // POST output — left side
+          '<div id="post-output" style="max-width:calc(100% - 140px);"></div>' +
+          // Bottom section (press DEL + BIOS ID) — positioned at bottom
+          '<div id="post-bottom" style="position:absolute;bottom:16px;left:20px;display:none;">' +
+            '<div>Press ' + w('DEL') + ' to enter SETUP</div>' +
+            '<div style="color:#555555;">03/25/2026-i440BX-W977-2A69KM4NC-00</div>' +
+          '</div>' +
         '</div>';
 
       outputEl = document.getElementById('post-output');
-
-      // POST lines with typewriter timing
-      postLines = [
-        { html: span('Award Modular BIOS v4.51PG', C.WHITE) + ', An Energy Star Ally', delay: 300 },
-        { html: 'Copyright (C) 1984-98, Award Software, Inc.', delay: 400 },
-        { html: '', delay: 200 },
-        { html: span('PENTIUM II CPU at 233 MHz', C.WHITE) + '         , Host Bus  66MHz', delay: 500 },
-        { html: 'Memory Test :   ' + span('32768K OK', C.WHITE), delay: 700 },
-        { html: '', delay: 200 },
-        { html: 'Award Plug and Play BIOS Extension v1.0A', delay: 300 },
-        { html: 'Copyright (C) 1998, Award Software, Inc.', delay: 300 },
-        { html: '  Detecting IDE Primary Master   ... ' + span('QUANTUM FIREBALL 4.3GB', C.WHITE), delay: 400 },
-        { html: '  Detecting IDE Primary Slave    ... ' + span('CREATIVE 24X CD-ROM', C.WHITE), delay: 400 },
-        { html: '  Detecting IDE Secondary Master ... None', delay: 300 },
-        { html: '  Detecting IDE Secondary Slave  ... None', delay: 300 },
-        { html: '', delay: 200 },
-        { html: 'PCI device listing:', delay: 300 },
-        { html: '  3Dfx Interactive - ' + span('Creative Labs 3D Blaster Voodoo2 8MB', C.WHITE), delay: 400 },
-        { html: '  Creative Labs ' + span('Sound Blaster 16', C.WHITE) + ' at IRQ 5', delay: 400 },
-        { html: '', delay: 300 },
-        { html: '', delay: 200 },
-        { html: 'Press ' + span('F1', C.WHITE) + ' to continue, ' + span('DEL', C.WHITE) + ' to enter SETUP', delay: 0 }
-      ];
       lineIndex = 0;
       typeNextLine();
       return;
 
     } else if (stage === 2) {
+      // Show bottom text briefly
+      var bottom = document.getElementById('post-bottom');
+      if (bottom) bottom.style.display = 'block';
+      timer = setTimeout(nextStage, 1200);
+
+    } else if (stage === 3) {
       // =============== POST BEEP + BLACK SCREEN ===============
       dosBeep();
       overlay.innerHTML = '';
-      overlay.style.background = C.BLACK;
       timer = setTimeout(nextStage, 600);
 
-    } else if (stage === 3) {
+    } else if (stage === 4) {
       // =============== WINDOWS 98 LOGO ===============
-      overlay.style.background = C.BLACK;
       overlay.innerHTML =
         '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;">' +
           '<div style="margin-bottom:20px;">' +
@@ -147,10 +128,10 @@
             '<span style="display:inline-block;width:16px;height:16px;background:#0000FF;margin:2px;"></span>' +
             '<span style="display:inline-block;width:16px;height:16px;background:#FFFF00;margin:2px;"></span>' +
           '</div>' +
-          '<div style="color:' + C.WHITE + ';font-size:22px;font-weight:bold;letter-spacing:6px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Portfolio 98</div>' +
-          '<div style="color:' + C.LGRAY + ';font-size:11px;margin-top:12px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Starting Portfolio 98...</div>' +
-          '<div style="margin-top:28px;width:220px;height:18px;border:1px solid ' + C.DGRAY + ';background:' + C.BLACK + ';">' +
-            '<div id="boot-progress" style="height:100%;width:0%;background:' + C.BLUE + ';transition:width 1.8s linear;"></div>' +
+          '<div style="color:' + WHITE + ';font-size:22px;font-weight:bold;letter-spacing:6px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Portfolio 98</div>' +
+          '<div style="color:' + GRAY + ';font-size:11px;margin-top:12px;font-family:\'Pixelated MS Sans Serif\',Arial,sans-serif;">Starting Portfolio 98...</div>' +
+          '<div style="margin-top:28px;width:220px;height:18px;border:1px solid #555555;background:#000;">' +
+            '<div id="boot-progress" style="height:100%;width:0%;background:#000080;transition:width 1.8s linear;"></div>' +
           '</div>' +
         '</div>';
       requestAnimationFrame(function() {
@@ -167,18 +148,14 @@
   function typeNextLine() {
     if (stage !== 1) return;
     if (lineIndex >= postLines.length) {
-      timer = setTimeout(nextStage, 1000);
+      timer = setTimeout(nextStage, 800);
       return;
     }
 
     var line = postLines[lineIndex];
     if (outputEl) {
       var div = document.createElement('div');
-      if (line.html) {
-        div.innerHTML = line.html;
-      } else {
-        div.innerHTML = '&nbsp;';
-      }
+      div.innerHTML = line.html;
       outputEl.appendChild(div);
     }
     lineIndex++;
