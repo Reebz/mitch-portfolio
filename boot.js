@@ -93,10 +93,10 @@
           // Energy Star logo — top right, LARGE per reference
           '<div style="position:absolute;top:8px;right:16px;text-align:center;">' +
             '<img src="img/energystar.png" alt="Energy Star"' +
-            ' style="width:200px;height:auto;image-rendering:auto;opacity:0.95;">' +
+            ' style="width:400px;height:auto;image-rendering:auto;opacity:0.95;">' +
           '</div>' +
           // POST output — left side, leave room for logo
-          '<div id="post-output" style="max-width:calc(100% - 220px);"></div>' +
+          '<div id="post-output" style="max-width:calc(100% - 420px);"></div>' +
           // Bottom section — press F1/DEL + BIOS ID
           '<div id="post-bottom" style="position:absolute;bottom:12px;left:16px;display:none;">' +
             '<div>&nbsp;</div>' +
