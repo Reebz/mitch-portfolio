@@ -89,14 +89,12 @@ body {
 
 /* === Icon Grid === */
 #icon-grid {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(auto-fill, var(--icon-cell-height));
-  gap: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--taskbar-height);
   padding: 8px;
-  height: calc(100% - var(--taskbar-height));
-  align-content: start;
-  justify-content: start;
 }
 
 .desktop-icon {
@@ -110,6 +108,7 @@ body {
   user-select: none;
   border: 1px solid transparent;
   text-decoration: none;
+  position: absolute;
 }
 
 .desktop-icon img {

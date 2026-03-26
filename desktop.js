@@ -828,6 +828,140 @@
     }
   }
 
+  // --- Icon Drag (rearrange desktop icons) ---
+  var iconDragState = {
+    active: false,
+    iconEl: null,
+    offsetX: 0,
+    offsetY: 0,
+    startX: 0,
+    startY: 0,
+    moved: false,
+    rafId: null
+  };
+
+  function layoutIcons() {
+    var icons = elIconGrid.querySelectorAll('.desktop-icon');
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem('icon-positions')); } catch(e) {}
+
+    var cellW = 80;
+    var cellH = 90;
+    var padding = 8;
+    var gridHeight = elIconGrid.clientHeight || (window.innerHeight - TASKBAR_HEIGHT);
+    var cols = Math.max(1, Math.floor(gridHeight / cellH));
+
+    icons.forEach(function(icon, i) {
+      var id = icon.getAttribute('data-window-id') || ('icon-' + i);
+      if (saved && saved[id]) {
+        icon.style.left = saved[id].x + 'px';
+        icon.style.top = saved[id].y + 'px';
+      } else {
+        // Column-first layout (top to bottom, then next column)
+        var col = Math.floor(i / cols);
+        var row = i % cols;
+        icon.style.left = (padding + col * cellW) + 'px';
+        icon.style.top = (padding + row * cellH) + 'px';
+      }
+    });
+  }
+
+  function saveIconPositions() {
+    var icons = elIconGrid.querySelectorAll('.desktop-icon');
+    var positions = {};
+    icons.forEach(function(icon, i) {
+      var id = icon.getAttribute('data-window-id') || ('icon-' + i);
+      positions[id] = {
+        x: parseInt(icon.style.left) || 0,
+        y: parseInt(icon.style.top) || 0
+      };
+    });
+    localStorage.setItem('icon-positions', JSON.stringify(positions));
+  }
+
+  function setupIconDrag() {
+    elIconGrid.addEventListener('pointerdown', function(e) {
+      var icon = e.target.closest('.desktop-icon');
+      if (!icon) return;
+
+      var z = getZoom();
+      var rect = icon.getBoundingClientRect();
+      iconDragState.iconEl = icon;
+      iconDragState.offsetX = e.clientX - rect.left;
+      iconDragState.offsetY = e.clientY - rect.top;
+      iconDragState.startX = e.clientX;
+      iconDragState.startY = e.clientY;
+      iconDragState.moved = false;
+      iconDragState.active = true;
+
+      icon.setPointerCapture(e.pointerId);
+    });
+
+    elIconGrid.addEventListener('pointermove', function(e) {
+      if (!iconDragState.active || !iconDragState.iconEl) return;
+      if (!iconDragState.iconEl.hasPointerCapture(e.pointerId)) return;
+
+      var dx = e.clientX - iconDragState.startX;
+      var dy = e.clientY - iconDragState.startY;
+
+      // 5px threshold before starting drag (so clicks still work)
+      if (!iconDragState.moved && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+        iconDragState.moved = true;
+        iconDragState.iconEl.style.zIndex = '10';
+        iconDragState.iconEl.style.opacity = '0.7';
+      }
+
+      if (!iconDragState.moved) return;
+
+      var z = getZoom();
+      var x = (e.clientX - iconDragState.offsetX) / z;
+      var y = (e.clientY - iconDragState.offsetY) / z;
+
+      // Constrain to grid bounds
+      x = Math.max(0, x);
+      y = Math.max(0, y);
+
+      if (!iconDragState.rafId) {
+        iconDragState.rafId = requestAnimationFrame(function() {
+          iconDragState.rafId = null;
+          if (iconDragState.iconEl) {
+            iconDragState.iconEl.style.left = x + 'px';
+            iconDragState.iconEl.style.top = y + 'px';
+          }
+        });
+      }
+    });
+
+    elIconGrid.addEventListener('pointerup', function(e) {
+      if (!iconDragState.active) return;
+
+      if (iconDragState.rafId) {
+        cancelAnimationFrame(iconDragState.rafId);
+        iconDragState.rafId = null;
+      }
+
+      if (iconDragState.iconEl) {
+        iconDragState.iconEl.style.zIndex = '';
+        iconDragState.iconEl.style.opacity = '';
+        iconDragState.iconEl.releasePointerCapture(e.pointerId);
+      }
+
+      if (iconDragState.moved) {
+        saveIconPositions();
+        // Suppress the click that would follow
+        dragState.suppressClick = true;
+        iconDragState.iconEl = null;
+        iconDragState.active = false;
+        iconDragState.moved = false;
+        return;
+      }
+
+      iconDragState.iconEl = null;
+      iconDragState.active = false;
+      iconDragState.moved = false;
+    });
+  }
+
   // --- Desktop Icon Events ---
   function handleIconClick(iconEl, windowId) {
     var existing = clickTimeouts.get(windowId);
@@ -1820,6 +1954,8 @@
     setupContextMenus();
     setupSelectionRect();
     initSubmenus();
+    layoutIcons();
+    setupIconDrag();
 
     // Apply hash on load
     applyHashState();
