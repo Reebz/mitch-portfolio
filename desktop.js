@@ -8,7 +8,7 @@
   // --- Constants ---
   var TASKBAR_HEIGHT = 28;
   var MIN_WIN_SIZE = { w: 300, h: 200 };
-  var INITIAL_VISITOR_COUNT = 12847;
+  var INITIAL_VISITOR_COUNT = 3;
   var DBLCLICK_DELAY = 300;
   var Z_NORMALIZE_THRESHOLD = 1000;
 
