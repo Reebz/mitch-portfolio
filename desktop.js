@@ -15,37 +15,59 @@
   // --- Project Data ---
   var PROJECTS = [
     {
-      id: 'project-1',
-      title: 'Project One',
-      description: 'A placeholder project. Replace with real content.',
-      tech: ['JavaScript', 'HTML', 'CSS'],
-      github: 'https://github.com/Reebz',
-      demo: null,
+      id: 'always-draft',
+      title: 'Always dRaft',
+      description: 'Blog',
+      tech: [],
+      url: null,
+      type: 'construction',
       screenshot: null,
-      updated: '2026-03-24',
-      icon: null
+      updated: '2026-03-26',
+      icon: 'img/icons/blog.png'
     },
     {
-      id: 'project-2',
-      title: 'Project Two',
-      description: 'Another placeholder project. Replace with real content.',
-      tech: ['Python', 'AI'],
-      github: 'https://github.com/Reebz',
-      demo: null,
+      id: 'claude-battery',
+      title: 'Claude Battery',
+      description: 'AI tool',
+      tech: [],
+      url: 'http://claudebattery.com/',
+      type: 'link',
       screenshot: null,
-      updated: '2026-03-24',
-      icon: null
+      updated: '2026-03-26',
+      icon: 'img/icons/battery.png'
     },
     {
-      id: 'project-3',
-      title: 'Project Three',
-      description: 'Yet another placeholder. Replace with real content.',
-      tech: ['TypeScript', 'Node.js'],
-      github: 'https://github.com/Reebz',
-      demo: null,
+      id: 'avails-click',
+      title: 'Avails Click',
+      description: 'Coming soon',
+      tech: [],
+      url: null,
+      type: 'construction',
       screenshot: null,
-      updated: '2026-03-24',
-      icon: null
+      updated: '2026-03-26',
+      icon: 'img/icons/construction.png'
+    },
+    {
+      id: 'linkedin',
+      title: 'LinkedIn',
+      description: 'Professional profile',
+      tech: [],
+      url: 'https://www.linkedin.com/in/mitchribar/',
+      type: 'link',
+      screenshot: null,
+      updated: '2026-03-26',
+      icon: 'img/icons/linkedin.png'
+    },
+    {
+      id: 'obsidian-game',
+      title: 'Obsidian Game',
+      description: 'Game project',
+      tech: [],
+      url: null,
+      type: 'construction',
+      screenshot: null,
+      updated: '2026-03-26',
+      icon: 'img/icons/game.png'
     }
   ];
 
@@ -813,7 +835,14 @@
       // Second click — double-click
       clearTimeout(existing);
       clickTimeouts.delete(windowId);
-      openWindow(windowId);
+
+      // Check if this is an external link project
+      var linkUrl = iconEl.getAttribute('data-url');
+      if (linkUrl) {
+        window.open(linkUrl, '_blank', 'noopener');
+      } else {
+        openWindow(windowId);
+      }
     } else {
       // First click — wait for potential double-click
       var timeout = setTimeout(function() {
@@ -1187,67 +1216,83 @@
     // Then project icons
     PROJECTS.forEach(function(project, i) {
       var id = 'window-' + project.id;
-      VALID_WINDOWS.add(id);
 
-      // Clone template and fill
-      var clone = template.content.cloneNode(true);
-      var winEl = clone.querySelector('.window');
-      winEl.id = id;
-      winEl.setAttribute('aria-labelledby', 'title-' + project.id);
-
-      var titleText = clone.querySelector('.title-bar-text');
-      titleText.id = 'title-' + project.id;
-      titleText.textContent = project.title;
-
-      var desc = clone.querySelector('.project-description');
-      desc.textContent = project.description;
-
-      var techStack = clone.querySelector('.tech-stack');
-      project.tech.forEach(function(t) {
-        var pill = document.createElement('span');
-        pill.className = 'tech-pill';
-        pill.textContent = t;
-        techStack.appendChild(pill);
-      });
-
-      var links = clone.querySelector('.project-links');
-      if (project.github) {
-        var a = document.createElement('a');
-        a.href = project.github;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        a.textContent = 'GitHub';
-        links.appendChild(a);
-      }
-      if (project.demo) {
-        var a2 = document.createElement('a');
-        a2.href = project.demo;
-        a2.target = '_blank';
-        a2.rel = 'noopener';
-        a2.textContent = 'Live Demo';
-        links.appendChild(a2);
-      }
-
-      var screenshot = clone.querySelector('.project-screenshot');
-      if (project.screenshot) {
-        screenshot.src = project.screenshot;
-        screenshot.alt = project.title + ' screenshot';
-        screenshot.width = 640;
-        screenshot.height = 400;
+      if (project.type === 'construction') {
+        // Create an "Under Construction" window
+        VALID_WINDOWS.add(id);
+        var conWin = document.createElement('div');
+        conWin.id = id;
+        conWin.className = 'window';
+        conWin.setAttribute('data-state', 'closed');
+        conWin.setAttribute('role', 'dialog');
+        conWin.setAttribute('tabindex', '-1');
+        conWin.style.width = '350px';
+        conWin.innerHTML =
+          '<div class="title-bar">' +
+            '<div class="title-bar-text">Under Construction - Coming Soon</div>' +
+            '<div class="title-bar-controls" role="toolbar" aria-label="Window controls">' +
+              '<button aria-label="Minimize"></button>' +
+              '<button aria-label="Maximize"></button>' +
+              '<button aria-label="Close"></button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="window-body" role="document" style="text-align:center;padding:16px;">' +
+            '<img src="https://media.tenor.com/MRCIli40TYoAAAAj/under-construction90s-90s.gif" alt="Under Construction" style="max-width:200px;margin:8px auto;display:block;">' +
+            '<p style="font-family:\'Pixelated MS Sans Serif\',Arial;font-size:11px;margin-top:12px;">' + project.title + ' is coming soon!</p>' +
+          '</div>';
+        elDesktop.appendChild(conWin);
+        windows.set(id, { state: 'closed', prevRect: null, el: conWin, taskbarBtn: null });
+      } else if (project.type === 'link') {
+        // External link — no window, just open URL on double-click
+        // We'll handle this in the icon click handler
       } else {
-        screenshot.remove();
+        // Standard project window from template
+        VALID_WINDOWS.add(id);
+        var clone = template.content.cloneNode(true);
+        var winEl = clone.querySelector('.window');
+        winEl.id = id;
+        winEl.setAttribute('aria-labelledby', 'title-' + project.id);
+        var titleText = clone.querySelector('.title-bar-text');
+        titleText.id = 'title-' + project.id;
+        titleText.textContent = project.title;
+        var desc = clone.querySelector('.project-description');
+        desc.textContent = project.description;
+        var techStack = clone.querySelector('.tech-stack');
+        project.tech.forEach(function(t) {
+          var pill = document.createElement('span');
+          pill.className = 'tech-pill';
+          pill.textContent = t;
+          techStack.appendChild(pill);
+        });
+        var links = clone.querySelector('.project-links');
+        if (project.url) {
+          var a = document.createElement('a');
+          a.href = project.url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = 'Visit';
+          links.appendChild(a);
+        }
+
+        var screenshot = clone.querySelector('.project-screenshot');
+        if (project.screenshot) {
+          screenshot.src = project.screenshot;
+          screenshot.alt = project.title + ' screenshot';
+          screenshot.width = 640;
+          screenshot.height = 400;
+        } else {
+          screenshot.remove();
+        }
+
+        var statusField = clone.querySelector('.status-bar-field');
+        statusField.textContent = 'Last updated: ' + project.updated;
+
+        elDesktop.appendChild(clone);
+        var el = document.getElementById(id);
+        windows.set(id, { state: 'closed', prevRect: null, el: el, taskbarBtn: null });
       }
 
-      var statusField = clone.querySelector('.status-bar-field');
-      statusField.textContent = 'Last updated: ' + project.updated;
-
-      elDesktop.appendChild(clone);
-
-      // Register in state
-      var el = document.getElementById(id);
-      windows.set(id, { state: 'closed', prevRect: null, el: el, taskbarBtn: null });
-
-      // Create desktop icon
+      // Create desktop icon (for ALL project types)
       var icon = document.createElement('div');
       icon.className = 'desktop-icon';
       icon.setAttribute('role', 'gridcell');
@@ -1255,6 +1300,11 @@
       icon.setAttribute('data-window-id', id);
       icon.setAttribute('data-selected', 'false');
       icon.setAttribute('aria-label', 'Open ' + project.title);
+
+      // For link-type projects, store the URL on the icon for direct opening
+      if (project.type === 'link' && project.url) {
+        icon.setAttribute('data-url', project.url);
+      }
 
       var img = document.createElement('img');
       img.src = project.icon || 'img/icons/project-default.png';
@@ -1271,25 +1321,15 @@
 
       elIconGrid.appendChild(icon);
 
-      // Add to start menu
-      var menuItem = document.createElement('button');
-      menuItem.className = 'start-menu-item';
-      menuItem.setAttribute('role', 'menuitem');
-      menuItem.setAttribute('data-window', id);
-      menuItem.textContent = project.title;
-      var li = document.createElement('li');
-      li.appendChild(menuItem);
-      startMenuProjects.appendChild(li);
-
       // DOS terminal file entry
       var dosFileList = document.getElementById('dos-file-list');
       if (dosFileList) {
         var dosName = project.title.toUpperCase().replace(/\s+/g, '').substring(0, 8);
-        var dosExt = 'EXE';
+        var dosExt = project.type === 'link' ? 'URL' : 'EXE';
         var size = String(Math.floor(Math.random() * 9000 + 1024)).padStart(9, ' ');
         var entry = document.createElement('a');
         entry.className = 'dos-file-entry';
-        entry.href = project.github || '#';
+        entry.href = project.url || '#';
         entry.target = '_blank';
         entry.rel = 'noopener';
         entry.textContent = dosName.padEnd(12, ' ') + dosExt + size + '  ' + project.updated;
