@@ -149,7 +149,6 @@
     win.el.style.left = offset + 'px';
     win.el.style.top = offset + 'px';
     win.el.style.width = '500px';
-    win.el.style.height = '400px';
     win.el.style.transform = '';
 
     win.state = 'open';
@@ -361,10 +360,11 @@
     if (!dragState.rafId) {
       dragState.rafId = requestAnimationFrame(function() {
         dragState.rafId = null;
+        var z = getZoom();
         var win = windows.get(dragState.windowId);
         if (win && win.el) {
-          win.el.style.left = dragState.pendingX + 'px';
-          win.el.style.top = dragState.pendingY + 'px';
+          win.el.style.left = (dragState.pendingX / z) + 'px';
+          win.el.style.top = (dragState.pendingY / z) + 'px';
         }
       });
     }
@@ -382,8 +382,9 @@
 
     if (dragState.active && win && win.el) {
       // Apply final position synchronously
-      win.el.style.left = dragState.pendingX + 'px';
-      win.el.style.top = dragState.pendingY + 'px';
+      var z = getZoom();
+      win.el.style.left = (dragState.pendingX / z) + 'px';
+      win.el.style.top = (dragState.pendingY / z) + 'px';
       win.el.style.willChange = '';
       dragState.suppressClick = true;
     }
@@ -1400,21 +1401,26 @@
   var webampInstance = null;
 
   function launchWebamp() {
-    if (webampInstance) return;
-    if (typeof Webamp === 'undefined') {
-      announce('Webamp failed to load');
-      return;
-    }
-    webampInstance = new Webamp({
-      windowLayout: { main: { position: { top: 100, left: 300 } } },
-      zIndex: 9000
-    });
-    webampInstance.renderWhenReady(document.getElementById('desktop'));
-    webampInstance.onClose(function() {
-      webampInstance.dispose();
+    try {
+      if (webampInstance) return;
+      if (typeof window.Webamp === 'undefined') {
+        announce('Winamp is still loading. Please try again.');
+        return;
+      }
+      webampInstance = new Webamp({
+        windowLayout: { main: { position: { top: 100, left: 300 } } },
+        zIndex: 9000
+      });
+      webampInstance.renderWhenReady(document.body);
+      webampInstance.onClose(function() {
+        webampInstance.dispose();
+        webampInstance = null;
+      });
+      announce('Winamp opened');
+    } catch (e) {
+      announce('Failed to open Winamp');
       webampInstance = null;
-    });
-    announce('Winamp opened');
+    }
   }
 
   function createAppWindow(id, title, bodyHtml, opts) {

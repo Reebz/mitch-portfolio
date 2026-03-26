@@ -24,13 +24,8 @@
 }
 
 /* === Win98 Cursors === */
-body {
-  cursor: url('img/cursors/arrow.png') 0 0, default;
-}
-
-a, [role="menuitem"] {
-  cursor: url('img/cursors/pointer.png') 6 0, pointer;
-}
+*, *::before, *::after { cursor: url('img/cursors/arrow.png') 0 0, default !important; }
+a, a *, button, button *, [role="menuitem"], [role="menuitem"] * { cursor: url('img/cursors/pointer.png') 8 0, pointer !important; }
 
 /* === Reset === */
 *, *::before, *::after {
@@ -162,7 +157,6 @@ body {
   position: absolute;
   display: none;
   min-width: 300px;
-  min-height: 200px;
   max-width: calc(100% - 8px);
   max-height: calc(100% - var(--taskbar-height) - 8px);
 }
@@ -808,7 +802,7 @@ a:focus-visible,
 .sysprop-panel-area {
   background: var(--win98-white);
   border: 1px solid var(--win98-grey);
-  min-height: 200px;
+  min-height: 240px;
   padding: 12px;
 }
 
