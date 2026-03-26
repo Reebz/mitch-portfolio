@@ -45,7 +45,7 @@
       type: 'construction',
       screenshot: null,
       updated: '2026-03-26',
-      icon: 'img/icons/construction.png'
+      icon: 'img/icons/calendar.png'
     },
     {
       id: 'linkedin',
@@ -1237,8 +1237,8 @@
             '</div>' +
           '</div>' +
           '<div class="window-body" role="document" style="text-align:center;padding:16px;">' +
-            '<img src="https://media.tenor.com/MRCIli40TYoAAAAj/under-construction90s-90s.gif" alt="Under Construction" style="max-width:200px;margin:8px auto;display:block;">' +
-            '<p style="font-family:\'Pixelated MS Sans Serif\',Arial;font-size:11px;margin-top:12px;">' + project.title + ' is coming soon!</p>' +
+            '<p style="font-family:\'Pixelated MS Sans Serif\',Arial;font-size:11px;margin-bottom:12px;">' + project.title + ' is coming soon!</p>' +
+            '<img src="img/under-construction.gif" alt="Under Construction" style="max-width:100px;margin:0 auto;display:block;image-rendering:pixelated;">' +
           '</div>';
         elDesktop.appendChild(conWin);
         windows.set(id, { state: 'closed', prevRect: null, el: conWin, taskbarBtn: null });
