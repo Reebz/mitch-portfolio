@@ -1151,32 +1151,28 @@
     if (form) {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        // Sync hidden fields
-        var replyTo = document.getElementById('contact-replyto');
-        var subjectHidden = document.getElementById('contact-subject-hidden');
-        if (replyTo) replyTo.value = document.getElementById('contact-from').value;
-        if (subjectHidden) subjectHidden.value = document.getElementById('contact-subject').value;
 
-        // Show sending state
         var sendBtn = form.querySelector('button[type="submit"]');
         if (sendBtn) {
           sendBtn.textContent = 'Sending...';
           sendBtn.disabled = true;
         }
 
-        // Submit via fetch
         fetch(form.action, {
           method: 'POST',
           body: new FormData(form),
           headers: { 'Accept': 'application/json' }
         }).then(function(response) {
-          if (sendBtn) sendBtn.textContent = 'Message Sent!';
-          setTimeout(function() {
-            closeWindow('window-contact');
-            // Reset form for next time
-            form.reset();
-            if (sendBtn) { sendBtn.textContent = 'Send'; sendBtn.disabled = false; }
-          }, 1500);
+          if (response.ok) {
+            if (sendBtn) sendBtn.textContent = 'Message Sent!';
+            setTimeout(function() {
+              closeWindow('window-contact');
+              form.reset();
+              if (sendBtn) { sendBtn.textContent = 'Send'; sendBtn.disabled = false; }
+            }, 1500);
+          } else {
+            if (sendBtn) { sendBtn.textContent = 'Send Failed - Try Again'; sendBtn.disabled = false; }
+          }
         }).catch(function() {
           if (sendBtn) { sendBtn.textContent = 'Send Failed - Try Again'; sendBtn.disabled = false; }
         });
