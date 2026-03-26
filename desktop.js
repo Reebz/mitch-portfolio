@@ -1660,14 +1660,33 @@
         announce('Winamp is still loading. Please try again.');
         return;
       }
+
+      // Create a dedicated container so Webamp doesn't interfere with page layout
+      var container = document.getElementById('webamp-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'webamp-container';
+        container.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;z-index:9000;pointer-events:none;';
+        document.body.appendChild(container);
+      }
+
       webampInstance = new Webamp({
         windowLayout: { main: { position: { top: 100, left: 300 } } },
         zIndex: 9000
       });
-      webampInstance.renderWhenReady(document.body);
+      webampInstance.renderWhenReady(container).then(function() {
+        // Ensure Webamp's elements can receive clicks
+        container.style.pointerEvents = 'auto';
+        container.style.width = 'auto';
+        container.style.height = 'auto';
+      });
       webampInstance.onClose(function() {
         webampInstance.dispose();
         webampInstance = null;
+        if (container) {
+          container.style.pointerEvents = 'none';
+          container.innerHTML = '';
+        }
       });
       announce('Winamp opened');
     } catch (e) {
