@@ -314,6 +314,149 @@
     suppressClick: false
   };
 
+  // --- Resize System ---
+  var RESIZE_ZONE = 8; // px from edge to trigger resize
+  var resizeState = {
+    active: false,
+    windowId: null,
+    edge: null,    // 'n','ne','e','se','s','sw','w','nw'
+    startRect: null, // { x, y, w, h }
+    startX: 0,
+    startY: 0,
+    rafId: null
+  };
+
+  function getResizeEdge(e, winEl) {
+    var rect = winEl.getBoundingClientRect();
+    var z = getZoom();
+    var x = e.clientX;
+    var y = e.clientY;
+    var nearL = x - rect.left < RESIZE_ZONE;
+    var nearR = rect.right - x < RESIZE_ZONE;
+    var nearT = y - rect.top < RESIZE_ZONE;
+    var nearB = rect.bottom - y < RESIZE_ZONE;
+
+    if (nearT && nearL) return 'nw';
+    if (nearT && nearR) return 'ne';
+    if (nearB && nearL) return 'sw';
+    if (nearB && nearR) return 'se';
+    if (nearT) return 'n';
+    if (nearB) return 's';
+    if (nearL) return 'w';
+    if (nearR) return 'e';
+    return null;
+  }
+
+  var EDGE_CURSORS = {
+    n: 'n-resize', ne: 'ne-resize', e: 'e-resize', se: 'se-resize',
+    s: 's-resize', sw: 'sw-resize', w: 'w-resize', nw: 'nw-resize'
+  };
+
+  function onResizeStart(e, windowId, edge) {
+    var win = windows.get(windowId);
+    if (!win || win.state === 'maximized') return;
+
+    var z = getZoom();
+    resizeState.active = true;
+    resizeState.windowId = windowId;
+    resizeState.edge = edge;
+    resizeState.startX = e.clientX;
+    resizeState.startY = e.clientY;
+    resizeState.startRect = {
+      x: parseInt(win.el.style.left) || 0,
+      y: parseInt(win.el.style.top) || 0,
+      w: win.el.offsetWidth / z,
+      h: win.el.offsetHeight / z
+    };
+
+    // Disable pointer events on iframes during resize
+    win.el.querySelectorAll('iframe').forEach(function(iframe) {
+      iframe.style.pointerEvents = 'none';
+    });
+
+    e.target.setPointerCapture(e.pointerId);
+    bringToFront(windowId);
+  }
+
+  function onResizeMove(e) {
+    if (!resizeState.active) return;
+    if (!e.target.hasPointerCapture(e.pointerId)) return;
+
+    var z = getZoom();
+    var dx = (e.clientX - resizeState.startX) / z;
+    var dy = (e.clientY - resizeState.startY) / z;
+    var sr = resizeState.startRect;
+    var edge = resizeState.edge;
+
+    var newX = sr.x, newY = sr.y, newW = sr.w, newH = sr.h;
+
+    // East
+    if (edge === 'e' || edge === 'ne' || edge === 'se') {
+      newW = Math.max(MIN_WIN_SIZE.w, sr.w + dx);
+    }
+    // West
+    if (edge === 'w' || edge === 'nw' || edge === 'sw') {
+      var proposedW = sr.w - dx;
+      if (proposedW >= MIN_WIN_SIZE.w) {
+        newW = proposedW;
+        newX = sr.x + dx;
+      } else {
+        newW = MIN_WIN_SIZE.w;
+        newX = sr.x + (sr.w - MIN_WIN_SIZE.w);
+      }
+    }
+    // South
+    if (edge === 's' || edge === 'se' || edge === 'sw') {
+      newH = Math.max(MIN_WIN_SIZE.h, sr.h + dy);
+    }
+    // North
+    if (edge === 'n' || edge === 'ne' || edge === 'nw') {
+      var proposedH = sr.h - dy;
+      if (proposedH >= MIN_WIN_SIZE.h) {
+        newH = proposedH;
+        newY = sr.y + dy;
+      } else {
+        newH = MIN_WIN_SIZE.h;
+        newY = sr.y + (sr.h - MIN_WIN_SIZE.h);
+      }
+    }
+
+    if (!resizeState.rafId) {
+      resizeState.rafId = requestAnimationFrame(function() {
+        resizeState.rafId = null;
+        var win = windows.get(resizeState.windowId);
+        if (win && win.el) {
+          win.el.style.left = newX + 'px';
+          win.el.style.top = newY + 'px';
+          win.el.style.width = newW + 'px';
+          win.el.style.height = newH + 'px';
+        }
+      });
+    }
+  }
+
+  function onResizeEnd(e) {
+    if (!resizeState.active) return;
+    var win = windows.get(resizeState.windowId);
+
+    if (resizeState.rafId) {
+      cancelAnimationFrame(resizeState.rafId);
+      resizeState.rafId = null;
+    }
+
+    // Re-enable iframe pointer events
+    if (win && win.el) {
+      win.el.querySelectorAll('iframe').forEach(function(iframe) {
+        iframe.style.pointerEvents = '';
+      });
+    }
+
+    e.target.releasePointerCapture(e.pointerId);
+    resizeState.active = false;
+    resizeState.windowId = null;
+    resizeState.edge = null;
+  }
+
   function onDragStart(e, windowId) {
     var win = windows.get(windowId);
     if (!win || win.state === 'maximized') return;
@@ -736,21 +879,61 @@
       }
     });
 
-    // Title bar drag (pointer events on desktop)
+    // Title bar drag + window resize (pointer events on desktop)
     elDesktop.addEventListener('pointerdown', function(e) {
+      // Check for resize first (edge/corner of a window)
+      var winEl = e.target.closest('.window');
+      if (winEl && windows.has(winEl.id)) {
+        var edge = getResizeEdge(e, winEl);
+        if (edge && !e.target.closest('.title-bar') && !e.target.closest('.window-body') && !e.target.closest('.status-bar')) {
+          onResizeStart(e, winEl.id, edge);
+          return;
+        }
+      }
+
+      // Title bar drag
       var titleBar = e.target.closest('.title-bar');
       if (!titleBar) return;
-      // Don't drag if clicking a button
       if (e.target.closest('button')) return;
 
-      var winEl = titleBar.closest('.window');
       if (winEl && windows.has(winEl.id)) {
         onDragStart(e, winEl.id);
       }
     });
 
-    elDesktop.addEventListener('pointermove', onDragMove);
-    elDesktop.addEventListener('pointerup', onDragEnd);
+    elDesktop.addEventListener('pointermove', function(e) {
+      // Handle active resize
+      if (resizeState.active) {
+        onResizeMove(e);
+        return;
+      }
+      // Handle active drag
+      if (dragState.windowId) {
+        onDragMove(e);
+        return;
+      }
+      // Cursor hint: show resize cursor when near window edge
+      var winEl = e.target.closest('.window');
+      if (winEl && windows.has(winEl.id)) {
+        var win = windows.get(winEl.id);
+        if (win.state !== 'maximized') {
+          var edge = getResizeEdge(e, winEl);
+          if (edge) {
+            winEl.style.cursor = EDGE_CURSORS[edge];
+            return;
+          }
+        }
+        winEl.style.cursor = '';
+      }
+    });
+
+    elDesktop.addEventListener('pointerup', function(e) {
+      if (resizeState.active) {
+        onResizeEnd(e);
+        return;
+      }
+      onDragEnd(e);
+    });
 
     // Taskbar clicks
     elTaskbar.addEventListener('click', function(e) {
