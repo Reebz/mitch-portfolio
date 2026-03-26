@@ -973,7 +973,7 @@
       { id: 'window-recycle-bin', title: 'Recycle Bin', icon: 'img/icons/recyclebin.png' },
       { id: 'window-about', title: 'About Me', icon: 'img/icons/notepad.png' },
       { id: 'window-guestbook', title: 'Guestbook', icon: 'img/icons/guestbook.png' },
-      { id: 'window-contact', title: 'Contact', icon: 'img/icons/contact.png' }
+      { id: 'window-contact', title: 'E-Mail', icon: 'img/icons/contact.png' }
     ];
 
     systemIcons.forEach(function(sys, i) {
@@ -1519,8 +1519,8 @@
 
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
-      '<iframe src="apps/minesweeper/index.html" style="width:100%;height:300px;border:none;"></iframe>',
-      { width: '260px', height: '380px' });
+      '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
+      { width: '200px', height: '280px' });
   }
 
   function launchCalculator() {
