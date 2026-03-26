@@ -1335,16 +1335,32 @@
       form.addEventListener('submit', function(e) {
         e.preventDefault();
 
+        // Run HTML5 validation (required fields, email format)
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
         var sendBtn = form.querySelector('button[type="submit"]');
         if (sendBtn) {
           sendBtn.textContent = 'Sending...';
           sendBtn.disabled = true;
         }
 
+        // Build JSON body — Formspree recommends JSON for AJAX
+        var data = {
+          email: form.querySelector('[name="email"]').value,
+          _subject: form.querySelector('[name="_subject"]').value,
+          message: form.querySelector('[name="message"]').value
+        };
+
         fetch(form.action, {
           method: 'POST',
-          body: new FormData(form),
-          headers: { 'Accept': 'application/json' }
+          body: JSON.stringify(data),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
         }).then(function(response) {
           if (response.ok) {
             if (sendBtn) sendBtn.textContent = 'Message Sent!';
@@ -1354,7 +1370,12 @@
               if (sendBtn) { sendBtn.textContent = 'Send'; sendBtn.disabled = false; }
             }, 1500);
           } else {
-            if (sendBtn) { sendBtn.textContent = 'Send Failed - Try Again'; sendBtn.disabled = false; }
+            response.json().then(function(body) {
+              var msg = (body.errors && body.errors.length) ? body.errors[0].message : 'Send Failed';
+              if (sendBtn) { sendBtn.textContent = msg; sendBtn.disabled = false; }
+            }).catch(function() {
+              if (sendBtn) { sendBtn.textContent = 'Send Failed - Try Again'; sendBtn.disabled = false; }
+            });
           }
         }).catch(function() {
           if (sendBtn) { sendBtn.textContent = 'Send Failed - Try Again'; sendBtn.disabled = false; }
