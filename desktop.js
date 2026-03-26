@@ -1631,7 +1631,10 @@
       switch (act) {
         case 'refresh': location.reload(); break;
         case 'properties': openWindow('window-my-computer'); break;
-        case 'arrange-icons': break; // Icons snap to grid already
+        case 'arrange-icons':
+          localStorage.removeItem('icon-positions');
+          layoutIcons();
+          break;
         case 'ctx-minimize':
           if (ctxTargetWindowId) minimizeWindow(ctxTargetWindowId);
           break;
