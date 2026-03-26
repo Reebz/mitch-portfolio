@@ -341,6 +341,13 @@ on. Double-click any icon to explore.
       <button class="context-menu-item" role="menuitem" data-action="ctx-close">Close</button>
     </div>
 
+    <div id="context-menu-taskbar" class="context-menu" role="menu" aria-label="Taskbar context menu">
+      <button class="context-menu-item" role="menuitem" data-action="cascade-windows">Cascade Windows</button>
+      <button class="context-menu-item" role="menuitem" data-action="show-desktop">Show Desktop</button>
+      <div class="context-menu-separator" role="separator"></div>
+      <button class="context-menu-item" role="menuitem" data-action="properties">Properties</button>
+    </div>
+
     <!-- Selection Rectangle -->
     <div id="selection-rect"></div>
   </div>
@@ -400,7 +407,7 @@ on. Double-click any icon to explore.
     <ul class="start-menu-items">
       <li class="has-submenu">
         <button class="start-menu-item start-menu-item-lg" role="menuitem" aria-haspopup="true" aria-expanded="false">
-          <img src="img/icons/project-default.png" alt="" class="start-icon-32">
+          <img src="img/icons/programs-32.png" alt="" class="start-icon-32">
           <span class="start-item-label">Programs</span>
           <span class="submenu-arrow" aria-hidden="true">&#9656;</span>
         </button>
@@ -461,10 +468,20 @@ on. Double-click any icon to explore.
         <span class="start-item-label">My Computer</span>
       </button></li>
 
+      <li><button class="start-menu-item start-menu-item-lg" role="menuitem">
+        <img src="img/icons/help-32.png" alt="" class="start-icon-32">
+        <span class="start-item-label">Help</span>
+      </button></li>
+
+      <li><button class="start-menu-item start-menu-item-lg" role="menuitem">
+        <img src="img/icons/run-32.png" alt="" class="start-icon-32">
+        <span class="start-item-label">Run...</span>
+      </button></li>
+
       <li class="start-menu-separator" role="separator"></li>
 
       <li><button class="start-menu-item start-menu-item-lg" role="menuitem" data-action="shutdown">
-        <img src="img/icons/recyclebin.png" alt="" class="start-icon-32">
+        <img src="img/icons/shutdown-32.png" alt="" class="start-icon-32">
         <span class="start-item-label">Shut Down...</span>
       </button></li>
     </ul>
@@ -477,7 +494,7 @@ on. Double-click any icon to explore.
     <!-- Quick Launch -->
     <div id="quick-launch">
       <button class="quick-launch-btn" data-action="show-desktop" title="Show Desktop">
-        <img src="img/icons/mycomputer-sm.png" alt="Show Desktop" width="16" height="16">
+        <img src="img/icons/desktop-sm.png" alt="Show Desktop" width="16" height="16">
       </button>
       <button class="quick-launch-btn" data-window="window-contact" title="Outlook Express">
         <img src="img/icons/contact-sm.png" alt="Outlook Express" width="16" height="16">

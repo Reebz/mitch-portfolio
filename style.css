@@ -249,7 +249,7 @@ body {
 #start-button {
   font-weight: bold;
   font-size: 11px;
-  min-width: 54px;
+  min-width: 68px;
   height: 22px;
   padding: 0 6px;
   margin-left: 2px;
@@ -339,7 +339,7 @@ body {
   transform: rotate(180deg);
   color: var(--win98-white);
   font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   letter-spacing: 1px;
   padding: 8px 0;
   display: flex;
@@ -347,8 +347,8 @@ body {
   justify-content: flex-end;
 }
 
-.sidebar-windows { font-weight: normal; }
-.sidebar-98 { font-weight: bold; }
+.sidebar-windows { font-weight: bold; }
+.sidebar-98 { font-weight: 900; }
 
 .start-menu-items {
   margin-left: 24px;
@@ -382,7 +382,7 @@ body {
 .start-menu-separator {
   height: 1px;
   background: var(--win98-grey);
-  margin: 2px 0 2px 24px;
+  margin: 2px 0 2px 0;
   box-shadow: 0 1px 0 var(--win98-white);
 }
 
