@@ -1149,15 +1149,43 @@
   function initContactForm() {
     var form = document.getElementById('contact-form');
     if (form) {
-      form.addEventListener('submit', function() {
-        document.getElementById('contact-replyto').value = document.getElementById('contact-from').value;
-        document.getElementById('contact-subject-hidden').value = document.getElementById('contact-subject').value;
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Sync hidden fields
+        var replyTo = document.getElementById('contact-replyto');
+        var subjectHidden = document.getElementById('contact-subject-hidden');
+        if (replyTo) replyTo.value = document.getElementById('contact-from').value;
+        if (subjectHidden) subjectHidden.value = document.getElementById('contact-subject').value;
+
+        // Show sending state
+        var sendBtn = form.querySelector('button[type="submit"]');
+        if (sendBtn) {
+          sendBtn.textContent = 'Sending...';
+          sendBtn.disabled = true;
+        }
+
+        // Submit via fetch
+        fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        }).then(function(response) {
+          if (sendBtn) sendBtn.textContent = 'Message Sent!';
+          setTimeout(function() {
+            closeWindow('window-contact');
+            // Reset form for next time
+            form.reset();
+            if (sendBtn) { sendBtn.textContent = 'Send'; sendBtn.disabled = false; }
+          }, 1500);
+        }).catch(function() {
+          if (sendBtn) { sendBtn.textContent = 'Send Failed - Try Again'; sendBtn.disabled = false; }
+        });
       });
     }
   }
 
   // --- Context Menus ---
-  var elCtxDesktop, elCtxTitlebar;
+  var elCtxDesktop, elCtxTitlebar, elCtxTaskbar;
   var ctxTargetWindowId = null;
 
   function getZoom() {
@@ -1179,12 +1207,14 @@
   function hideAllContextMenus() {
     if (elCtxDesktop) elCtxDesktop.classList.remove('open');
     if (elCtxTitlebar) elCtxTitlebar.classList.remove('open');
+    if (elCtxTaskbar) elCtxTaskbar.classList.remove('open');
     ctxTargetWindowId = null;
   }
 
   function setupContextMenus() {
     elCtxDesktop = document.getElementById('context-menu-desktop');
     elCtxTitlebar = document.getElementById('context-menu-titlebar');
+    elCtxTaskbar = document.getElementById('context-menu-taskbar');
 
     // Right-click on desktop
     elDesktop.addEventListener('contextmenu', function(e) {
@@ -1202,6 +1232,14 @@
       // Desktop right-click (not on a window)
       if (!e.target.closest('.window')) {
         showContextMenu(elCtxDesktop, e.clientX, e.clientY);
+      }
+    });
+
+    // Right-click on taskbar
+    document.getElementById('taskbar').addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      if (!e.target.closest('#start-button') && !e.target.closest('#start-menu')) {
+        if (elCtxTaskbar) showContextMenu(elCtxTaskbar, e.clientX, e.clientY);
       }
     });
 
@@ -1229,12 +1267,27 @@
         case 'ctx-close':
           if (ctxTargetWindowId) closeWindow(ctxTargetWindowId);
           break;
+        case 'cascade-windows':
+          var idx = 0;
+          windows.forEach(function(win, id) {
+            if (win.state === 'open' || win.state === 'maximized') {
+              var offset = 30 + (idx * 22);
+              win.el.style.top = offset + 'px';
+              win.el.style.left = offset + 'px';
+              bringToFront(id);
+              idx++;
+            }
+          });
+          break;
+        case 'show-desktop':
+          showDesktop();
+          break;
       }
       hideAllContextMenus();
     });
 
     // Keyboard in context menus
-    [elCtxDesktop, elCtxTitlebar].forEach(function(menu) {
+    [elCtxDesktop, elCtxTitlebar, elCtxTaskbar].forEach(function(menu) {
       if (!menu) return;
       menu.addEventListener('keydown', function(e) {
         var items = Array.from(menu.querySelectorAll('[role="menuitem"]'));
