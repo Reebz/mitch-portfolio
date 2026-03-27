@@ -1184,6 +1184,8 @@
         launchMinesweeper();
       } else if (app === 'calculator') {
         launchCalculator();
+      } else if (app === 'help') {
+        launchHelpBook();
       }
 
       elStartMenu.classList.remove('open');
@@ -2013,6 +2015,65 @@
     createAppWindow('window-minesweeper', 'Minesweeper',
       '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
       { width: '200px', height: '260px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
+  }
+
+  function launchHelpBook() {
+    var page = 0;
+    var pages = window.BOOK_PAGES || [];
+    var total = pages.length;
+
+    function navHtml() {
+      return '<div style="display:flex;align-items:center;justify-content:space-between;' +
+        'padding:6px 12px;border-top:1px solid #808080;background:var(--win98-silver);' +
+        'font-family:\'Pixelated MS Sans Serif\',Arial;font-size:11px;">' +
+        '<button id="help-prev" style="min-width:70px;"' + (page === 0 ? ' disabled' : '') +
+          '>\u25C0 Previous</button>' +
+        '<span>Page ' + (page + 1) + ' of ' + total + '</span>' +
+        '<button id="help-next" style="min-width:70px;"' + (page === total - 1 ? ' disabled' : '') +
+          '>Next \u25B6</button>' +
+        '</div>';
+    }
+
+    function render() {
+      var win = document.getElementById('window-help-book');
+      if (!win) return;
+      var body = win.querySelector('.window-body');
+      body.innerHTML =
+        '<div id="help-page" style="flex:1;overflow-y:auto;padding:20px 24px;' +
+          'font-family:Georgia,\'Times New Roman\',serif;font-size:13px;' +
+          'background:#fff;text-align:center;">' +
+          pages[page] +
+        '</div>' +
+        navHtml();
+
+      var prev = body.querySelector('#help-prev');
+      var next = body.querySelector('#help-next');
+      if (prev) prev.addEventListener('click', function() { if (page > 0) { page--; render(); } });
+      if (next) next.addEventListener('click', function() { if (page < total - 1) { page++; render(); } });
+    }
+
+    var bodyContent =
+      '<div id="help-page" style="flex:1;overflow-y:auto;padding:20px 24px;' +
+        'font-family:Georgia,\'Times New Roman\',serif;font-size:13px;' +
+        'background:#fff;text-align:center;">' +
+        pages[0] +
+      '</div>' +
+      navHtml();
+
+    createAppWindow('window-help-book', 'The Way of Code - Help', bodyContent, {
+      width: '400px',
+      height: '500px',
+      bodyStyle: 'display:flex;flex-direction:column;padding:0;overflow:hidden;'
+    });
+
+    // Attach navigation after window is created
+    var win = document.getElementById('window-help-book');
+    if (win) {
+      var prev = win.querySelector('#help-prev');
+      var next = win.querySelector('#help-next');
+      if (prev) prev.addEventListener('click', function() { if (page > 0) { page--; render(); } });
+      if (next) next.addEventListener('click', function() { if (page < total - 1) { page++; render(); } });
+    }
   }
 
   function launchCalculator() {
