@@ -203,15 +203,83 @@ Mitch</div>
           </div>
           <!-- Device Manager tab -->
           <div role="tabpanel" id="sysprop-panel-device" class="sysprop-panel" style="display:none;">
-            <p class="sysprop-unavailable">This feature is not available in Portfolio 98.</p>
+            <div style="padding:8px;">
+              <div class="field-row" style="margin-bottom:8px;">
+                <input type="radio" id="dm-type" name="dm-view" checked><label for="dm-type">View devices by type</label>
+                <input type="radio" id="dm-conn" name="dm-view" style="margin-left:12px;"><label for="dm-conn">View devices by connection</label>
+              </div>
+              <ul class="tree-view" style="height:200px;overflow:auto;background:#fff;">
+                <li><details open><summary>Computer</summary>
+                  <ul>
+                    <li><details><summary>CDROM</summary><ul><li>Creative CD-ROM CD2423E 24X</li></ul></details></li>
+                    <li><details><summary>Disk drives</summary><ul><li>QUANTUM FIREBALL 4.3GB</li></ul></details></li>
+                    <li><details><summary>Display adapters</summary><ul><li>3Dfx Voodoo2 (Creative Labs 3D Blaster)</li><li>S3 Trio64V2/DX</li></ul></details></li>
+                    <li><details><summary>Floppy disk controllers</summary><ul><li>Standard Floppy Disk Controller</li></ul></details></li>
+                    <li><details><summary>Hard disk controllers</summary><ul><li>Intel 82371AB/EB PCI Bus Master IDE Controller</li></ul></details></li>
+                    <li><details><summary>Keyboard</summary><ul><li>Standard 101/102-Key Keyboard</li></ul></details></li>
+                    <li><details><summary>Monitor</summary><ul><li>Plug and Play Monitor</li></ul></details></li>
+                    <li><details><summary>Mouse</summary><ul><li>PS/2 Compatible Mouse</li></ul></details></li>
+                    <li><details><summary>Ports (COM & LPT)</summary><ul><li>Communications Port (COM1)</li><li>Printer Port (LPT1)</li></ul></details></li>
+                    <li><details><summary>Sound, video and game controllers</summary><ul><li>Creative Sound Blaster 16</li><li>Gameport Joystick</li></ul></details></li>
+                    <li><details><summary>System devices</summary><ul><li>PCI bus</li><li>System CMOS/real time clock</li><li>System timer</li><li>Plug and Play BIOS</li></ul></details></li>
+                    <li><details><summary>Universal Serial Bus controllers</summary><ul><li>Intel 82371AB/EB USB Host Controller</li><li>USB Root Hub</li></ul></details></li>
+                  </ul>
+                </details></li>
+              </ul>
+              <div style="margin-top:8px;display:flex;gap:4px;">
+                <button style="min-width:70px;" disabled>Properties</button>
+                <button style="min-width:70px;" disabled>Refresh</button>
+                <button style="min-width:70px;" disabled>Remove</button>
+                <button style="min-width:70px;" disabled>Print...</button>
+              </div>
+            </div>
           </div>
           <!-- Hardware Profiles tab -->
           <div role="tabpanel" id="sysprop-panel-hardware" class="sysprop-panel" style="display:none;">
-            <p class="sysprop-unavailable">This feature is not available in Portfolio 98.</p>
+            <div style="padding:8px;">
+              <div style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;margin-bottom:8px;">
+                You can set up hardware profiles for different hardware configurations. At startup, Windows uses the profile you select.
+              </div>
+              <div style="border:1px solid grey;padding:4px;background:#fff;min-height:60px;margin-bottom:8px;">
+                <div style="padding:2px 4px;background:#000080;color:#fff;font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
+                  1. Original Configuration (Current)
+                </div>
+              </div>
+              <div style="display:flex;gap:4px;margin-bottom:12px;">
+                <button style="min-width:70px;" disabled>Copy...</button>
+                <button style="min-width:70px;" disabled>Rename...</button>
+                <button style="min-width:70px;" disabled>Delete</button>
+              </div>
+              <fieldset style="font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
+                <legend>Hardware profiles selection</legend>
+                <div class="field-row"><input type="radio" id="hp-wait" name="hp-select"><label for="hp-wait">Wait until I select a hardware profile.</label></div>
+                <div class="field-row"><input type="radio" id="hp-auto" name="hp-select" checked><label for="hp-auto">Select the first profile listed if I don't select a profile in <input type="text" value="30" style="width:30px;" disabled> seconds.</label></div>
+              </fieldset>
+            </div>
           </div>
           <!-- Performance tab -->
           <div role="tabpanel" id="sysprop-panel-perf" class="sysprop-panel" style="display:none;">
-            <p class="sysprop-unavailable">This feature is not available in Portfolio 98.</p>
+            <div style="padding:8px;font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
+              <div style="line-height:2;">
+                <div><strong style="display:inline-block;width:140px;">Memory:</strong> 32.0 MB of RAM</div>
+                <div><strong style="display:inline-block;width:140px;">System Resources:</strong> 78% free</div>
+                <div><strong style="display:inline-block;width:140px;">File System:</strong> 32-bit</div>
+                <div><strong style="display:inline-block;width:140px;">Virtual Memory:</strong> 32-bit</div>
+                <div><strong style="display:inline-block;width:140px;">Disk Compression:</strong> Not installed</div>
+                <div><strong style="display:inline-block;width:140px;">PC Cards (PCMCIA):</strong> No PCMCIA sockets installed</div>
+              </div>
+              <div style="margin:12px 0;padding:8px;border:1px solid grey;background:#ffffcc;">
+                Your system is configured for optimal performance.
+              </div>
+              <fieldset>
+                <legend>Advanced settings</legend>
+                <div style="display:flex;gap:4px;padding:4px;">
+                  <button style="min-width:90px;" disabled>File System...</button>
+                  <button style="min-width:90px;" disabled>Graphics...</button>
+                  <button style="min-width:90px;" disabled>Virtual Memory...</button>
+                </div>
+              </fieldset>
+            </div>
           </div>
         </div>
         <div class="sysprop-buttons">
