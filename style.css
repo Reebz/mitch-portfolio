@@ -1,7 +1,8 @@
 /* === DOS VGA Font (for BIOS boot + mobile DOS view) === */
 @font-face {
   font-family: "Perfect DOS VGA 437";
-  src: url("vendor/PerfectDOSVGA437.ttf") format("truetype");
+  src: url("vendor/PerfectDOSVGA437.woff2") format("woff2"),
+       url("vendor/PerfectDOSVGA437.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -585,19 +586,11 @@ body {
   #mobile-view {
     display: block !important;
   }
-
-  .desktop-notice {
-    display: block !important;
-  }
 }
 
 /* Desktop: always show desktop UI when hover+fine pointer (mouse) is available */
 @media (hover: hover) and (pointer: fine) {
   #mobile-view {
-    display: none !important;
-  }
-
-  .desktop-notice {
     display: none !important;
   }
 }
@@ -724,11 +717,6 @@ button:focus-visible,
 a:focus-visible,
 [role="menuitem"]:focus-visible {
   outline: 1px dotted var(--win98-black);
-  outline-offset: -1px;
-}
-
-.desktop-icon:focus-visible {
-  outline: 1px dotted var(--win98-white);
   outline-offset: -1px;
 }
 
