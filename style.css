@@ -25,7 +25,7 @@
 }
 
 /* === Win98 Cursors === */
-*, *::before, *::after { cursor: url('img/cursors/arrow.png') 0 0, default !important; }
+*, *::before, *::after { cursor: url('img/cursors/arrow.png') 0 0, default; }
 a[href^="http"], a[href^="http"] *, a[href^="mailto"], a[href^="mailto"] * { cursor: url('img/cursors/pointer.png') 6 0, pointer !important; }
 
 /* === Reset === */
@@ -251,9 +251,9 @@ body {
 #start-button {
   font-weight: bold;
   font-size: 11px;
-  min-width: 68px;
+  min-width: 61px;
   height: 22px;
-  padding: 0 6px;
+  padding: 0 5px;
   margin-left: 2px;
   display: flex;
   align-items: center;

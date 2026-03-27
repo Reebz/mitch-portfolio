@@ -417,6 +417,7 @@
   function onResizeStart(e, windowId, edge) {
     var win = windows.get(windowId);
     if (!win || win.state === 'maximized') return;
+    if (win.el.getAttribute('data-no-resize') === 'true') return;
 
     var z = getZoom();
     resizeState.active = true;
@@ -1978,18 +1979,23 @@
     win.setAttribute('tabindex', '-1');
     if (opts.width) win.style.width = opts.width;
     if (opts.height) win.style.height = opts.height;
+    if (opts.noResize) win.setAttribute('data-no-resize', 'true');
+
+    var controls = opts.noResize
+      ? '<button aria-label="Close"></button>'
+      : '<button aria-label="Minimize"></button><button aria-label="Maximize"></button><button aria-label="Close"></button>';
+
+    var bodyStyle = opts.bodyStyle ? ' style="' + opts.bodyStyle + '"' : '';
 
     win.innerHTML =
       '<div class="title-bar">' +
         '<img src="img/icons/project-sm.png" class="title-bar-icon" alt="" aria-hidden="true">' +
         '<div class="title-bar-text" id="title-' + id.replace('window-', '') + '">' + title + '</div>' +
         '<div class="title-bar-controls" role="toolbar" aria-label="Window controls">' +
-          '<button aria-label="Minimize"></button>' +
-          '<button aria-label="Maximize"></button>' +
-          '<button aria-label="Close"></button>' +
+          controls +
         '</div>' +
       '</div>' +
-      '<div class="window-body" role="document">' + bodyHtml + '</div>';
+      '<div class="window-body" role="document"' + bodyStyle + '>' + bodyHtml + '</div>';
 
     elDesktop.appendChild(win);
     VALID_WINDOWS.add(id);
@@ -1999,19 +2005,20 @@
 
   function launchPaint() {
     createAppWindow('window-paint', 'untitled - Paint',
-      '<iframe src="https://jspaint.app" style="width:100%;height:400px;border:none;"></iframe>');
+      '<iframe src="https://jspaint.app" style="width:100%;height:100%;border:none;flex:1;"></iframe>',
+      { width: '640px', height: '480px', bodyStyle: 'display:flex;flex-direction:column;padding:0;overflow:hidden;' });
   }
 
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
       '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
-      { width: '200px', height: '280px' });
+      { width: '200px', height: '260px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
   }
 
   function launchCalculator() {
     createAppWindow('window-calculator', 'Calculator',
-      '<iframe src="apps/calculator/index.html" style="width:100%;height:340px;border:none;"></iframe>',
-      { width: '250px', height: '410px' });
+      '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
+      { width: '230px', height: '310px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
   }
 
   // --- Init ---
