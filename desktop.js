@@ -68,6 +68,39 @@
       screenshot: null,
       updated: '2026-03-26',
       icon: 'img/icons/game.png'
+    },
+    {
+      id: 'microgram',
+      title: 'Microgram',
+      description: 'Coming soon',
+      tech: [],
+      url: null,
+      type: 'construction',
+      screenshot: null,
+      updated: '2026-03-27',
+      icon: 'img/icons/microgram.png'
+    },
+    {
+      id: 'prototypist',
+      title: 'Prototypist',
+      description: 'Coming soon',
+      tech: [],
+      url: null,
+      type: 'construction',
+      screenshot: null,
+      updated: '2026-03-27',
+      icon: 'img/icons/prototypist.png'
+    },
+    {
+      id: 'cavaro',
+      title: 'Cavaro',
+      description: 'Stealth mode',
+      tech: [],
+      url: null,
+      type: 'cavaro',
+      screenshot: null,
+      updated: '2026-03-27',
+      icon: 'img/icons/cavaro.png'
     }
   ];
 
@@ -190,6 +223,13 @@
   function closeWindow(id) {
     var win = windows.get(id);
     if (!win || win.state === 'closed') return;
+
+    // Cavaro self-destruct: save dismissal and remove icon
+    if (id === 'window-cavaro') {
+      localStorage.setItem('cavaro-dismissed', Date.now());
+      var cavaroIcon = elIconGrid.querySelector('[data-window-id="window-cavaro"]');
+      if (cavaroIcon) cavaroIcon.remove();
+    }
 
     // Stop analogue clock if closing the clock window
     if (id === 'window-clock') stopAnalogueClock();
@@ -1376,6 +1416,41 @@
           '</div>';
         elDesktop.appendChild(conWin);
         windows.set(id, { state: 'closed', prevRect: null, el: conWin, taskbarBtn: null });
+      } else if (project.type === 'cavaro') {
+        // Check if Cavaro was dismissed and 48h hasn't passed
+        var dismissed = parseInt(localStorage.getItem('cavaro-dismissed')) || 0;
+        var hoursSince = (Date.now() - dismissed) / (1000 * 60 * 60);
+        if (dismissed > 0 && hoursSince < 48) {
+          // Skip creating the icon — Cavaro is hidden
+          // Still create the icon placeholder but hide it later
+        }
+
+        VALID_WINDOWS.add(id);
+        var cavaroWin = document.createElement('div');
+        cavaroWin.id = id;
+        cavaroWin.className = 'window';
+        cavaroWin.setAttribute('data-state', 'closed');
+        cavaroWin.setAttribute('role', 'dialog');
+        cavaroWin.setAttribute('tabindex', '-1');
+        cavaroWin.style.width = '450px';
+        cavaroWin.innerHTML =
+          '<div class="title-bar">' +
+            '<div class="title-bar-text">cavaro.txt - Notepad</div>' +
+            '<div class="title-bar-controls" role="toolbar" aria-label="Window controls">' +
+              '<button aria-label="Minimize"></button>' +
+              '<button aria-label="Maximize"></button>' +
+              '<button aria-label="Close"></button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="notepad-menu-bar" aria-hidden="true">' +
+            '<span>File</span><span>Edit</span><span>Format</span><span>Help</span>' +
+          '</div>' +
+          '<div class="window-body" role="document">' +
+            '<div class="notepad-content" style="min-height:250px;">Isn\'t it ironic that there\'s no real "Relationship" in CRM? Everything is transactional. Hardly anything has changed with customer relationship and lifecycle technology, and frankly the big players and new agentic startups are just doing the same crap faster.\n\nThis transactional thinking is stuck in the 1990s.\n\nThis isn\'t an LLM wrapper - LLMs will ultimately wrap Cavaro. We are in stealth mode developing the foundational tech.\n\nAre you experienced with causal inference at scale? Are you a marketing lifecycle expert? Are you a full stack SWE who\'s got the battle scars to prove it? Are you sick and tired of wallpapering over major industry issues driven by vendors hard-selling you on a new tool every week?\n\nIf you\'re any of those (or just curious), I\'d love to talk. Please email me to learn more using the E-Mail icon or at mitch@ribar.ai\n\nThis message will self-destruct in 3 seconds...</div>' +
+          '</div>' +
+          '<div class="status-bar"><p class="status-bar-field">Ln 1, Col 1</p></div>';
+        elDesktop.appendChild(cavaroWin);
+        windows.set(id, { state: 'closed', prevRect: null, el: cavaroWin, taskbarBtn: null });
       } else if (project.type === 'link') {
         // External link — no window, just open URL on double-click
         // We'll handle this in the icon click handler
@@ -1454,6 +1529,15 @@
       icon.appendChild(label);
 
       elIconGrid.appendChild(icon);
+
+      // Hide Cavaro icon if dismissed within 48h
+      if (project.type === 'cavaro') {
+        var dismissed = parseInt(localStorage.getItem('cavaro-dismissed')) || 0;
+        var hoursSince = (Date.now() - dismissed) / (1000 * 60 * 60);
+        if (dismissed > 0 && hoursSince < 48) {
+          icon.style.display = 'none';
+        }
+      }
 
       // DOS terminal file entry
       var dosFileList = document.getElementById('dos-file-list');
@@ -1813,6 +1897,7 @@
       }, 3000);
     } else if (option.id === 'sd-restart' || option.id === 'sd-dos') {
       sessionStorage.removeItem('booted');
+      localStorage.removeItem('cavaro-dismissed');
       location.reload();
     }
   }
@@ -1834,7 +1919,7 @@
     try {
       if (webampInstance) return;
       if (typeof window.Webamp === 'undefined') {
-        announce('Winamp is still loading. Please try again.');
+        alert('Winamp could not load. The CDN may be blocked by your browser or ad blocker.');
         return;
       }
 
@@ -1856,6 +1941,10 @@
         container.style.pointerEvents = 'auto';
         container.style.width = 'auto';
         container.style.height = 'auto';
+      }).catch(function(err) {
+        announce('Winamp failed to load');
+        console.error('Webamp error:', err);
+        webampInstance = null;
       });
       webampInstance.onClose(function() {
         webampInstance.dispose();
