@@ -1932,47 +1932,50 @@
   function launchWebamp() {
     try {
       if (webampInstance) return;
-      if (typeof window.Webamp === 'undefined') {
-        alert('Winamp could not load. The CDN may be blocked by your browser or ad blocker.');
+
+      // Try the global first (UMD bundle)
+      if (typeof window.Webamp !== 'undefined') {
+        initWebamp(window.Webamp);
         return;
       }
 
-      // Create a dedicated container so Webamp doesn't interfere with page layout
-      var container = document.getElementById('webamp-container');
-      if (!container) {
-        container = document.createElement('div');
-        container.id = 'webamp-container';
-        container.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;z-index:9000;pointer-events:none;';
-        document.body.appendChild(container);
-      }
-
-      webampInstance = new Webamp({
-        windowLayout: { main: { position: { top: 100, left: 300 } } },
-        zIndex: 9000
+      // Fallback: try dynamic ESM import
+      import('https://unpkg.com/webamp@1.5.0/built/webamp.bundle.min.js').then(function(mod) {
+        var WebampClass = mod.default || mod;
+        initWebamp(WebampClass);
+      }).catch(function() {
+        alert('Winamp could not load. Try refreshing the page.');
       });
-      webampInstance.renderWhenReady(container).then(function() {
-        // Ensure Webamp's elements can receive clicks
-        container.style.pointerEvents = 'auto';
-        container.style.width = 'auto';
-        container.style.height = 'auto';
-      }).catch(function(err) {
-        announce('Winamp failed to load');
-        console.error('Webamp error:', err);
-        webampInstance = null;
-      });
-      webampInstance.onClose(function() {
-        webampInstance.dispose();
-        webampInstance = null;
-        if (container) {
-          container.style.pointerEvents = 'none';
-          container.innerHTML = '';
-        }
-      });
-      announce('Winamp opened');
     } catch (e) {
-      announce('Failed to open Winamp');
-      webampInstance = null;
+      alert('Winamp could not load.');
     }
+  }
+
+  function initWebamp(WebampClass) {
+    var container = document.getElementById('webamp-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'webamp-container';
+      container.style.cssText = 'position:fixed;top:0;left:0;z-index:9000;';
+      document.body.appendChild(container);
+    }
+
+    webampInstance = new WebampClass({
+      windowLayout: { main: { position: { top: 100, left: 300 } } },
+      zIndex: 9000
+    });
+    webampInstance.renderWhenReady(container).then(function() {
+      announce('Winamp opened');
+    }).catch(function(err) {
+      console.error('Webamp render error:', err);
+      announce('Winamp failed to render');
+      webampInstance = null;
+    });
+    webampInstance.onClose(function() {
+      webampInstance.dispose();
+      webampInstance = null;
+      container.innerHTML = '';
+    });
   }
 
   function createAppWindow(id, title, bodyHtml, opts) {
@@ -2073,7 +2076,7 @@
 
     createAppWindow('window-help-book', 'The Way of Code - Help', bodyContent, {
       width: '400px',
-      height: '500px',
+      height: '600px',
       bodyStyle: 'display:flex;flex-direction:column;padding:0;overflow:hidden;'
     });
 
