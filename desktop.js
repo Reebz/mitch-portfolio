@@ -2065,7 +2065,7 @@
 
   function launchMinesweeper() {
     var msStyle =
-      '#ms-app button { all: initial; box-sizing: border-box; cursor: pointer; }' +
+      '#ms-app button { box-sizing: border-box; cursor: pointer; min-width: auto; min-height: auto; padding: 0; box-shadow: none; text-shadow: none; color: #000; }' +
       '#ms-app { font-family: "MS Sans Serif", Arial, sans-serif; font-size: 12px; user-select: none; display: flex; flex-direction: column; align-items: center; }' +
       '#ms-app #header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; background: #c0c0c0; border: 2px inset #fff; padding: 4px 8px; width: fit-content; }' +
       '#ms-app .counter { background: #000; color: #f00; font-family: monospace; font-size: 18px; padding: 2px 6px; min-width: 40px; text-align: right; border: 1px inset #808080; }' +
@@ -2093,7 +2093,7 @@
       '</div>';
 
     createAppWindow('window-minesweeper', 'Minesweeper', msHtml,
-      { width: '250px', noResize: true, bodyStyle: 'padding:4px;margin:0;overflow:hidden;background:#c0c0c0;' });
+      { width: '250px', noResize: true, bodyStyle: 'padding:4px;margin:0;background:#c0c0c0;' });
 
     var msJs = '(function() {' +
       'var W = 9, H = 9, MINES = 10, grid, mines, revealed, flagged, gameOver, firstClick, timerVal, timerInt;' +
@@ -2246,7 +2246,7 @@
 
   function launchCalculator() {
     var calcStyle =
-      '#calc-app button { all: initial; box-sizing: border-box; cursor: pointer; }' +
+      '#calc-app button { box-sizing: border-box; cursor: pointer; min-width: auto; min-height: auto; padding: 0; box-shadow: none; text-shadow: none; color: #000; }' +
       '#calc-app { font-family: "MS Sans Serif", Arial, sans-serif; user-select: none; }' +
       '#calc-app #calc { width: 220px; }' +
       '#calc-app #display { width: 100%; text-align: right; font-size: 16px; font-family: monospace; padding: 4px 6px; margin-bottom: 6px; background: #fff; border: 2px inset #808080; height: 28px; overflow: hidden; }' +
@@ -2293,7 +2293,7 @@
       '</div>';
 
     createAppWindow('window-calculator', 'Calculator', calcHtml,
-      { width: '240px', noResize: true, bodyStyle: 'padding:4px;margin:0;overflow:hidden;background:#c0c0c0;' });
+      { width: '240px', noResize: true, bodyStyle: 'padding:4px;margin:0;background:#c0c0c0;' });
 
     var calcJs = '(function() {' +
       'var disp = document.getElementById("display"), memDisp = document.getElementById("display-mem");' +
