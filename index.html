@@ -124,15 +124,15 @@ Mitch</div>
           <!-- Toolbar-like header -->
           <div style="background:var(--win98-silver);padding:4px 8px;border-bottom:1px solid var(--win98-grey);font-family:'Pixelated MS Sans Serif',Arial;font-size:11px;">
             <div style="display:flex;align-items:center;margin-bottom:4px;">
-              <label style="width:50px;font-weight:bold;">To:</label>
-              <input type="text" value="mitch@ribar.ai" readonly style="flex:1;font-size:11px;">
+              <label for="contact-to" style="width:50px;font-weight:bold;">To:</label>
+              <input type="text" id="contact-to" value="mitch@ribar.ai" readonly style="flex:1;font-size:11px;">
             </div>
             <div style="display:flex;align-items:center;margin-bottom:4px;">
-              <label style="width:50px;font-weight:bold;">From:</label>
+              <label for="contact-from" style="width:50px;font-weight:bold;">From:</label>
               <input type="email" name="email" id="contact-from" placeholder="your@email.com" style="flex:1;font-size:11px;" required>
             </div>
             <div style="display:flex;align-items:center;">
-              <label style="width:50px;font-weight:bold;">Subject:</label>
+              <label for="contact-subject" style="width:50px;font-weight:bold;">Subject:</label>
               <input type="text" name="_subject" id="contact-subject" placeholder="Hello from your portfolio!" style="flex:1;font-size:11px;">
             </div>
           </div>
@@ -586,7 +586,7 @@ Mitch</div>
   </div>
 
   <script src="boot.js"></script>
-  <script src="apps/help/book.js"></script>
+  <script defer src="apps/help/book.js"></script>
   <script src="apps/matrix/rain.js"></script>
   <script defer src="desktop.js"></script>
   <script src="https://unpkg.com/webamp@2.2.0/built/webamp.bundle.min.js"></script>

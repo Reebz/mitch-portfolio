@@ -110,7 +110,7 @@
     var c = e.target.closest('.cell'); if (!c || gameOver) return;
     var i = +c.dataset.i;
     if (flagged.has(i)) return;
-    if (firstClick) { firstClick = false; placeMines(i); timerInt = setInterval(function() { timerVal++; elTimer.textContent = ('00' + timerVal).slice(-3); }, 1000); }
+    if (firstClick) { firstClick = false; placeMines(i); timerInt = setInterval(function() { timerVal++; if (timerVal > 999) timerVal = 999; elTimer.textContent = ('00' + timerVal).slice(-3); }, 1000); }
     reveal(i);
   });
 

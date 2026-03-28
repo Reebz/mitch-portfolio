@@ -99,6 +99,25 @@
     prev = parseFloat(cur); fresh = true; show(cur);
   }
 })();
+
+document.addEventListener('keydown', function(e) {
+  var key = e.key;
+  var btn = null;
+  if (/^[0-9]$/.test(key)) {
+    btn = document.querySelector('[data-v="' + key + '"]');
+  } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+    btn = document.querySelector('[data-op="' + key + '"]');
+  } else if (key === 'Enter' || key === '=') {
+    btn = document.getElementById('eq');
+  } else if (key === 'Escape') {
+    btn = document.getElementById('clr');
+  } else if (key === 'Backspace') {
+    btn = document.getElementById('back');
+  } else if (key === '.') {
+    btn = document.querySelector('[data-v="."]');
+  }
+  if (btn) { e.preventDefault(); btn.click(); }
+});
 </script>
 </body>
 </html>

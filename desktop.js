@@ -1296,6 +1296,28 @@
         e.preventDefault();
         var prev = currentIdx > 0 ? currentIdx - 1 : items.length - 1;
         items[prev].focus();
+      } else if (e.key === 'ArrowRight') {
+        var parentLi = document.activeElement.closest('.has-submenu');
+        if (parentLi) {
+          e.preventDefault();
+          openSubmenu(parentLi);
+          var sub = parentLi.querySelector('.start-submenu');
+          if (sub) {
+            var firstItem = sub.querySelector('[role="menuitem"]');
+            if (firstItem) firstItem.focus();
+          }
+        }
+      } else if (e.key === 'ArrowLeft') {
+        var submenu = document.activeElement.closest('.start-submenu');
+        if (submenu) {
+          var parentItem = submenu.closest('.has-submenu');
+          if (parentItem) {
+            e.preventDefault();
+            closeSubmenu(parentItem);
+            var trigger = parentItem.querySelector(':scope > [role="menuitem"]');
+            if (trigger) trigger.focus();
+          }
+        }
       } else if (e.key === 'Home') {
         e.preventDefault();
         items[0].focus();
@@ -1587,14 +1609,31 @@
     if (!tablist) return;
     var tabs = tablist.querySelectorAll('[role="tab"]');
     tabs.forEach(function(tab) {
+      tab.setAttribute('tabindex', tab.getAttribute('aria-selected') === 'true' ? '0' : '-1');
       tab.addEventListener('click', function() {
-        tabs.forEach(function(t) { t.setAttribute('aria-selected', 'false'); });
+        tabs.forEach(function(t) { t.setAttribute('aria-selected', 'false'); t.setAttribute('tabindex', '-1'); });
         tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('tabindex', '0');
         var panels = document.querySelectorAll('#window-my-computer .sysprop-panel');
         panels.forEach(function(p) { p.style.display = 'none'; });
         var target = document.getElementById(tab.getAttribute('aria-controls'));
         if (target) target.style.display = 'block';
       });
+    });
+
+    tablist.addEventListener('keydown', function(e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      var tabArr = Array.from(tabs);
+      var idx = tabArr.indexOf(document.activeElement);
+      if (idx === -1) return;
+      e.preventDefault();
+      if (e.key === 'ArrowRight') {
+        idx = idx < tabArr.length - 1 ? idx + 1 : 0;
+      } else {
+        idx = idx > 0 ? idx - 1 : tabArr.length - 1;
+      }
+      tabArr[idx].click();
+      tabArr[idx].focus();
     });
   }
 
@@ -2024,7 +2063,7 @@
 
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
-      '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
+      '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;"></iframe>',
       { width: '242px', height: '310px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
   }
 
@@ -2089,7 +2128,7 @@
 
   function launchCalculator() {
     createAppWindow('window-calculator', 'Calculator',
-      '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
+      '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;"></iframe>',
       { width: '175px', height: '240px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
   }
 

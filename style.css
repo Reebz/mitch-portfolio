@@ -44,6 +44,15 @@ body {
   zoom: 1.5; /* Scale everything 150% to mimic 1024x768-era low-res feel */
 }
 
+@supports not (zoom: 1.5) {
+  body {
+    transform: scale(1.5);
+    transform-origin: top left;
+    width: 66.67%;
+    height: 66.67%;
+  }
+}
+
 /* === Screen Reader Only === */
 .sr-only {
   position: absolute;
