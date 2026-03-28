@@ -1197,6 +1197,8 @@
         launchCalculator();
       } else if (app === 'help') {
         launchHelpBook();
+      } else if (app === 'run') {
+        launchRun();
       }
 
       elStartMenu.classList.remove('open');
@@ -2094,6 +2096,91 @@
     createAppWindow('window-calculator', 'Calculator',
       '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
       { width: '175px', height: '240px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+  }
+
+  function launchRun() {
+    // Create Run dialog
+    var runId = 'window-run-dialog';
+    var existing = document.getElementById(runId);
+    if (existing) { openWindow(runId); return; }
+
+    var win = document.createElement('div');
+    win.id = runId;
+    win.className = 'window';
+    win.setAttribute('data-state', 'closed');
+    win.setAttribute('data-no-resize', 'true');
+    win.setAttribute('role', 'dialog');
+    win.setAttribute('tabindex', '-1');
+    win.style.width = '350px';
+
+    win.innerHTML =
+      '<div class="title-bar">' +
+        '<div class="title-bar-text">Run</div>' +
+        '<div class="title-bar-controls" role="toolbar" aria-label="Window controls">' +
+          '<button aria-label="Close"></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="window-body" role="document" style="padding:12px;background:#c0c0c0;">' +
+        '<div style="font-family:\'Pixelated MS Sans Serif\',Arial;font-size:11px;margin-bottom:8px;">' +
+          'Type the name of a program, folder, document, or Internet resource, and Windows will open it for you.' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+          '<label style="font-family:\'Pixelated MS Sans Serif\',Arial;font-size:11px;font-weight:bold;">Open:</label>' +
+          '<input type="text" value="cmd" readonly style="flex:1;font-size:11px;">' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<button id="run-ok-btn" style="min-width:75px;">OK</button>' +
+          '<button data-close-window="' + runId + '" style="min-width:75px;margin-left:4px;">Cancel</button>' +
+          '<button style="min-width:75px;margin-left:4px;" disabled>Browse...</button>' +
+        '</div>' +
+      '</div>';
+
+    elDesktop.appendChild(win);
+    VALID_WINDOWS.add(runId);
+    windows.set(runId, { state: 'closed', prevRect: null, el: win, taskbarBtn: null });
+    openWindow(runId);
+
+    // Wire OK button
+    document.getElementById('run-ok-btn').addEventListener('click', function() {
+      closeWindow(runId);
+      launchMatrixTerminal();
+    });
+  }
+
+  function launchMatrixTerminal() {
+    createAppWindow('window-matrix', 'C:\\WINDOWS\\system32\\cmd.exe',
+      '<div id="matrix-terminal" style="background:#000;color:#00FF00;font-family:\'Perfect DOS VGA 437\',\'Lucida Console\',monospace;font-size:14px;padding:8px;height:100%;position:relative;overflow:hidden;">' +
+        '<div id="matrix-text"></div>' +
+        '<canvas id="matrix-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;"></canvas>' +
+      '</div>',
+      { width: '500px', height: '400px', bodyStyle: 'padding:0;overflow:hidden;' });
+
+    var textEl = document.getElementById('matrix-text');
+    var canvasEl = document.getElementById('matrix-canvas');
+
+    if (!textEl) return;
+
+    // Step 1: After 1 second, type "Knock, knock, Neo."
+    setTimeout(function() {
+      var msg = 'Knock, knock, Neo.';
+      var i = 0;
+      var interval = setInterval(function() {
+        if (i < msg.length) {
+          textEl.textContent += msg[i];
+          i++;
+        } else {
+          clearInterval(interval);
+          // Step 2: After 2 more seconds, start Matrix rain
+          setTimeout(function() {
+            textEl.style.display = 'none';
+            canvasEl.style.display = 'block';
+            if (window.startMatrixRain) {
+              window.startMatrixRain(canvasEl);
+            }
+          }, 2000);
+        }
+      }, 80);
+    }, 1000);
   }
 
   // --- Init ---
