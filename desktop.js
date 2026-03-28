@@ -2065,8 +2065,8 @@
 
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
-      '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '228px', height: '320px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
+      '<iframe src="apps/minesweeper/index.html" style="width:150%;height:150%;border:none;transform:scale(0.6667);transform-origin:top left;"></iframe>',
+      { width: '165px', height: '215px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
   }
 
   function launchHelpBook() {
@@ -2130,8 +2130,8 @@
 
   function launchCalculator() {
     createAppWindow('window-calculator', 'Calculator',
-      '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '228px', height: '290px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+      '<iframe src="apps/calculator/index.html" style="width:150%;height:150%;border:none;transform:scale(0.6667);transform-origin:top left;"></iframe>',
+      { width: '160px', height: '200px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
   }
 
   var notepadCounter = 0;
