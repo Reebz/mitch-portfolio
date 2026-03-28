@@ -169,6 +169,10 @@ body {
   max-height: calc(100% - var(--taskbar-height) - 8px);
 }
 
+.window[data-no-resize="true"] {
+  min-width: auto;
+}
+
 .window[data-state="open"],
 .window[data-state="maximized"] {
   display: flex;

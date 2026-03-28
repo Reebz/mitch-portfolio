@@ -213,7 +213,7 @@
     cascadeIndex = (cascadeIndex + 1) % 10;
     win.el.style.left = offset + 'px';
     win.el.style.top = offset + 'px';
-    win.el.style.width = '500px';
+    if (!win.el.style.width) win.el.style.width = '500px';
     win.el.style.transform = '';
 
     win.state = 'open';
@@ -2064,9 +2064,125 @@
   }
 
   function launchMinesweeper() {
-    createAppWindow('window-minesweeper', 'Minesweeper',
-      '<iframe src="apps/minesweeper/index.html" style="width:150%;height:150%;border:none;transform:scale(0.6667);transform-origin:top left;"></iframe>',
-      { width: '165px', height: '215px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
+    var msStyle =
+      '#ms-app button { all: initial; box-sizing: border-box; cursor: pointer; }' +
+      '#ms-app { font-family: "MS Sans Serif", Arial, sans-serif; font-size: 12px; user-select: none; display: flex; flex-direction: column; align-items: center; }' +
+      '#ms-app #header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; background: #c0c0c0; border: 2px inset #fff; padding: 4px 8px; width: fit-content; }' +
+      '#ms-app .counter { background: #000; color: #f00; font-family: monospace; font-size: 18px; padding: 2px 6px; min-width: 40px; text-align: right; border: 1px inset #808080; }' +
+      '#ms-app #face { font-size: 18px; cursor: pointer; border: 2px outset #fff; background: #c0c0c0; width: 28px; height: 28px; line-height: 28px; text-align: center; }' +
+      '#ms-app #face:active { border-style: inset; }' +
+      '#ms-app #grid { display: grid; grid-template-columns: repeat(9, 24px); border: 3px inset #808080; }' +
+      '#ms-app .cell { width: 24px; height: 24px; border: 2px outset #fff; background: #c0c0c0; text-align: center; line-height: 20px; font-weight: bold; font-size: 12px; cursor: pointer; }' +
+      '#ms-app .cell.revealed { border: 1px solid #808080; cursor: default; }' +
+      '#ms-app .cell.mine-hit { background: #f00; }' +
+      '#ms-app .c1 { color: #0000ff; } #ms-app .c2 { color: #008000; } #ms-app .c3 { color: #ff0000; }' +
+      '#ms-app .c4 { color: #000080; } #ms-app .c5 { color: #800000; } #ms-app .c6 { color: #008080; }' +
+      '#ms-app .c7 { color: #000; } #ms-app .c8 { color: #808080; }' +
+      '#ms-app #msg { margin-top: 6px; font-weight: bold; height: 16px; }';
+
+    var msHtml =
+      '<div id="ms-app">' +
+        '<style>' + msStyle + '</style>' +
+        '<div id="header">' +
+          '<div class="counter" id="mine-count">010</div>' +
+          '<button id="face">&#128578;</button>' +
+          '<div class="counter" id="timer">000</div>' +
+        '</div>' +
+        '<div id="grid"></div>' +
+        '<div id="msg"></div>' +
+      '</div>';
+
+    createAppWindow('window-minesweeper', 'Minesweeper', msHtml,
+      { width: '250px', noResize: true, bodyStyle: 'padding:4px;margin:0;overflow:hidden;background:#c0c0c0;' });
+
+    var msJs = '(function() {' +
+      'var W = 9, H = 9, MINES = 10, grid, mines, revealed, flagged, gameOver, firstClick, timerVal, timerInt;' +
+      'var elGrid = document.getElementById("grid");' +
+      'var elFace = document.getElementById("face");' +
+      'var elMines = document.getElementById("mine-count");' +
+      'var elTimer = document.getElementById("timer");' +
+      'var elMsg = document.getElementById("msg");' +
+      'function init() {' +
+        'grid = []; mines = new Set(); revealed = new Set(); flagged = new Set();' +
+        'gameOver = false; firstClick = true; timerVal = 0;' +
+        'clearInterval(timerInt); elTimer.textContent = "000";' +
+        'elFace.innerHTML = "&#128578;"; elMsg.textContent = "";' +
+        'elGrid.innerHTML = "";' +
+        'for (var i = 0; i < W * H; i++) {' +
+          'grid[i] = 0;' +
+          'var c = document.createElement("div"); c.className = "cell"; c.dataset.i = i;' +
+          'elGrid.appendChild(c);' +
+        '}' +
+        'updateMineCount();' +
+      '}' +
+      'function placeMines(safe) {' +
+        'while (mines.size < MINES) {' +
+          'var r = Math.floor(Math.random() * W * H);' +
+          'if (r !== safe && !mines.has(r)) mines.add(r);' +
+        '}' +
+        'mines.forEach(function(m) { grid[m] = -1; });' +
+        'for (var i = 0; i < W * H; i++) {' +
+          'if (grid[i] === -1) continue;' +
+          'var n = 0; neighbors(i).forEach(function(nb) { if (grid[nb] === -1) n++; });' +
+          'grid[i] = n;' +
+        '}' +
+      '}' +
+      'function neighbors(i) {' +
+        'var r = Math.floor(i / W), c = i % W, result = [];' +
+        'for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {' +
+          'if (!dr && !dc) continue;' +
+          'var nr = r + dr, nc = c + dc;' +
+          'if (nr >= 0 && nr < H && nc >= 0 && nc < W) result.push(nr * W + nc);' +
+        '}' +
+        'return result;' +
+      '}' +
+      'function reveal(i) {' +
+        'if (revealed.has(i) || flagged.has(i) || gameOver) return;' +
+        'revealed.add(i);' +
+        'var c = elGrid.children[i]; c.classList.add("revealed");' +
+        'if (grid[i] === -1) {' +
+          'c.textContent = "\\uD83D\\uDCA3"; c.classList.add("mine-hit");' +
+          'endGame(false); return;' +
+        '}' +
+        'if (grid[i] > 0) { c.textContent = grid[i]; c.classList.add("c" + grid[i]); }' +
+        'else neighbors(i).forEach(function(nb) { reveal(nb); });' +
+        'if (revealed.size === W * H - MINES) endGame(true);' +
+      '}' +
+      'function endGame(won) {' +
+        'gameOver = true; clearInterval(timerInt);' +
+        'elFace.innerHTML = won ? "&#128526;" : "&#128565;";' +
+        'elMsg.textContent = won ? "You Win!" : "Game Over";' +
+        'if (!won) mines.forEach(function(m) {' +
+          'if (!revealed.has(m)) { elGrid.children[m].textContent = "\\uD83D\\uDCA3"; elGrid.children[m].classList.add("revealed"); }' +
+        '});' +
+      '}' +
+      'function updateMineCount() {' +
+        'var v = MINES - flagged.size;' +
+        'elMines.textContent = (v < 0 ? "-" : "") + ("00" + Math.abs(v)).slice(-3);' +
+      '}' +
+      'elGrid.addEventListener("click", function(e) {' +
+        'var c = e.target.closest(".cell"); if (!c || gameOver) return;' +
+        'var i = +c.dataset.i;' +
+        'if (flagged.has(i)) return;' +
+        'if (firstClick) { firstClick = false; placeMines(i); timerInt = setInterval(function() { timerVal++; if (timerVal > 999) timerVal = 999; elTimer.textContent = ("00" + timerVal).slice(-3); }, 1000); }' +
+        'reveal(i);' +
+      '});' +
+      'elGrid.addEventListener("contextmenu", function(e) {' +
+        'e.preventDefault();' +
+        'var c = e.target.closest(".cell"); if (!c || gameOver) return;' +
+        'var i = +c.dataset.i;' +
+        'if (revealed.has(i)) return;' +
+        'if (flagged.has(i)) { flagged.delete(i); c.textContent = ""; }' +
+        'else { flagged.add(i); c.textContent = "\\uD83D\\uDEA9"; }' +
+        'updateMineCount();' +
+      '});' +
+      'elFace.addEventListener("click", init);' +
+      'init();' +
+    '})();';
+
+    var script = document.createElement('script');
+    script.textContent = msJs;
+    document.getElementById('ms-app').appendChild(script);
   }
 
   function launchHelpBook() {
@@ -2129,9 +2245,122 @@
   }
 
   function launchCalculator() {
-    createAppWindow('window-calculator', 'Calculator',
-      '<iframe src="apps/calculator/index.html" style="width:150%;height:150%;border:none;transform:scale(0.6667);transform-origin:top left;"></iframe>',
-      { width: '160px', height: '200px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+    var calcStyle =
+      '#calc-app button { all: initial; box-sizing: border-box; cursor: pointer; }' +
+      '#calc-app { font-family: "MS Sans Serif", Arial, sans-serif; user-select: none; }' +
+      '#calc-app #calc { width: 220px; }' +
+      '#calc-app #display { width: 100%; text-align: right; font-size: 16px; font-family: monospace; padding: 4px 6px; margin-bottom: 6px; background: #fff; border: 2px inset #808080; height: 28px; overflow: hidden; }' +
+      '#calc-app .row { display: flex; gap: 2px; margin-bottom: 2px; }' +
+      '#calc-app button { flex: 1; height: 28px; font-size: 12px; font-family: inherit; border: 2px outset #fff; background: #c0c0c0; cursor: pointer; }' +
+      '#calc-app button:active { border-style: inset; }' +
+      '#calc-app .op { background: #d4d0c8; font-weight: bold; }' +
+      '#calc-app .wide { flex: 2.05; }' +
+      '#calc-app #display-mem { font-size: 10px; height: 14px; color: #444; margin-bottom: 2px; }';
+
+    var calcHtml =
+      '<div id="calc-app">' +
+        '<style>' + calcStyle + '</style>' +
+        '<div id="calc">' +
+          '<div id="display-mem"></div>' +
+          '<div id="display">0</div>' +
+          '<div class="row">' +
+            '<button id="mc">MC</button><button id="mr">MR</button>' +
+            '<button id="ms">MS</button><button id="mp">M+</button>' +
+          '</div>' +
+          '<div class="row">' +
+            '<button data-v="7">7</button><button data-v="8">8</button>' +
+            '<button data-v="9">9</button><button class="op" data-op="/">/</button>' +
+            '<button class="op" id="sqrt">sqrt</button>' +
+          '</div>' +
+          '<div class="row">' +
+            '<button data-v="4">4</button><button data-v="5">5</button>' +
+            '<button data-v="6">6</button><button class="op" data-op="*">*</button>' +
+            '<button class="op" id="pct">%</button>' +
+          '</div>' +
+          '<div class="row">' +
+            '<button data-v="1">1</button><button data-v="2">2</button>' +
+            '<button data-v="3">3</button><button class="op" data-op="-">-</button>' +
+            '<button class="op" id="inv">1/x</button>' +
+          '</div>' +
+          '<div class="row">' +
+            '<button data-v="0" class="wide">0</button><button data-v=".">.</button>' +
+            '<button class="op" data-op="+">+</button><button class="op" id="eq">=</button>' +
+          '</div>' +
+          '<div class="row">' +
+            '<button id="back">Bksp</button><button id="ce">CE</button><button id="clr">C</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    createAppWindow('window-calculator', 'Calculator', calcHtml,
+      { width: '240px', noResize: true, bodyStyle: 'padding:4px;margin:0;overflow:hidden;background:#c0c0c0;' });
+
+    var calcJs = '(function() {' +
+      'var disp = document.getElementById("display"), memDisp = document.getElementById("display-mem");' +
+      'var cur = "0", prev = null, op = null, fresh = true, mem = 0;' +
+      'function show(v) { disp.textContent = v; }' +
+      'document.getElementById("calc").addEventListener("click", function(e) {' +
+        'var b = e.target.closest("button"); if (!b) return;' +
+        'var v = b.dataset.v, o = b.dataset.op, id = b.id;' +
+        'if (v !== undefined) {' +
+          'if (fresh) { cur = v === "." ? "0." : v; fresh = false; }' +
+          'else { if (v === "." && cur.indexOf(".") >= 0) return; cur += v; }' +
+          'show(cur);' +
+        '} else if (o) {' +
+          'if (prev !== null && op && !fresh) calc();' +
+          'prev = parseFloat(cur); op = o; fresh = true;' +
+        '} else if (id === "eq") {' +
+          'if (prev !== null && op) calc();' +
+          'op = null;' +
+        '} else if (id === "clr") {' +
+          'cur = "0"; prev = null; op = null; fresh = true; show("0");' +
+        '} else if (id === "ce") {' +
+          'cur = "0"; fresh = true; show("0");' +
+        '} else if (id === "back") {' +
+          'cur = cur.length > 1 ? cur.slice(0, -1) : "0"; show(cur);' +
+        '} else if (id === "sqrt") {' +
+          'cur = String(Math.sqrt(parseFloat(cur))); fresh = true; show(cur);' +
+        '} else if (id === "pct") {' +
+          'if (prev !== null) cur = String(prev * parseFloat(cur) / 100);' +
+          'fresh = true; show(cur);' +
+        '} else if (id === "inv") {' +
+          'var n = parseFloat(cur); cur = n ? String(1 / n) : "Error"; fresh = true; show(cur);' +
+        '} else if (id === "mc") { mem = 0; memDisp.textContent = ""; }' +
+        'else if (id === "mr") { cur = String(mem); fresh = true; show(cur); }' +
+        'else if (id === "ms") { mem = parseFloat(cur); memDisp.textContent = "M"; }' +
+        'else if (id === "mp") { mem += parseFloat(cur); memDisp.textContent = "M"; }' +
+      '});' +
+      'function calc() {' +
+        'var a = prev, b = parseFloat(cur);' +
+        'if (op === "+") cur = String(a + b);' +
+        'else if (op === "-") cur = String(a - b);' +
+        'else if (op === "*") cur = String(a * b);' +
+        'else if (op === "/") cur = b ? String(a / b) : "Error";' +
+        'prev = parseFloat(cur); fresh = true; show(cur);' +
+      '}' +
+    '})();' +
+    'document.addEventListener("keydown", function(e) {' +
+      'var key = e.key;' +
+      'var btn = null;' +
+      'if (/^[0-9]$/.test(key)) {' +
+        'btn = document.querySelector(\'[data-v="\' + key + \'"]\');' +
+      '} else if (key === "+" || key === "-" || key === "*" || key === "/") {' +
+        'btn = document.querySelector(\'[data-op="\' + key + \'"]\');' +
+      '} else if (key === "Enter" || key === "=") {' +
+        'btn = document.getElementById("eq");' +
+      '} else if (key === "Escape") {' +
+        'btn = document.getElementById("clr");' +
+      '} else if (key === "Backspace") {' +
+        'btn = document.getElementById("back");' +
+      '} else if (key === ".") {' +
+        'btn = document.querySelector(\'[data-v="."]\');' +
+      '}' +
+      'if (btn) { e.preventDefault(); btn.click(); }' +
+    '});';
+
+    var script = document.createElement('script');
+    script.textContent = calcJs;
+    document.getElementById('calc-app').appendChild(script);
   }
 
   var notepadCounter = 0;
