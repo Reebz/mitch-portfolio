@@ -1,0 +1,28 @@
+{
+  "name": "mitch-portfolio",
+  "version": "1.0.0",
+  "description": "My portfolio site, styled as a Windows 98 desktop - down to the BIOS boot sequence, the hardware specs, and the under-construction GIFs. Static HTML, CSS, and vanilla JavaScript. No frameworks, no build step, no npm. Hosted on GitHub Pages.",
+  "main": "boot.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Reebz/portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Reebz/portfolio/issues"
+  },
+  "homepage": "https://github.com/Reebz/portfolio#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "serve": "^14.2.6"
+  }
+}
