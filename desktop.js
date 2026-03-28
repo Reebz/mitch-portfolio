@@ -2066,7 +2066,7 @@
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
       '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '240px', height: '320px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
+      { width: '228px', height: '320px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
   }
 
   function launchHelpBook() {
@@ -2131,7 +2131,7 @@
   function launchCalculator() {
     createAppWindow('window-calculator', 'Calculator',
       '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '240px', height: '290px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+      { width: '228px', height: '290px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
   }
 
   var notepadCounter = 0;
@@ -2206,27 +2206,44 @@
 
     if (!textEl) return;
 
-    // Second 0-3: show three periods
-    textEl.textContent = '...';
+    var CURSOR = '<span style="animation:dos-cursor-blink 1s step-end infinite;">_</span>';
 
-    // Second 3: show "Knock, knock, Neo."
-    setTimeout(function() {
-      textEl.textContent = 'Knock, knock, Neo.';
+    function typeText(text, callback) {
+      textEl.innerHTML = '';
+      var i = 0;
+      var interval = setInterval(function() {
+        if (i < text.length) {
+          textEl.innerHTML = text.substring(0, i + 1) + CURSOR;
+          i++;
+        } else {
+          clearInterval(interval);
+          textEl.innerHTML = text + CURSOR;
+          if (callback) callback();
+        }
+      }, 120);
+    }
 
-      // Second 6: show three periods again
+    // Phase 1: type "..." then hold 3 seconds
+    typeText('...', function() {
       setTimeout(function() {
-        textEl.textContent = '...';
-
-        // Second 10 (4 seconds later): start Matrix rain
-        setTimeout(function() {
-          textEl.style.display = 'none';
-          canvasEl.style.display = 'block';
-          if (window.startMatrixRain) {
-            window.startMatrixRain(canvasEl);
-          }
-        }, 4000);
+        // Phase 2: type "Knock, knock, Neo." then hold 3 seconds
+        typeText('Knock, knock, Neo.', function() {
+          setTimeout(function() {
+            // Phase 3: type "..." then hold 4 seconds
+            typeText('...', function() {
+              setTimeout(function() {
+                // Phase 4: Matrix rain
+                textEl.style.display = 'none';
+                canvasEl.style.display = 'block';
+                if (window.startMatrixRain) {
+                  window.startMatrixRain(canvasEl);
+                }
+              }, 4000);
+            });
+          }, 3000);
+        });
       }, 3000);
-    }, 3000);
+    });
   }
 
   // --- Init ---
