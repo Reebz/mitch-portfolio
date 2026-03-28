@@ -101,6 +101,17 @@
       screenshot: null,
       updated: '2026-03-27',
       icon: 'img/icons/cavaro.png'
+    },
+    {
+      id: 'snowball-dodge',
+      title: 'Snowball Dodge',
+      description: 'Coming soon',
+      tech: [],
+      url: null,
+      type: 'construction',
+      screenshot: null,
+      updated: '2026-03-28',
+      icon: 'img/icons/snowball.png'
     }
   ];
 
@@ -2014,7 +2025,7 @@
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
       '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
-      { width: '200px', height: '260px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
+      { width: '242px', height: '310px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
   }
 
   function launchHelpBook() {
@@ -2079,7 +2090,7 @@
   function launchCalculator() {
     createAppWindow('window-calculator', 'Calculator',
       '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;" scrolling="no"></iframe>',
-      { width: '230px', height: '310px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+      { width: '175px', height: '240px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
   }
 
   // --- Init ---
