@@ -30,7 +30,7 @@
       title: 'Claude Battery',
       description: 'AI tool',
       tech: [],
-      url: 'http://claudebattery.com/',
+      url: 'https://claudebattery.com/',
       type: 'link',
       screenshot: null,
       updated: '2026-03-26',
@@ -132,7 +132,6 @@
   var elDesktop, elIconGrid, elTaskbar, elTaskbarButtons;
   var elStartMenu, elStartButton, elSystemTray;
   var elClock, elVisitorCounter, elAnnouncer;
-  var elMobileProjects;
 
   // --- Announcer ---
   function announce(message) {
@@ -240,6 +239,12 @@
       localStorage.setItem('cavaro-dismissed', Date.now());
       var cavaroIcon = elIconGrid.querySelector('[data-window-id="window-cavaro"]');
       if (cavaroIcon) cavaroIcon.remove();
+    }
+
+    // Cancel matrix rain animation if closing the matrix window
+    if (id === 'window-matrix') {
+      var matrixCanvas = document.getElementById('matrix-canvas');
+      if (matrixCanvas && matrixCanvas._rafId) cancelAnimationFrame(matrixCanvas._rafId);
     }
 
     // Stop analogue clock if closing the clock window
@@ -716,6 +721,10 @@
     var cy = h / 2;
     var r = Math.min(cx, cy) - 8;
 
+    var digitalEl = document.getElementById('clock-digital-time');
+    var dateEl = document.getElementById('clock-date');
+    var tzOffsetEl = document.getElementById('clock-timezone-offset');
+
     function draw() {
       var syd = getSydneyTime();
       var hrs = syd.getHours() % 12;
@@ -790,13 +799,8 @@
       ctx.fill();
 
       // Update digital readout
-      var digitalEl = document.getElementById('clock-digital-time');
       if (digitalEl) digitalEl.textContent = formatTime12h(syd) + ':' + (secs < 10 ? '0' : '') + secs;
-      var dateEl = document.getElementById('clock-date');
       if (dateEl) dateEl.textContent = syd.toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-      // Update timezone offset display
-      var tzOffsetEl = document.getElementById('clock-timezone-offset');
       if (tzOffsetEl) {
         var isDST = syd.toLocaleString('en-US', { timeZone: TIMEZONE, timeZoneName: 'short' }).includes('DT');
         tzOffsetEl.textContent = isDST ? 'AEDT (UTC+11:00)' : 'AEST (UTC+10:00)';
@@ -1433,14 +1437,6 @@
         elDesktop.appendChild(conWin);
         windows.set(id, { state: 'closed', prevRect: null, el: conWin, taskbarBtn: null });
       } else if (project.type === 'cavaro') {
-        // Check if Cavaro was dismissed and 48h hasn't passed
-        var dismissed = parseInt(localStorage.getItem('cavaro-dismissed')) || 0;
-        var hoursSince = (Date.now() - dismissed) / (1000 * 60 * 60);
-        if (dismissed > 0 && hoursSince < 48) {
-          // Skip creating the icon — Cavaro is hidden
-          // Still create the icon placeholder but hide it later
-        }
-
         VALID_WINDOWS.add(id);
         var cavaroWin = document.createElement('div');
         cavaroWin.id = id;
@@ -1969,7 +1965,6 @@
     webampInstance.renderWhenReady(container).then(function() {
       announce('Winamp opened');
     }).catch(function(err) {
-      console.error('Webamp render error:', err);
       announce('Winamp failed to render');
       webampInstance = null;
     });
@@ -2195,7 +2190,6 @@
     elClock = document.getElementById('clock');
     elVisitorCounter = document.getElementById('visitor-counter');
     elAnnouncer = document.getElementById('window-announcer');
-    // elMobileProjects removed — using DOS terminal view instead
 
     // Register system windows first
     registerSystemWindows();

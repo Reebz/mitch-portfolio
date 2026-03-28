@@ -36,7 +36,7 @@ window.startMatrixRain = function(canvas) {
       drops[i]++;
     }
 
-    requestAnimationFrame(draw);
+    canvas._rafId = requestAnimationFrame(draw);
   }
 
   draw();
