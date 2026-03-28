@@ -1203,6 +1203,8 @@
         launchHelpBook();
       } else if (app === 'run') {
         launchRun();
+      } else if (app === 'notepad') {
+        launchNotepad();
       }
 
       elStartMenu.classList.remove('open');
@@ -2064,7 +2066,7 @@
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
       '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '242px', height: '310px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
+      { width: '164px', height: '210px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
   }
 
   function launchHelpBook() {
@@ -2090,7 +2092,7 @@
       var body = win.querySelector('.window-body');
       body.innerHTML =
         '<div id="help-page" style="flex:1;overflow-y:auto;padding:20px 24px;' +
-          'font-family:Georgia,\'Times New Roman\',serif;font-size:13px;' +
+          'font-family:Georgia,\'Times New Roman\',serif;font-size:12px;' +
           'background:#fff;text-align:center;">' +
           pages[page] +
         '</div>' +
@@ -2104,7 +2106,7 @@
 
     var bodyContent =
       '<div id="help-page" style="flex:1;overflow-y:auto;padding:20px 24px;' +
-        'font-family:Georgia,\'Times New Roman\',serif;font-size:13px;' +
+        'font-family:Georgia,\'Times New Roman\',serif;font-size:12px;' +
         'background:#fff;text-align:center;">' +
         pages[0] +
       '</div>' +
@@ -2129,7 +2131,17 @@
   function launchCalculator() {
     createAppWindow('window-calculator', 'Calculator',
       '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '175px', height: '240px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+      { width: '152px', height: '168px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+  }
+
+  var notepadCounter = 0;
+  function launchNotepad() {
+    notepadCounter++;
+    var id = 'window-notepad-' + notepadCounter;
+    createAppWindow(id, 'Untitled - Notepad',
+      '<div class="notepad-menu-bar" aria-hidden="true"><span>File</span><span>Edit</span><span>Format</span><span>Help</span></div>' +
+      '<textarea style="width:100%;flex:1;border:none;padding:4px;font-family:\'Lucida Console\',\'Courier New\',monospace;font-size:12px;resize:none;box-sizing:border-box;" placeholder=""></textarea>',
+      { width: '400px', height: '300px', bodyStyle: 'display:flex;flex-direction:column;padding:0;' });
   }
 
   function launchRun() {
@@ -2145,7 +2157,7 @@
     win.setAttribute('data-no-resize', 'true');
     win.setAttribute('role', 'dialog');
     win.setAttribute('tabindex', '-1');
-    win.style.width = '350px';
+    win.style.width = '235px';
 
     win.innerHTML =
       '<div class="title-bar">' +
@@ -2160,7 +2172,7 @@
         '</div>' +
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
           '<label style="font-family:\'Pixelated MS Sans Serif\',Arial;font-size:11px;font-weight:bold;">Open:</label>' +
-          '<input type="text" value="cmd" readonly style="flex:1;font-size:11px;">' +
+          '<input type="text" value="cmd" readonly style="flex:1;font-size:11px;background:#fff;">' +
         '</div>' +
         '<div style="text-align:right;">' +
           '<button id="run-ok-btn" style="min-width:75px;">OK</button>' +
@@ -2194,7 +2206,7 @@
 
     if (!textEl) return;
 
-    // Step 1: After 1 second, type "Knock, knock, Neo."
+    // Step 1: After 2 seconds, type "Knock, knock, Neo."
     setTimeout(function() {
       var msg = 'Knock, knock, Neo.';
       var i = 0;
@@ -2204,17 +2216,17 @@
           i++;
         } else {
           clearInterval(interval);
-          // Step 2: After 2 more seconds, start Matrix rain
+          // Step 2: After 4 more seconds, start Matrix rain
           setTimeout(function() {
             textEl.style.display = 'none';
             canvasEl.style.display = 'block';
             if (window.startMatrixRain) {
               window.startMatrixRain(canvasEl);
             }
-          }, 2000);
+          }, 4000);
         }
       }, 80);
-    }, 1000);
+    }, 2000);
   }
 
   // --- Init ---
