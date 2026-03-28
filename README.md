@@ -1,21 +1,24 @@
 # Portfolio 98
 
-A portfolio site disguised as a Windows 98 desktop. Built with static HTML, CSS, and vanilla JavaScript. Hosted on GitHub Pages.
+My portfolio site, styled as a Windows 98 desktop - down to the BIOS boot sequence, the hardware specs, and the under-construction GIFs. Static HTML, CSS, and vanilla JavaScript. No frameworks, no build step, no npm. Hosted on GitHub Pages.
 
-**Live:** https://reebz.github.io/portfolio/
+**Live:** [reebz.com](https://reebz.com)
 
-## Features
+## What's in here
 
-- Draggable, resizable windows with minimize/maximize/close
-- Start menu with keyboard navigation
-- System tray with clock (Sydney timezone) and visitor counter
-- Right-click context menus
-- Desktop icon selection rectangle
-- BIOS boot sequence on first visit
-- DOS terminal view on mobile devices
+- Award BIOS v4.51PG boot sequence with Energy Star logo, Pentium II 233MHz specs, and a DOS beep
+- Draggable, resizable windows with minimize, maximize, and close
+- Start menu with cascading submenus, Shut Down dialog, and a working Run prompt
+- Quick Launch bar, system tray clock (Sydney timezone), and visitor counter
+- Right-click context menus on the desktop, title bars, and taskbar
+- Desktop icon drag-and-drop with localStorage persistence
+- Minesweeper, Calculator, Paint (via jspaint.app), and a paginated Help book
+- Matrix rain easter egg (Start > Run > OK)
+- Formspree-powered contact form styled as Outlook Express
+- DOS terminal view on mobile
 - 404 page styled as a Windows error dialog
 
-## Tech Stack
+## Tech
 
 - HTML, CSS, vanilla JavaScript
 - [98.css](https://jdan.github.io/98.css/) for Windows 98 UI components
@@ -23,12 +26,21 @@ A portfolio site disguised as a Windows 98 desktop. Built with static HTML, CSS,
 
 ## Acknowledgements
 
-- **Icons:** [Win98 Icons](https://win98icons.alexmeub.com/) by Alex Meub
-- **CSS Framework:** [98.css](https://jdan.github.io/98.css/) by Jordan Scales (MIT)
-- **Font:** [Perfect DOS VGA 437](https://www.dafont.com/perfect-dos-vga-437.font)
-- **Webamp:** [Webamp](https://webamp.org/) by Jordan Eldredge (MIT)
-- **jspaint:** [JS Paint](https://jspaint.app/) by Isaiah Odhner (MIT)
-- **Wallpaper:** Office Space x Windows XP "Bliss" mashup
-- **Contact Form:** [Formspree](https://formspree.io/)
-- **Matrix Rain:** Visual effect inspired by [cmatrix](https://github.com/abishekvashok/cmatrix) by Abishek V Ashok (GPL-3.0)
-- **Inspiration:** [win98ge](https://github.com/gelasioebel/win98ge) by Gelasio Ebel (BSD), [window98-html-css-js](https://github.com/lolstring/window98-html-css-js) (MIT)
+This project uses and is inspired by the work of others. Credit where it's due.
+
+- **[98.css](https://github.com/jdan/98.css)** by Jordan Scales - Windows 98 CSS component library (MIT)
+- **[Win98 Icons](https://win98icons.alexmeub.com/)** by Alex Meub - icon pack
+- **[Perfect DOS VGA 437](https://www.dafont.com/perfect-dos-vga-437.font)** - BIOS boot sequence font
+- **[Webamp](https://github.com/captbaritone/webamp)** by Jordan Eldredge - Winamp player for the web (MIT)
+- **[JS Paint](https://github.com/1j01/jspaint)** by Isaiah Odhner - MS Paint clone (MIT)
+- **[Formspree](https://formspree.io/)** - contact form backend
+- **[cmatrix](https://github.com/abishekvashok/cmatrix)** by Abishek V Ashok - Matrix rain visual inspiration (GPL-3.0)
+- **[win98ge](https://github.com/gelasioebel/win98ge)** by Gelasio Ebel - visual reference (BSD)
+- **[window98-html-css-js](https://github.com/lolstring/window98-html-css-js)** - implementation reference (MIT)
+- **[Minesweeper](https://github.com/nickarocho/minesweeper)** by Nick Arocho - game reference
+- **The Way of Code** - book content adapted by Rick Rubin, source at [thewayofcode.com](https://www.thewayofcode.com)
+- **Windows XP "Bliss"** wallpaper by Charles O'Rear
+
+## License
+
+Code is MIT. Third-party assets retain their original licenses as noted above.
