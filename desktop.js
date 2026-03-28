@@ -2066,7 +2066,7 @@
   function launchMinesweeper() {
     createAppWindow('window-minesweeper', 'Minesweeper',
       '<iframe src="apps/minesweeper/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '160px', height: '215px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
+      { width: '240px', height: '320px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;' });
   }
 
   function launchHelpBook() {
@@ -2131,7 +2131,7 @@
   function launchCalculator() {
     createAppWindow('window-calculator', 'Calculator',
       '<iframe src="apps/calculator/index.html" style="width:100%;height:100%;border:none;"></iframe>',
-      { width: '158px', height: '200px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
+      { width: '240px', height: '290px', noResize: true, bodyStyle: 'padding:0;overflow:hidden;background:#c0c0c0;' });
   }
 
   var notepadCounter = 0;
@@ -2206,27 +2206,27 @@
 
     if (!textEl) return;
 
-    // Step 1: After 2 seconds, type "Knock, knock, Neo."
+    // Second 0-3: show three periods
+    textEl.textContent = '...';
+
+    // Second 3: show "Knock, knock, Neo."
     setTimeout(function() {
-      var msg = 'Knock, knock, Neo.';
-      var i = 0;
-      var interval = setInterval(function() {
-        if (i < msg.length) {
-          textEl.textContent += msg[i];
-          i++;
-        } else {
-          clearInterval(interval);
-          // Step 2: After 4 more seconds, start Matrix rain
-          setTimeout(function() {
-            textEl.style.display = 'none';
-            canvasEl.style.display = 'block';
-            if (window.startMatrixRain) {
-              window.startMatrixRain(canvasEl);
-            }
-          }, 4000);
-        }
-      }, 80);
-    }, 2000);
+      textEl.textContent = 'Knock, knock, Neo.';
+
+      // Second 6: show three periods again
+      setTimeout(function() {
+        textEl.textContent = '...';
+
+        // Second 10 (4 seconds later): start Matrix rain
+        setTimeout(function() {
+          textEl.style.display = 'none';
+          canvasEl.style.display = 'block';
+          if (window.startMatrixRain) {
+            window.startMatrixRain(canvasEl);
+          }
+        }, 4000);
+      }, 3000);
+    }, 3000);
   }
 
   // --- Init ---
