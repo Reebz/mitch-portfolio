@@ -33,7 +33,6 @@ This project uses and is inspired by the work of others. Credit where it's due, 
 - **[98.css](https://github.com/jdan/98.css)** by Jordan Scales - Windows 98 CSS component library (MIT)
 - **[Win98 Icons](https://win98icons.alexmeub.com/)** by Alex Meub - icon pack
 - **[Perfect DOS VGA 437](https://www.dafont.com/perfect-dos-vga-437.font)** - BIOS boot sequence font
-- **[Webamp](https://github.com/captbaritone/webamp)** by Jordan Eldredge - Winamp player for the web (MIT)
 - **[JS Paint](https://github.com/1j01/jspaint)** by Isaiah Odhner - MS Paint clone (MIT)
 - **[Formspree](https://formspree.io/)** - contact form backend
 - **[cmatrix](https://github.com/abishekvashok/cmatrix)** by Abishek V Ashok - Matrix rain visual inspiration (GPL-3.0)

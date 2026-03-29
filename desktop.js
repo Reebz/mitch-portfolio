@@ -1191,8 +1191,6 @@
         openWindow(windowId);
       } else if (action === 'shutdown') {
         openWindow('window-shutdown');
-      } else if (app === 'winamp') {
-        launchWebamp();
       } else if (app === 'paint') {
         launchPaint();
       } else if (app === 'minesweeper') {
@@ -1965,49 +1963,6 @@
   }
 
   // --- Embedded App Launchers ---
-
-  var webampInstance = null;
-
-  function launchWebamp() {
-    try {
-      if (webampInstance) return;
-
-      // Try the global first (UMD bundle)
-      if (typeof window.Webamp !== 'undefined') {
-        initWebamp(window.Webamp);
-        return;
-      }
-
-      // Fallback: try dynamic ESM import
-      import('https://unpkg.com/webamp@1.5.0/built/webamp.bundle.min.js').then(function(mod) {
-        var WebampClass = mod.default || mod;
-        initWebamp(WebampClass);
-      }).catch(function() {
-        alert('Winamp could not load. Try refreshing the page.');
-      });
-    } catch (e) {
-      alert('Winamp could not load.');
-    }
-  }
-
-  function initWebamp(WebampClass) {
-    // Webamp always renders to document.body (not the container you pass).
-    // Position values are in CSS pixels, affected by body zoom:1.5.
-    webampInstance = new WebampClass({
-      windowLayout: { main: { position: { top: 40, left: 120 } } },
-      zIndex: 9000
-    });
-    webampInstance.renderWhenReady(document.body).then(function() {
-      announce('Winamp opened');
-    }).catch(function(err) {
-      announce('Winamp failed to render');
-      webampInstance = null;
-    });
-    webampInstance.onClose(function() {
-      webampInstance.dispose();
-      webampInstance = null;
-    });
-  }
 
   function createAppWindow(id, title, bodyHtml, opts) {
     opts = opts || {};
