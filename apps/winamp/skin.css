@@ -1,499 +1,753 @@
 /* ============================================================
-   Winamp 2.x Skin — pixel-accurate 1999 default skin replica
-   275px wide, dark charcoal body, green LCD display
-   Layout: titlebar > display > sliders+EQ/PL > seekbar > transport
+   Winamp 2.x Skin — pixel-accurate CSS recreation
+   Based on Webamp (captbaritone/webamp) sprite positions
+   275px wide, absolute positioning, authentic colors
    ============================================================ */
 
-/* --- Main container (275x116 main + playlist below) --- */
+/* --- Reset for Winamp elements --- */
+#winamp-app *,
+#winamp-app *::before,
+#winamp-app *::after {
+  box-sizing: content-box;
+  margin: 0;
+  padding: 0;
+}
+
+#winamp-app button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  color: inherit;
+}
+
+#winamp-app input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+/* --- App container --- */
 #winamp-app {
-  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
-  font-size: 11px;
-  background: #2B2B2B;
-  color: #999;
   width: 275px;
   user-select: none;
   -webkit-user-select: none;
-  border: 1px solid #0A0A0A;
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  image-rendering: pixelated;
+}
+
+/* ========================================================
+   MAIN PLAYER WINDOW — 275 x 116px
+   ======================================================== */
+.wa-main {
+  position: relative;
+  width: 275px;
+  height: 116px;
+  background:
+    /* Main chrome body */
+    linear-gradient(180deg,
+      #464658 0px, #3A3A4E 2px,
+      #35354A 4px, #2E2E44 8px,
+      #2A2A40 14px, /* below titlebar */
+      #292940 15px, #292940 56px,
+      #2C2C3E 57px, #2C2C3E 71px,
+      #2A2A3C 72px, #2A2A3C 82px,
+      #2C2C3E 83px, #2C2C3E 116px
+    );
+  border: 1px solid #0D0D18;
   box-shadow:
-    inset 1px 1px 0 #444,
-    inset -1px -1px 0 #111;
-}
-
-/* --- Title bar (14px tall) --- */
-.winamp-titlebar {
-  display: flex;
-  align-items: center;
-  height: 14px;
-  background: linear-gradient(180deg, #4A4A5A 0%, #2A2A3A 50%, #1E1E2E 100%);
-  border-bottom: 1px solid #0A0A14;
-  padding: 0 2px;
-  position: relative;
-}
-
-.wa-tb-menu {
-  font-size: 8px;
-  color: #AAA;
-  cursor: pointer;
-  padding: 0 3px;
-  line-height: 14px;
-}
-
-.wa-tb-menu:hover { color: #FFF; }
-
-.wa-tb-title {
-  flex: 1;
-  text-align: center;
-  color: #FFF;
-  font-size: 8px;
-  font-weight: bold;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  text-shadow: 1px 1px 0 #000;
-  line-height: 14px;
-}
-
-.wa-tb-buttons {
-  display: flex;
-  gap: 1px;
-}
-
-.wa-tb-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 9px;
-  height: 9px;
-  font-size: 7px;
-  line-height: 9px;
-  background: linear-gradient(180deg, #555 0%, #333 100%);
-  border: 1px outset #666;
-  color: #CCC;
-  cursor: pointer;
-}
-
-.wa-tb-btn:hover { color: #FFF; background: linear-gradient(180deg, #666 0%, #444 100%); }
-.wa-tb-btn:active { border-style: inset; }
-
-/* --- Display/LCD area (the black-green info panel) --- */
-.winamp-display {
-  display: flex;
-  background: #000;
-  margin: 3px 4px 1px;
-  border: 2px solid;
-  border-color: #0A0A14 #2A2A3A #2A2A3A #0A0A14;
-  min-height: 40px;
-  position: relative;
+    inset 1px 1px 0 #50506A,
+    inset -1px -1px 0 #18182A;
   overflow: hidden;
 }
 
-/* Clutterbar — narrow vertical strip on left */
-.wa-clutterbar {
-  display: flex;
-  flex-direction: column;
-  width: 8px;
-  background: #1A1A1A;
-  border-right: 1px solid #222;
-  flex-shrink: 0;
+/* --- Title bar --- */
+.wa-titlebar {
+  position: absolute;
+  top: 0; left: 0;
+  width: 275px;
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: #FFF;
+  text-shadow: 1px 1px 0 #000;
+  background: linear-gradient(180deg,
+    #50506E 0%, #3C3C58 30%, #2C2C48 60%, #242440 100%);
+  border-bottom: 1px solid #0D0D18;
+  cursor: default;
 }
 
-.wa-cb-btn {
+/* --- Display / LCD panel (black area) --- */
+.wa-display {
+  position: absolute;
+  top: 14px; left: 9px;
+  width: 256px;
+  height: 43px;
+  background: #000;
+  border: 1px solid #0D0D18;
+  overflow: hidden;
+}
+
+/* Clutterbar — far left of display */
+.wa-clutterbar {
+  position: absolute;
+  top: 2px; left: 1px;
+  width: 7px;
+  height: 39px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #1A1A1A;
+}
+
+.wa-clutterbar div {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 5px;
-  font-family: "Pixelated MS Sans Serif", monospace;
-  color: #555;
+  color: #3A3A3A;
   cursor: pointer;
+  font-family: "Pixelated MS Sans Serif", monospace;
   line-height: 1;
 }
 
-.wa-cb-btn:hover { color: #00CC00; }
+.wa-clutterbar div:hover { color: #00CC00; }
 
-/* Main display content area */
-.wa-display-main {
-  flex: 1;
-  padding: 2px 4px;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-/* Track title marquee — top of display */
-.winamp-title-scroll {
-  color: #00FF00;
-  font-family: "Pixelated MS Sans Serif", monospace;
-  font-size: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: clip;
-  animation: winamp-marquee 10s linear infinite;
-  height: 10px;
-  line-height: 10px;
-}
-
-@keyframes winamp-marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-/* Middle row: play state icon + time + mini visualizer */
-.wa-display-mid {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  margin: 1px 0;
-}
-
-.wa-play-state {
-  color: #00CC00;
-  font-size: 7px;
+/* Play/Pause/Stop state indicator */
+.wa-playpaus {
+  position: absolute;
+  top: 14px; left: 15px;
   width: 9px;
   height: 9px;
+  font-size: 7px;
+  color: #00CC00;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  line-height: 1;
 }
 
-.winamp-time {
+/* Time display — large LCD digits */
+.wa-time {
+  position: absolute;
+  top: 10px; left: 27px;
+  width: 66px;
+  height: 18px;
   color: #00FF00;
-  font-family: "Perfect DOS VGA 437", "Lucida Console", monospace;
-  font-size: 18px;
+  font-family: "Perfect DOS VGA 437", "Lucida Console", "Courier New", monospace;
+  font-size: 22px;
   font-weight: bold;
   letter-spacing: 2px;
-  text-shadow: 0 0 6px rgba(0, 170, 0, 0.5);
-  line-height: 1;
-  flex-shrink: 0;
+  line-height: 18px;
+  text-shadow:
+    0 0 8px rgba(0, 200, 0, 0.5),
+    0 0 2px rgba(0, 255, 0, 0.3);
+  text-align: center;
 }
 
-/* Mini visualizer placeholder — small oscilloscope-like area */
-.wa-mini-vis {
-  flex: 1;
-  height: 16px;
-  background: #000;
-  border: 1px solid #0A0A0A;
-  margin-left: 3px;
-  position: relative;
+/* Track title marquee — right side of display */
+.wa-marquee {
+  position: absolute;
+  top: 8px; left: 100px;
+  width: 152px;
+  height: 10px;
   overflow: hidden;
 }
 
-/* Simple fake visualization bars */
-.wa-mini-vis::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 2px;
-  width: calc(100% - 4px);
-  height: 100%;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent 0px, transparent 1px,
-    #004400 1px, #004400 2px,
-    transparent 2px, transparent 3px
-  );
-  opacity: 0.5;
+.wa-marquee-text {
+  color: #00FF00;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  font-size: 8px;
+  line-height: 10px;
+  white-space: nowrap;
+  animation: wa-scroll 8s linear infinite;
+  text-shadow: 0 0 4px rgba(0, 200, 0, 0.3);
 }
 
-/* Bottom info row: kbps, kHz, stereo/mono */
-.wa-display-info {
-  display: flex;
-  align-items: center;
-  gap: 2px;
+@keyframes wa-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Visualizer canvas — spectrum analyzer */
+.wa-vis {
+  position: absolute;
+  top: 22px; left: 15px;
+  width: 76px;
+  height: 16px;
+  image-rendering: pixelated;
+}
+
+/* Bitrate display */
+.wa-kbps {
+  position: absolute;
+  top: 28px; left: 100px;
+  color: #00CC00;
+  font-size: 7px;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  font-weight: bold;
+}
+
+.wa-kbps-label {
+  position: absolute;
+  top: 28px; left: 119px;
+  color: #006600;
   font-size: 6px;
   font-family: "Pixelated MS Sans Serif", monospace;
-  color: #00AA00;
-  margin-top: 1px;
 }
 
-.wa-kbps,
 .wa-khz {
+  position: absolute;
+  top: 28px; left: 140px;
   color: #00CC00;
-  font-weight: bold;
   font-size: 7px;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  font-weight: bold;
 }
 
-.wa-info-label {
+.wa-khz-label {
+  position: absolute;
+  top: 28px; left: 152px;
   color: #006600;
-  font-size: 5px;
-  text-transform: lowercase;
-  margin-right: 4px;
-}
-
-.wa-stereo {
-  margin-left: auto;
-  display: flex;
-  gap: 3px;
   font-size: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-family: "Pixelated MS Sans Serif", monospace;
 }
 
-.wa-stereo span { color: #333; }
-.wa-stereo span.lit {
+/* Mono / Stereo indicators */
+.wa-mono, .wa-stereo {
+  position: absolute;
+  top: 28px;
+  font-size: 7px;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  font-weight: bold;
+  text-transform: lowercase;
+  color: #333;
+}
+
+.wa-mono   { left: 200px; }
+.wa-stereo { left: 222px; }
+
+.wa-mono.lit, .wa-stereo.lit {
   color: #00DD00;
-  text-shadow: 0 0 3px #00AA00;
+  text-shadow: 0 0 4px rgba(0, 170, 0, 0.6);
 }
 
-/* --- Slider row: Volume + Balance + EQ + PL --- */
-.wa-slider-row {
-  display: flex;
-  align-items: center;
-  height: 14px;
-  padding: 0 4px;
-  gap: 2px;
-  background: #2B2B2B;
+/* --- Volume slider (left side, row below display) --- */
+.wa-volume {
+  position: absolute;
+  top: 58px; left: 107px;
+  width: 68px;
+  height: 13px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #1A1A2E, #0A0A18);
+  border: 1px solid #0A0A14;
 }
 
-/* Shared slider styles */
-.wa-volume,
-.wa-balance {
+.wa-volume::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  height: 4px;
-  background: linear-gradient(180deg, #1A1A2A, #0A0A14);
-  border: 1px solid #0A0A0A;
-  outline: none;
+  width: 14px; height: 11px;
+  background: linear-gradient(180deg, #6A6A7E 0%, #4A4A5E 50%, #3A3A4E 100%);
+  border: 1px outset #7A7A8E;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2);
   cursor: pointer;
 }
 
-.wa-volume { width: 68px; flex-shrink: 0; }
-.wa-balance { width: 38px; flex-shrink: 0; }
+.wa-volume::-moz-range-thumb {
+  width: 14px; height: 11px;
+  background: linear-gradient(180deg, #6A6A7E 0%, #4A4A5E 50%, #3A3A4E 100%);
+  border: 1px outset #7A7A8E;
+  cursor: pointer;
+}
 
-.wa-volume::-webkit-slider-thumb,
+/* --- Balance slider (right of volume) --- */
+.wa-balance {
+  position: absolute;
+  top: 58px; left: 177px;
+  width: 38px;
+  height: 13px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #1A1A2E, #0A0A18);
+  border: 1px solid #0A0A14;
+}
+
 .wa-balance::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 11px;
-  background: linear-gradient(180deg, #6A6A7A 0%, #4A4A5A 40%, #3A3A4A 100%);
-  border: 1px outset #7A7A8A;
-  cursor: pointer;
+  width: 14px; height: 11px;
+  background: linear-gradient(180deg, #6A6A7E 0%, #4A4A5E 50%, #3A3A4E 100%);
+  border: 1px outset #7A7A8E;
   box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2);
-}
-
-.wa-volume::-moz-range-thumb,
-.wa-balance::-moz-range-thumb {
-  width: 14px;
-  height: 11px;
-  background: linear-gradient(180deg, #6A6A7A 0%, #4A4A5A 40%, #3A3A4A 100%);
-  border: 1px outset #7A7A8A;
   cursor: pointer;
 }
 
-/* EQ and PL toggle buttons */
-.wa-eq-btn,
-.wa-pl-btn {
+.wa-balance::-moz-range-thumb {
+  width: 14px; height: 11px;
+  background: linear-gradient(180deg, #6A6A7E 0%, #4A4A5E 50%, #3A3A4E 100%);
+  border: 1px outset #7A7A8E;
+  cursor: pointer;
+}
+
+/* --- EQ / PL toggle buttons --- */
+.wa-eq-btn, .wa-pl-btn {
+  position: absolute;
+  top: 59px;
   width: 23px;
   height: 12px;
-  font-size: 6px;
+  font-size: 7px;
   font-weight: bold;
-  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  letter-spacing: 1px;
   text-align: center;
   line-height: 12px;
-  padding: 0;
-  border: 1px solid #444;
-  background: #2A2A3A;
-  color: #666;
-  cursor: pointer;
-  letter-spacing: 1px;
-  flex-shrink: 0;
+  color: #555;
+  background: #24243A;
+  border: 1px solid #3A3A50;
 }
 
-.wa-eq-btn:hover,
-.wa-pl-btn:hover {
-  color: #999;
-}
+.wa-eq-btn { left: 219px; }
+.wa-pl-btn { left: 242px; }
 
-.wa-eq-btn.active,
-.wa-pl-btn.active {
-  background: #00AA00;
+.wa-eq-btn:hover, .wa-pl-btn:hover { color: #888; }
+
+.wa-eq-btn.active, .wa-pl-btn.active {
   color: #000;
-  border-color: #00CC00;
-  text-shadow: 0 0 2px rgba(0,255,0,0.4);
+  background: #00BB00;
+  border-color: #00DD00;
+  text-shadow: 0 0 2px rgba(0,200,0,0.5);
 }
 
-/* --- Seekbar / Position bar --- */
-.winamp-seekbar {
-  height: 8px;
-  background: linear-gradient(180deg, #1A1A2A, #0A0A14);
-  border: 1px solid #0A0A0A;
-  margin: 2px 4px;
-  cursor: pointer;
-  position: relative;
-}
-
-.winamp-seek-fill {
-  height: 100%;
-  background: linear-gradient(180deg, #6A6A7A 0%, #4A4A5A 50%, #3A3A4A 100%);
-  width: 0%;
-  transition: width 0.4s linear;
-  position: relative;
-}
-
-/* Seekbar thumb indicator */
-.winamp-seek-fill::after {
-  content: "";
+/* --- Position / Seek bar --- */
+.wa-seek {
   position: absolute;
-  right: -1px;
-  top: -2px;
-  width: 14px;
-  height: 12px;
-  background: linear-gradient(180deg, #7A7A8A 0%, #5A5A6A 40%, #4A4A5A 100%);
-  border: 1px outset #8A8A9A;
-  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.15);
-}
-
-/* --- Transport buttons row --- */
-.winamp-transport {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 2px 4px 3px;
-  background: #2B2B2B;
-}
-
-.winamp-btn {
-  height: 18px;
-  font-size: 7px;
-  line-height: 16px;
-  text-align: center;
-  background: linear-gradient(180deg, #555 0%, #3A3A3A 50%, #2A2A2A 100%);
-  border: 1px outset #666;
-  color: #CCC;
+  top: 72px; left: 16px;
+  width: 248px;
+  height: 10px;
   cursor: pointer;
-  padding: 0;
-  font-family: "Segoe UI Symbol", "Arial Unicode MS", sans-serif;
+  background: linear-gradient(180deg, #1A1A30, #0A0A18);
+  border: 1px solid #0A0A14;
+}
+
+.wa-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 29px; height: 10px;
+  background: linear-gradient(180deg, #7A7A8E 0%, #5A5A6E 40%, #4A4A5E 100%);
+  border: 1px outset #8A8A9E;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.15);
+  cursor: pointer;
+}
+
+.wa-seek::-moz-range-thumb {
+  width: 29px; height: 10px;
+  background: linear-gradient(180deg, #7A7A8E 0%, #5A5A6E 40%, #4A4A5E 100%);
+  border: 1px outset #8A8A9E;
+  cursor: pointer;
+}
+
+/* --- Transport buttons --- */
+.wa-tbtn {
+  position: absolute;
+  top: 88px;
+  height: 18px;
+  background: linear-gradient(180deg, #50506A 0%, #3A3A52 40%, #2A2A42 100%);
+  border: 1px outset #60607A;
   box-shadow:
     inset 1px 1px 0 rgba(255,255,255,0.12),
-    inset -1px -1px 0 rgba(0,0,0,0.25);
-}
-
-/* Transport button widths — match Winamp's 23px standard */
-.wa-btn-prev,
-.wa-btn-play,
-.wa-btn-pause,
-.wa-btn-stop,
-.wa-btn-next {
-  width: 23px;
-}
-
-.wa-btn-eject {
-  width: 22px;
-  height: 16px;
-  font-size: 6px;
-  margin-left: 1px;
-}
-
-.winamp-btn:hover {
-  background: linear-gradient(180deg, #666 0%, #4A4A4A 50%, #3A3A3A 100%);
-  color: #FFF;
-}
-
-.winamp-btn:active {
-  border-style: inset;
-  background: linear-gradient(180deg, #2A2A2A 0%, #3A3A3A 50%, #4A4A4A 100%);
-  box-shadow:
-    inset -1px -1px 0 rgba(255,255,255,0.12),
-    inset 1px 1px 0 rgba(0,0,0,0.25);
-}
-
-/* Gap between eject and shuffle/repeat */
-.wa-transport-gap {
-  flex: 1;
-}
-
-/* Shuffle / Repeat toggle buttons */
-.wa-toggle-btn {
-  height: 15px;
-  padding: 0 3px;
-  font-size: 6px;
-  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
-  font-weight: bold;
-  text-transform: lowercase;
-  letter-spacing: 0.5px;
-  background: #2A2A3A;
-  border: 1px solid #444;
-  color: #555;
+    inset -1px -1px 0 rgba(0,0,0,0.2);
   cursor: pointer;
+  color: #CCC;
+  font-size: 0;
+  overflow: hidden;
 }
 
-.wa-toggle-btn:hover { color: #999; }
+.wa-tbtn:hover {
+  background: linear-gradient(180deg, #60607A 0%, #4A4A62 40%, #3A3A52 100%);
+}
 
-.wa-toggle-btn.active {
+.wa-tbtn:active {
+  border-style: inset;
+  background: linear-gradient(180deg, #2A2A42 0%, #3A3A52 40%, #4A4A62 100%);
+  box-shadow:
+    inset -1px -1px 0 rgba(255,255,255,0.1),
+    inset 1px 1px 0 rgba(0,0,0,0.2);
+}
+
+/* Button positions — from Webamp CBUTTONS */
+.wa-prev  { left: 16px;  width: 23px; }
+.wa-play  { left: 39px;  width: 23px; }
+.wa-pause { left: 62px;  width: 23px; }
+.wa-stop  { left: 85px;  width: 23px; }
+.wa-next  { left: 108px; width: 22px; }
+.wa-eject { left: 136px; width: 22px; height: 16px; top: 89px; }
+
+/* Transport button icons via ::after pseudo-elements */
+.wa-prev::after  { content: "\23EE"; font-size: 9px; color: #CCC; display: block; line-height: 18px; text-align: center; }
+.wa-play::after  { content: "\25B6"; font-size: 9px; color: #CCC; display: block; line-height: 18px; text-align: center; }
+.wa-pause::after { content: "\23F8"; font-size: 9px; color: #CCC; display: block; line-height: 18px; text-align: center; }
+.wa-stop::after  { content: "\25A0"; font-size: 8px; color: #CCC; display: block; line-height: 18px; text-align: center; }
+.wa-next::after  { content: "\23ED"; font-size: 9px; color: #CCC; display: block; line-height: 18px; text-align: center; }
+.wa-eject::after { content: "\23CF"; font-size: 8px; color: #CCC; display: block; line-height: 16px; text-align: center; }
+
+.wa-tbtn:hover::after { color: #FFF; }
+
+/* --- Shuffle / Repeat toggle buttons --- */
+.wa-shuffle, .wa-repeat {
+  position: absolute;
+  top: 89px;
+  height: 15px;
+  font-size: 6px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #444;
+  background: #24243A;
+  border: 1px solid #3A3A50;
+  line-height: 15px;
+  text-align: center;
+}
+
+.wa-shuffle { left: 164px; width: 47px; }
+.wa-repeat  { left: 211px; width: 28px; }
+
+.wa-shuffle:hover, .wa-repeat:hover { color: #888; }
+
+.wa-shuffle.active, .wa-repeat.active {
   color: #00DD00;
-  text-shadow: 0 0 3px #00AA00;
+  text-shadow: 0 0 4px rgba(0,170,0,0.5);
   border-color: #00AA00;
 }
 
-/* --- YouTube player container (visible per ToS) --- */
-#winamp-yt-container {
-  background: #000;
+
+/* ========================================================
+   EQUALIZER WINDOW — 275 x 116px
+   ======================================================== */
+.wa-eq-window {
+  width: 275px;
+  border: 1px solid #0D0D18;
+  box-shadow:
+    inset 1px 1px 0 #50506A,
+    inset -1px -1px 0 #18182A;
 }
 
-/* --- Playlist panel (separate "window" docked below) --- */
-.winamp-playlist {
-  background: #1E1E2E;
-  border-top: 1px solid #3A3A4A;
-}
-
-.winamp-pl-header {
-  background: linear-gradient(180deg, #3A3A4A 0%, #1E1E2E 100%);
-  color: #FFF;
+.wa-eq-titlebar {
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
   font-size: 8px;
   font-weight: bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-align: center;
-  padding: 2px 0;
-  border-bottom: 1px solid #0A0A14;
+  letter-spacing: 2px;
+  color: #FFF;
   text-shadow: 1px 1px 0 #000;
+  background: linear-gradient(180deg,
+    #50506E 0%, #3C3C58 30%, #2C2C48 60%, #242440 100%);
+  border-bottom: 1px solid #0D0D18;
 }
 
-.winamp-pl-list {
-  max-height: 160px;
+.wa-eq-body {
+  position: relative;
+  height: 100px;
+  background: linear-gradient(180deg,
+    #2A2A44 0%, #262642 20%, #222240 80%, #1E1E3C 100%);
+  padding: 0;
+}
+
+/* ON / AUTO buttons */
+.wa-eq-on, .wa-eq-auto {
+  position: absolute;
+  top: 4px;
+  height: 12px;
+  font-size: 6px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 12px;
+  text-align: center;
+  color: #555;
+  background: #24243A;
+  border: 1px solid #3A3A50;
+}
+
+.wa-eq-on   { left: 14px;  width: 26px; }
+.wa-eq-auto { left: 42px;  width: 32px; }
+
+.wa-eq-on.active, .wa-eq-auto.active {
+  color: #00DD00;
+  text-shadow: 0 0 3px rgba(0,170,0,0.5);
+  border-color: #00AA00;
+}
+
+/* Presets button */
+.wa-eq-presets {
+  position: absolute;
+  top: 4px; right: 14px;
+  width: 44px;
+  height: 12px;
+  font-size: 6px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 12px;
+  text-align: center;
+  color: #555;
+  background: #24243A;
+  border: 1px solid #3A3A50;
+}
+
+.wa-eq-presets:hover { color: #888; }
+
+/* EQ graph / frequency response curve */
+.wa-eq-graph {
+  position: absolute;
+  top: 3px; left: 86px;
+  width: 113px;
+  height: 19px;
+  background: #000;
+  border: 1px solid #1A1A30;
+  overflow: hidden;
+}
+
+/* Fake EQ curve via CSS gradient */
+.wa-eq-graph::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse 20% 60% at 15% 50%, #00AA00 0%, transparent 100%),
+    radial-gradient(ellipse 15% 50% at 35% 55%, #00AA00 0%, transparent 100%),
+    radial-gradient(ellipse 15% 40% at 50% 60%, #009900 0%, transparent 100%),
+    radial-gradient(ellipse 15% 50% at 70% 45%, #00AA00 0%, transparent 100%),
+    radial-gradient(ellipse 20% 60% at 90% 50%, #009900 0%, transparent 100%);
+  opacity: 0.7;
+}
+
+/* dB labels */
+.wa-eq-db {
+  position: absolute;
+  left: 46px;
+  font-size: 5px;
+  color: #006600;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  width: 16px;
+  text-align: right;
+}
+
+.wa-eq-db-plus  { top: 24px; }
+.wa-eq-db-zero  { top: 50px; }
+.wa-eq-db-minus { top: 78px; }
+
+/* Preamp slider */
+.wa-eq-preamp {
+  position: absolute;
+  top: 22px; left: 21px;
+  width: 14px;
+  height: 74px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wa-eq-preamp .wa-eq-band-label {
+  font-size: 5px;
+  color: #006600;
+  margin-top: 2px;
+  letter-spacing: 0;
+}
+
+/* EQ frequency bands container */
+.wa-eq-bands {
+  position: absolute;
+  top: 22px; left: 78px;
+  display: flex;
+  gap: 4px;
+  height: 74px;
+}
+
+.wa-eq-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 14px;
+}
+
+.wa-eq-band-label {
+  font-size: 5px;
+  color: #006600;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  margin-top: 2px;
+  text-align: center;
+  letter-spacing: 0;
+}
+
+/* Vertical EQ sliders */
+.wa-eq-slider {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 11px;
+  height: 56px;
+  cursor: pointer;
+  background: linear-gradient(0deg,
+    #00BB00 0%, #44CC00 30%, #88DD00 50%, #CCCC00 70%, #DD8800 85%, #DD4400 100%);
+  border: 1px solid #0A0A14;
+}
+
+.wa-eq-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 11px; height: 11px;
+  background: linear-gradient(90deg, #6A6A7E 0%, #5A5A6E 50%, #4A4A5E 100%);
+  border: 1px outset #7A7A8E;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+  cursor: pointer;
+}
+
+.wa-eq-slider::-moz-range-thumb {
+  width: 11px; height: 11px;
+  background: linear-gradient(90deg, #6A6A7E 0%, #5A5A6E 50%, #4A4A5E 100%);
+  border: 1px outset #7A7A8E;
+  cursor: pointer;
+}
+
+/* ========================================================
+   YOUTUBE PLAYER — visible per ToS
+   ======================================================== */
+#winamp-yt-container {
+  width: 200px;
+  height: 150px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid #0D0D18;
+}
+
+
+/* ========================================================
+   PLAYLIST WINDOW
+   ======================================================== */
+.wa-pl-window {
+  width: 275px;
+  border: 1px solid #0D0D18;
+  box-shadow:
+    inset 1px 1px 0 #50506A,
+    inset -1px -1px 0 #18182A;
+  display: flex;
+  flex-direction: column;
+}
+
+.wa-pl-titlebar {
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #FFF;
+  text-shadow: 1px 1px 0 #000;
+  background: linear-gradient(180deg,
+    #50506E 0%, #3C3C58 30%, #2C2C48 60%, #242440 100%);
+  border-bottom: 1px solid #0D0D18;
+  flex-shrink: 0;
+}
+
+/* Track list */
+.wa-pl-tracks {
+  background: #000;
+  max-height: 130px;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #3A3A4A #1E1E2E;
+  scrollbar-color: #3A3A50 #0D0D18;
 }
 
-.winamp-pl-list::-webkit-scrollbar { width: 10px; }
-.winamp-pl-list::-webkit-scrollbar-track { background: #1E1E2E; }
-.winamp-pl-list::-webkit-scrollbar-thumb {
-  background: #3A3A4A;
-  border: 1px solid #5A5A6A;
+.wa-pl-tracks::-webkit-scrollbar { width: 8px; }
+.wa-pl-tracks::-webkit-scrollbar-track { background: #0D0D18; }
+.wa-pl-tracks::-webkit-scrollbar-thumb {
+  background: #3A3A50;
+  border: 1px solid #50506A;
 }
 
-.winamp-pl-item {
-  padding: 1px 6px;
+/* Track items */
+.wa-pl-item {
+  display: flex;
+  height: 13px;
+  line-height: 13px;
   font-size: 9px;
   font-family: Arial, sans-serif;
   color: #00FF00;
   cursor: default;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 0 4px;
+  letter-spacing: 0.5px;
 }
 
-.winamp-pl-item:hover {
+.wa-pl-item:hover {
   background: #00007F;
   color: #FFF;
 }
 
-.winamp-pl-item.active {
+.wa-pl-item.active {
   background: #0000FF;
   color: #FFFFFF;
 }
 
-/* --- Playlist bottom info bar --- */
-.winamp-pl-info {
+.wa-pl-num {
+  width: 20px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-right: 3px;
+}
+
+.wa-pl-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wa-pl-dur {
+  flex-shrink: 0;
+  text-align: right;
+  padding-left: 6px;
+  width: 30px;
+}
+
+/* Playlist bottom bar */
+.wa-pl-bottom {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: 1px 6px;
+  height: 20px;
+  background: linear-gradient(180deg, #2A2A44 0%, #222240 100%);
+  border-top: 1px solid #3A3A50;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.wa-pl-buttons {
+  display: flex;
+  gap: 2px;
+}
+
+.wa-pl-action {
+  height: 15px;
+  padding: 0 6px;
+  font-size: 6px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #555;
+  background: #24243A;
+  border: 1px solid #3A3A50;
+  line-height: 15px;
+}
+
+.wa-pl-action:hover {
+  color: #FFF;
+  background: #3A3A50;
+}
+
+.wa-pl-status {
   font-size: 7px;
   color: #00CC00;
-  font-family: Arial, sans-serif;
-  background: #1E1E2E;
-  border-top: 1px solid #0A0A14;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  letter-spacing: 0.5px;
 }

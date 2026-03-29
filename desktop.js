@@ -247,6 +247,14 @@
       if (matrixCanvas && matrixCanvas._rafId) cancelAnimationFrame(matrixCanvas._rafId);
     }
 
+    // Stop Winamp visualizer + YouTube player on close
+    if (id === 'window-winamp') {
+      var visCanvas = document.getElementById('winamp-vis');
+      if (visCanvas && visCanvas._rafId) cancelAnimationFrame(visCanvas._rafId);
+      if (typeof winampStop === 'function') winampStop();
+      if (typeof stopSeekUpdate === 'function') stopSeekUpdate();
+    }
+
     // Stop analogue clock if closing the clock window
     if (id === 'window-clock') stopAnalogueClock();
 
@@ -2368,118 +2376,160 @@
   }
 
   function launchWinamp() {
+    var eqBands = ['60', '170', '310', '600', '1K', '3K', '6K', '12K', '14K', '16K'];
+    var eqSlidersHTML = '';
+    for (var b = 0; b < eqBands.length; b++) {
+      eqSlidersHTML += '<div class="wa-eq-band"><input type="range" min="0" max="100" value="50" ' +
+        'orient="vertical" class="wa-eq-slider"><div class="wa-eq-band-label">' + eqBands[b] + '</div></div>';
+    }
+
     var html =
       '<div id="winamp-app">' +
-        // Title bar with menu + minimize/shade/close
-        '<div class="winamp-titlebar">' +
-          '<span class="wa-tb-menu" title="Winamp Menu">&#9776;</span>' +
-          '<span class="wa-tb-title">WINAMP</span>' +
-          '<span class="wa-tb-buttons">' +
-            '<span class="wa-tb-btn" title="Minimize">&#9472;</span>' +
-            '<span class="wa-tb-btn" title="Window Shade">&#9644;</span>' +
-            '<span class="wa-tb-btn" title="Close">&#215;</span>' +
-          '</span>' +
-        '</div>' +
-        // Display/LCD area — authentic layout
-        '<div class="winamp-display">' +
-          // Clutterbar on far left
-          '<div class="wa-clutterbar">' +
-            '<div class="wa-cb-btn">O</div>' +
-            '<div class="wa-cb-btn">A</div>' +
-            '<div class="wa-cb-btn">I</div>' +
-            '<div class="wa-cb-btn">D</div>' +
-            '<div class="wa-cb-btn">V</div>' +
-          '</div>' +
-          '<div class="wa-display-main">' +
-            // Top: track title marquee
-            '<div class="winamp-title-scroll" id="winamp-title">1. Artist 1 - Track A</div>' +
-            // Middle: play state + time + mini-vis
-            '<div class="wa-display-mid">' +
-              '<div class="wa-play-state" id="winamp-play-state">&#9654;</div>' +
-              '<div class="winamp-time" id="winamp-time">00:00</div>' +
-              '<div class="wa-mini-vis" id="winamp-mini-vis"></div>' +
+
+        // ===== MAIN PLAYER WINDOW (275 x 116) =====
+        '<div class="wa-main">' +
+          '<div class="wa-titlebar">WINAMP</div>' +
+
+          // Display / LCD area — black panel
+          '<div class="wa-display">' +
+            // Clutterbar — left edge
+            '<div class="wa-clutterbar">' +
+              '<div>O</div><div>A</div><div>I</div><div>D</div><div>V</div>' +
             '</div>' +
-            // Bottom: kbps, kHz, stereo/mono
-            '<div class="wa-display-info">' +
-              '<span class="wa-kbps">128</span>' +
-              '<span class="wa-info-label">kbps</span>' +
-              '<span class="wa-khz">44</span>' +
-              '<span class="wa-info-label">kHz</span>' +
-              '<span class="wa-stereo">' +
-                '<span class="lit">stereo</span>' +
-                '<span>mono</span>' +
-              '</span>' +
-            '</div>' +
+            // Play state indicator
+            '<div class="wa-playpaus" id="winamp-play-state">&#9654;</div>' +
+            // Time digits
+            '<div class="wa-time" id="winamp-time">0:00</div>' +
+            // Track title marquee
+            '<div class="wa-marquee"><div class="wa-marquee-text" id="winamp-title">' +
+              '1. Artist 1 - Track A  ***  </div></div>' +
+            // Visualizer area
+            '<canvas class="wa-vis" id="winamp-vis" width="76" height="16"></canvas>' +
+            // Bitrate / sample rate
+            '<div class="wa-kbps">128</div>' +
+            '<div class="wa-kbps-label">kbps</div>' +
+            '<div class="wa-khz">44</div>' +
+            '<div class="wa-khz-label">kHz</div>' +
+            // Mono/Stereo
+            '<div class="wa-mono">mono</div>' +
+            '<div class="wa-stereo lit">stereo</div>' +
           '</div>' +
-        '</div>' +
-        // Slider row: volume + balance + EQ/PL buttons
-        '<div class="wa-slider-row">' +
+
+          // Volume slider
           '<input type="range" class="wa-volume" min="0" max="100" value="75" title="Volume" ' +
             'oninput="if(winampPlayer)winampPlayer.setVolume(this.value)">' +
+          // Balance slider
           '<input type="range" class="wa-balance" min="-100" max="100" value="0" title="Balance">' +
+
+          // EQ / PL toggle buttons
           '<button class="wa-eq-btn" title="Equalizer">EQ</button>' +
           '<button class="wa-pl-btn active" title="Playlist">PL</button>' +
+
+          // Position / seek bar
+          '<input type="range" class="wa-seek" id="winamp-seek" min="0" max="1000" value="0" title="Seek">' +
+
+          // Transport buttons
+          '<button class="wa-tbtn wa-prev" onclick="winampPrev()" title="Previous"></button>' +
+          '<button class="wa-tbtn wa-play" onclick="winampPlay()" title="Play"></button>' +
+          '<button class="wa-tbtn wa-pause" onclick="winampPause()" title="Pause"></button>' +
+          '<button class="wa-tbtn wa-stop" onclick="winampStop()" title="Stop"></button>' +
+          '<button class="wa-tbtn wa-next" onclick="winampNext()" title="Next"></button>' +
+          '<button class="wa-tbtn wa-eject" title="Open"></button>' +
+
+          // Shuffle / Repeat
+          '<button class="wa-shuffle" id="winamp-shuffle">SHUFFLE</button>' +
+          '<button class="wa-repeat" id="winamp-repeat">REPEAT</button>' +
         '</div>' +
-        // Seekbar/position bar
-        '<div class="winamp-seekbar"><div class="winamp-seek-fill" id="winamp-seek-fill"></div></div>' +
-        // Transport row + shuffle/repeat
-        '<div class="winamp-transport">' +
-          '<button class="winamp-btn wa-btn-prev" onclick="winampPrev()" title="Previous">&#9198;</button>' +
-          '<button class="winamp-btn wa-btn-play" onclick="winampPlay()" title="Play">&#9654;</button>' +
-          '<button class="winamp-btn wa-btn-pause" onclick="winampPause()" title="Pause">&#9646;&#9646;</button>' +
-          '<button class="winamp-btn wa-btn-stop" onclick="winampStop()" title="Stop">&#9632;</button>' +
-          '<button class="winamp-btn wa-btn-next" onclick="winampNext()" title="Next">&#9197;</button>' +
-          '<button class="winamp-btn wa-btn-eject" title="Open">&#9167;</button>' +
-          '<span class="wa-transport-gap"></span>' +
-          '<button class="wa-toggle-btn" id="winamp-shuffle" title="Shuffle">shuf</button>' +
-          '<button class="wa-toggle-btn" id="winamp-repeat" title="Repeat">rep</button>' +
-        '</div>' +
-        // YouTube player (visible per ToS)
-        '<div id="winamp-yt-container" style="width:200px;height:150px;margin:0 auto;border-top:1px solid #0A0A0A;overflow:hidden;background:#000;">' +
-          '<div id="winamp-yt-player"></div>' +
-        '</div>' +
-        // Playlist panel
-        '<div class="winamp-playlist">' +
-          '<div class="winamp-pl-header">&#9654; Playlist Editor</div>' +
-          '<div class="winamp-pl-list" id="winamp-playlist-list">' +
-            buildPlaylistHTML() +
+
+        // ===== EQUALIZER WINDOW (275 x 116) =====
+        '<div class="wa-eq-window" id="winamp-eq-window">' +
+          '<div class="wa-eq-titlebar">WINAMP EQUALIZER</div>' +
+          '<div class="wa-eq-body">' +
+            '<button class="wa-eq-on active">ON</button>' +
+            '<button class="wa-eq-auto">AUTO</button>' +
+            '<div class="wa-eq-graph" id="winamp-eq-graph"></div>' +
+            '<button class="wa-eq-presets">PRESETS</button>' +
+            // dB labels
+            '<div class="wa-eq-db wa-eq-db-plus">+12</div>' +
+            '<div class="wa-eq-db wa-eq-db-zero">0</div>' +
+            '<div class="wa-eq-db wa-eq-db-minus">-12</div>' +
+            // Preamp
+            '<div class="wa-eq-preamp">' +
+              '<input type="range" min="0" max="100" value="50" orient="vertical" class="wa-eq-slider">' +
+              '<div class="wa-eq-band-label">PREAMP</div>' +
+            '</div>' +
+            // 10 frequency bands
+            '<div class="wa-eq-bands">' + eqSlidersHTML + '</div>' +
           '</div>' +
         '</div>' +
+
+        // ===== YOUTUBE PLAYER (visible per ToS) =====
+        '<div id="winamp-yt-container">' +
+          '<div id="winamp-yt-player"></div>' +
+        '</div>' +
+
+        // ===== PLAYLIST WINDOW =====
+        '<div class="wa-pl-window" id="winamp-pl-window">' +
+          '<div class="wa-pl-titlebar">WINAMP PLAYLIST</div>' +
+          '<div class="wa-pl-tracks" id="winamp-playlist-list">' +
+            buildPlaylistHTML() +
+          '</div>' +
+          '<div class="wa-pl-bottom">' +
+            '<div class="wa-pl-buttons">' +
+              '<button class="wa-pl-action">ADD</button>' +
+              '<button class="wa-pl-action">REM</button>' +
+              '<button class="wa-pl-action">SEL</button>' +
+              '<button class="wa-pl-action">MISC</button>' +
+            '</div>' +
+            '<div class="wa-pl-status" id="winamp-pl-status">' +
+              WINAMP_PLAYLIST.length + ' items' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
       '</div>';
 
     createAppWindow('window-winamp', 'Winamp', html,
-      { width: '275px', noResize: true, bodyStyle: 'padding:0;margin:0;background:#2B2B2B;overflow:hidden;' });
+      { width: '275px', noResize: true, bodyStyle: 'padding:0;margin:0;background:#2B2B2B;overflow-y:auto;overflow-x:hidden;' });
 
-    // Init YouTube player after DOM is ready
+    // Init after DOM ready
     setTimeout(function() {
       if (typeof YT !== 'undefined' && YT.Player) {
         initWinampPlayer('winamp-yt-player');
       }
-      // Wire playlist double-click
+      // Playlist double-click
       var list = document.getElementById('winamp-playlist-list');
       if (list) {
         list.addEventListener('dblclick', function(e) {
-          var item = e.target.closest('.winamp-pl-item');
+          var item = e.target.closest('.wa-pl-item');
           if (item) winampLoadTrack(parseInt(item.getAttribute('data-index')));
         });
       }
-      // Wire shuffle/repeat toggles
+      // Shuffle/Repeat toggles
       var shuffleBtn = document.getElementById('winamp-shuffle');
       if (shuffleBtn) shuffleBtn.addEventListener('click', function() { this.classList.toggle('active'); });
       var repeatBtn = document.getElementById('winamp-repeat');
       if (repeatBtn) repeatBtn.addEventListener('click', function() { this.classList.toggle('active'); });
-      // Wire EQ/PL toggle buttons
+      // EQ/PL toggle buttons
       var app = document.getElementById('winamp-app');
       if (app) {
         app.addEventListener('click', function(e) {
-          if (e.target.classList.contains('wa-eq-btn')) e.target.classList.toggle('active');
+          if (e.target.classList.contains('wa-eq-btn')) {
+            e.target.classList.toggle('active');
+            var eqWin = document.getElementById('winamp-eq-window');
+            if (eqWin) eqWin.style.display = e.target.classList.contains('active') ? '' : 'none';
+          }
           if (e.target.classList.contains('wa-pl-btn')) {
             e.target.classList.toggle('active');
-            var pl = app.querySelector('.winamp-playlist');
-            if (pl) pl.style.display = e.target.classList.contains('active') ? '' : 'none';
+            var plWin = document.getElementById('winamp-pl-window');
+            if (plWin) plWin.style.display = e.target.classList.contains('active') ? '' : 'none';
           }
+          if (e.target.classList.contains('wa-eq-on')) e.target.classList.toggle('active');
+          if (e.target.classList.contains('wa-eq-auto')) e.target.classList.toggle('active');
         });
       }
+      // Start mini visualizer
+      startWinampVis();
     }, 100);
   }
 

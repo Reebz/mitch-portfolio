@@ -118,8 +118,8 @@ function updateTimeDisplay(current, duration) {
 }
 
 function updateSeekbar(pct) {
-  var bar = document.getElementById('winamp-seek-fill');
-  if (bar) bar.style.width = Math.max(0, Math.min(100, pct * 100)) + '%';
+  var bar = document.getElementById('winamp-seek');
+  if (bar) bar.value = Math.max(0, Math.min(1000, Math.floor(pct * 1000)));
 }
 
 function updateWinampUI() {
@@ -136,7 +136,7 @@ function updateWinampUI() {
 }
 
 function highlightPlaylistTrack(index) {
-  var items = document.querySelectorAll('#winamp-playlist-list .winamp-pl-item');
+  var items = document.querySelectorAll('#winamp-playlist-list .wa-pl-item');
   items.forEach(function(item, i) {
     item.classList.toggle('active', i === index);
   });
@@ -149,8 +149,56 @@ function highlightPlaylistTrack(index) {
 function buildPlaylistHTML() {
   var html = '';
   WINAMP_PLAYLIST.forEach(function(track, i) {
-    html += '<div class="winamp-pl-item' + (i === 0 ? ' active' : '') + '" data-index="' + i + '">' +
-      (i + 1) + '. ' + track.title + '</div>';
+    var dur = track.end - track.start;
+    var m = Math.floor(dur / 60);
+    var s = dur % 60;
+    var timeStr = m + ':' + (s < 10 ? '0' : '') + s;
+    html += '<div class="wa-pl-item' + (i === 0 ? ' active' : '') + '" data-index="' + i + '">' +
+      '<span class="wa-pl-num">' + (i + 1) + '.</span>' +
+      '<span class="wa-pl-name">' + track.title + '</span>' +
+      '<span class="wa-pl-dur">' + timeStr + '</span>' +
+      '</div>';
   });
   return html;
+}
+
+// Mini spectrum visualizer for the display area
+function startWinampVis() {
+  var canvas = document.getElementById('winamp-vis');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var bars = 20;
+  var barW = Math.floor(W / bars);
+  var heights = [];
+  for (var i = 0; i < bars; i++) heights[i] = Math.random() * H * 0.3;
+
+  // Spectrum colors — fire gradient like real Winamp (bottom=green, top=red/orange)
+  var colors = [
+    '#18A800', '#29BE10', '#5BDE29', '#8DE229',
+    '#C6DA18', '#D6B210', '#D69000', '#D66E00',
+    '#D64E00', '#EF3110'
+  ];
+
+  function draw() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+    for (var i = 0; i < bars; i++) {
+      // Animate heights
+      var target = (Math.sin(Date.now() * 0.003 + i * 0.5) + 1) * 0.35 * H +
+                   (Math.sin(Date.now() * 0.007 + i * 1.2) + 1) * 0.15 * H;
+      heights[i] += (target - heights[i]) * 0.15;
+      var h = Math.max(1, Math.floor(heights[i]));
+      // Draw bar segments
+      var segments = Math.ceil(h / 2);
+      for (var s = 0; s < segments; s++) {
+        var y = H - 1 - s * 2;
+        var colorIdx = Math.min(colors.length - 1, Math.floor(s / segments * colors.length));
+        ctx.fillStyle = colors[colorIdx];
+        ctx.fillRect(i * barW + 1, y, barW - 2, 1);
+      }
+    }
+    canvas._rafId = requestAnimationFrame(draw);
+  }
+  draw();
 }
