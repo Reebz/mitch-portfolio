@@ -23,11 +23,11 @@ window.startMatrixRain = function(canvas) {
       var x = i * fontSize;
       var y = drops[i] * fontSize;
 
-      // Head character: bright white-green
-      ctx.fillStyle = '#CCFFCC';
+      // Head character: bright white
+      ctx.fillStyle = '#FFFFFF';
       ctx.fillText(ch, x, y);
 
-      // Reset to green for next frame's trail
+      // Reset to bright green for next frame's trail (matches terminal text #00FF00)
       ctx.fillStyle = '#00FF00';
 
       if (y > H && Math.random() > 0.975) {

@@ -1991,19 +1991,13 @@
   }
 
   function initWebamp(WebampClass) {
-    var container = document.getElementById('webamp-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'webamp-container';
-      container.style.cssText = 'position:fixed;top:0;left:0;z-index:9000;';
-      document.body.appendChild(container);
-    }
-
+    // Webamp always renders to document.body (not the container you pass).
+    // Position values are in CSS pixels, affected by body zoom:1.5.
     webampInstance = new WebampClass({
-      windowLayout: { main: { position: { top: 100, left: 300 } } },
+      windowLayout: { main: { position: { top: 40, left: 120 } } },
       zIndex: 9000
     });
-    webampInstance.renderWhenReady(container).then(function() {
+    webampInstance.renderWhenReady(document.body).then(function() {
       announce('Winamp opened');
     }).catch(function(err) {
       announce('Winamp failed to render');
@@ -2012,7 +2006,6 @@
     webampInstance.onClose(function() {
       webampInstance.dispose();
       webampInstance = null;
-      container.innerHTML = '';
     });
   }
 
@@ -2238,7 +2231,7 @@
     win.setAttribute('data-no-resize', 'true');
     win.setAttribute('role', 'dialog');
     win.setAttribute('tabindex', '-1');
-    win.style.width = '235px';
+    win.style.width = '320px';
 
     win.innerHTML =
       '<div class="title-bar">' +

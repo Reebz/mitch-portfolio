@@ -1,6 +1,8 @@
 # Portfolio 98
 
-My portfolio site, styled as a Windows 98 desktop - down to the BIOS boot sequence, the hardware specs, and the under-construction GIFs. Static HTML, CSS, and vanilla JavaScript. No frameworks, no build step, no npm. Hosted on GitHub Pages.
+My portfolio site styled as a Windows 98 desktop. Static HTML, CSS, and vanilla JavaScript. No frameworks, etc. Hosted on GitHub Pages. 
+
+What's this for? Fun and nostaliga. I wanted to bring back the feeling of the PC on which I built my first website (shoutout to geocities), including the the boot sequence and the hardware specs as best as I could remember. I'll keep adding things over time. 
 
 **Live:** [reebz.com](https://reebz.com)
 
@@ -13,7 +15,7 @@ My portfolio site, styled as a Windows 98 desktop - down to the BIOS boot sequen
 - Right-click context menus on the desktop, title bars, and taskbar
 - Desktop icon drag-and-drop with localStorage persistence
 - Minesweeper, Calculator, Paint (via jspaint.app), and a paginated Help book
-- Matrix rain easter egg (Start > Run > OK)
+- Various easter eggs!
 - Formspree-powered contact form styled as Outlook Express
 - DOS terminal view on mobile
 - 404 page styled as a Windows error dialog
@@ -26,7 +28,7 @@ My portfolio site, styled as a Windows 98 desktop - down to the BIOS boot sequen
 
 ## Acknowledgements
 
-This project uses and is inspired by the work of others. Credit where it's due.
+This project uses and is inspired by the work of others. Credit where it's due, thank you.
 
 - **[98.css](https://github.com/jdan/98.css)** by Jordan Scales - Windows 98 CSS component library (MIT)
 - **[Win98 Icons](https://win98icons.alexmeub.com/)** by Alex Meub - icon pack
