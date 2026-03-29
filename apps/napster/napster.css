@@ -1,0 +1,192 @@
+/* === Napster v2.0 BETA 7 === */
+
+/* Tab bar */
+.napster-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  margin: 0 4px -1px 4px;
+  list-style: none;
+}
+
+.napster-tab {
+  padding: 4px 14px;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  cursor: default;
+  background: var(--win98-silver);
+  border: 1px solid var(--win98-grey);
+  border-bottom: none;
+  margin-right: 1px;
+  position: relative;
+  top: 1px;
+  border-radius: 2px 2px 0 0;
+  user-select: none;
+}
+
+.napster-tab[aria-selected="true"] {
+  background: var(--win98-white);
+  border-bottom: 1px solid var(--win98-white);
+  z-index: 1;
+  font-weight: bold;
+  top: 0;
+  padding-top: 5px;
+}
+
+/* Panel area */
+.napster-panel-area {
+  background: var(--win98-white);
+  border: 1px solid var(--win98-grey);
+  min-height: 260px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.napster-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Search bar */
+.napster-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: var(--win98-silver);
+  border-bottom: 1px solid var(--win98-grey);
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+}
+
+.napster-search-bar input[type="text"] {
+  flex: 1;
+  font-size: 11px;
+  padding: 2px 4px;
+}
+
+.napster-search-bar button {
+  min-width: 60px;
+  font-size: 11px;
+}
+
+/* Results table */
+.napster-results-wrap {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid;
+  border-color: grey white white grey;
+  margin: 4px;
+}
+
+.napster-results {
+  width: 100%;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  border-collapse: collapse;
+}
+
+.napster-results thead th {
+  text-align: left;
+  padding: 2px 6px;
+  background: silver;
+  box-shadow: inset -1px -1px #0a0a0a,
+              inset 1px 1px #fff,
+              inset -2px -2px grey,
+              inset 2px 2px #dfdfdf;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  cursor: default;
+  user-select: none;
+}
+
+.napster-results tbody {
+  background: #fff;
+}
+
+.napster-results td {
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.napster-row {
+  cursor: default;
+}
+
+.napster-row:hover {
+  background: var(--win98-navy);
+  color: var(--win98-white);
+}
+
+.napster-row[data-selected="true"] {
+  background: var(--win98-navy);
+  color: var(--win98-white);
+}
+
+/* Transfer panel */
+.napster-transfer-list {
+  padding: 8px;
+  flex: 1;
+  overflow: auto;
+}
+
+.napster-transfer {
+  margin-bottom: 10px;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+}
+
+.napster-transfer-name {
+  margin-bottom: 2px;
+  font-weight: bold;
+}
+
+.napster-transfer-bar {
+  height: 16px;
+  background: var(--win98-white);
+  border: 1px solid;
+  border-color: grey white white grey;
+  box-shadow: inset 1px 1px #0a0a0a;
+  overflow: hidden;
+}
+
+.napster-transfer-fill {
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    #000080 0px,
+    #000080 8px,
+    transparent 8px,
+    transparent 10px
+  );
+}
+
+.napster-transfer-info {
+  margin-top: 2px;
+  color: grey;
+  font-size: 10px;
+}
+
+/* Library panel */
+.napster-library-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: grey;
+  padding: 40px;
+}
+
+/* Status bar */
+.napster-status {
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+}

@@ -1203,6 +1203,12 @@
         launchRun();
       } else if (app === 'notepad') {
         launchNotepad();
+      } else if (app === 'napster') {
+        launchNapster();
+      } else if (app === 'winamp') {
+        launchWinamp();
+      } else if (app === 'icq') {
+        launchICQ();
       }
 
       elStartMenu.classList.remove('open');
@@ -2222,6 +2228,92 @@
     });
   }
 
+  function launchNapster() {
+    var tabNames = ['Search', 'Library', 'Transfer'];
+    var tabsHtml = '<menu role="tablist" class="napster-tabs">';
+    tabNames.forEach(function(name, idx) {
+      tabsHtml += '<li role="tab" aria-selected="' + (idx === 0 ? 'true' : 'false') +
+        '" aria-controls="napster-panel-' + name.toLowerCase() + '">' + name + '</li>';
+    });
+    tabsHtml += '</menu>';
+
+    var searchPanel =
+      '<div role="tabpanel" id="napster-panel-search" class="napster-panel" style="display:flex;">' +
+        '<div class="napster-search-bar">' +
+          '<label for="napster-search-input">Search:</label>' +
+          '<input type="text" id="napster-search-input" value="Artist" placeholder="Enter artist or song name">' +
+          '<button id="napster-find-btn">Find It!</button>' +
+        '</div>' +
+        '<div class="napster-results-wrap">' +
+          '<table class="napster-results">' +
+            '<thead><tr>' +
+              '<th>Song</th><th>Artist</th><th>Size</th><th>Bitrate</th><th>User</th><th>Connection</th>' +
+            '</tr></thead>' +
+            '<tbody id="napster-results-body">' +
+              buildNapsterSearchResults() +
+            '</tbody>' +
+          '</table>' +
+        '</div>' +
+      '</div>';
+
+    var libraryPanel =
+      '<div role="tabpanel" id="napster-panel-library" class="napster-panel" style="display:none;">' +
+        '<div class="napster-library-empty">Your shared folder is empty</div>' +
+      '</div>';
+
+    var transferPanel =
+      '<div role="tabpanel" id="napster-panel-transfer" class="napster-panel" style="display:none;">' +
+        '<div class="napster-transfer-list">' +
+          buildNapsterTransfers() +
+        '</div>' +
+      '</div>';
+
+    var bodyHtml =
+      tabsHtml +
+      '<div class="napster-panel-area">' +
+        searchPanel + libraryPanel + transferPanel +
+      '</div>' +
+      '<div class="status-bar napster-status"><p class="status-bar-field">8,342 users sharing 1,247,382 files</p></div>';
+
+    createAppWindow('window-napster', 'Napster v2.0 BETA 7', bodyHtml,
+      { width: '520px', height: '420px', bodyStyle: 'padding:4px;background:var(--win98-silver);display:flex;flex-direction:column;overflow:hidden;' });
+
+    // Wire tab switching
+    var napWin = document.getElementById('window-napster');
+    if (!napWin) return;
+    var tabs = napWin.querySelectorAll('.napster-tabs [role="tab"]');
+    var panels = napWin.querySelectorAll('[role="tabpanel"]');
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) { t.setAttribute('aria-selected', 'false'); });
+        panels.forEach(function(p) { p.style.display = 'none'; });
+        tab.setAttribute('aria-selected', 'true');
+        var panelId = tab.getAttribute('aria-controls');
+        var panel = document.getElementById(panelId);
+        if (panel) panel.style.display = 'flex';
+      });
+    });
+
+    // Wire row double-click to open URL
+    var tbody = document.getElementById('napster-results-body');
+    if (tbody) {
+      tbody.addEventListener('dblclick', function(e) {
+        var row = e.target.closest('.napster-row');
+        if (row && row.dataset.url) {
+          window.open(row.dataset.url, '_blank', 'noopener');
+        }
+      });
+      // Single click selects
+      tbody.addEventListener('click', function(e) {
+        var row = e.target.closest('.napster-row');
+        if (!row) return;
+        var prev = tbody.querySelector('[data-selected="true"]');
+        if (prev) prev.removeAttribute('data-selected');
+        row.setAttribute('data-selected', 'true');
+      });
+    }
+  }
+
   function launchMatrixTerminal() {
     createAppWindow('window-matrix', 'C:\\WINDOWS\\system32\\cmd.exe',
       '<div id="matrix-terminal" style="background:#000;color:#00FF00;font-family:\'Perfect DOS VGA 437\',\'Lucida Console\',monospace;font-size:14px;padding:8px;height:100%;position:relative;overflow:hidden;">' +
@@ -2273,6 +2365,118 @@
         });
       }, 3000);
     });
+  }
+
+  function launchWinamp() {
+    var html =
+      '<div id="winamp-app">' +
+        '<div class="winamp-titlebar">WINAMP</div>' +
+        '<div class="winamp-display">' +
+          '<div class="winamp-title-scroll" id="winamp-title">1. Artist 1 - Track A</div>' +
+          '<div class="winamp-time" id="winamp-time">00:00</div>' +
+        '</div>' +
+        '<div class="winamp-info-row">' +
+          '<span>128 kbps</span><span>44 kHz</span>' +
+        '</div>' +
+        '<div class="winamp-stereo">' +
+          '<span class="lit">stereo</span><span>mono</span>' +
+        '</div>' +
+        '<div class="winamp-seekbar"><div class="winamp-seek-fill" id="winamp-seek-fill"></div></div>' +
+        '<div class="winamp-transport">' +
+          '<button class="winamp-btn" onclick="winampPrev()" title="Previous">&#9664;&#9664;</button>' +
+          '<button class="winamp-btn" onclick="winampPlay()" title="Play">&#9654;</button>' +
+          '<button class="winamp-btn" onclick="winampPause()" title="Pause">&#10074;&#10074;</button>' +
+          '<button class="winamp-btn" onclick="winampStop()" title="Stop">&#9632;</button>' +
+          '<button class="winamp-btn" onclick="winampNext()" title="Next">&#9654;&#9654;</button>' +
+        '</div>' +
+        '<div class="winamp-volume">' +
+          '<span>Vol:</span>' +
+          '<input type="range" min="0" max="100" value="75" oninput="if(winampPlayer)winampPlayer.setVolume(this.value)">' +
+        '</div>' +
+        '<div id="winamp-yt-container" style="width:200px;height:150px;margin:4px auto;border:1px solid #000;overflow:hidden;">' +
+          '<div id="winamp-yt-player"></div>' +
+        '</div>' +
+        '<div class="winamp-playlist">' +
+          '<div class="winamp-pl-header">Playlist</div>' +
+          '<div class="winamp-pl-list" id="winamp-playlist-list">' +
+            buildPlaylistHTML() +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    createAppWindow('window-winamp', 'Winamp', html,
+      { width: '280px', noResize: true, bodyStyle: 'padding:0;margin:0;background:#2B2B2B;overflow:auto;' });
+
+    // Init YouTube player after DOM is ready
+    setTimeout(function() {
+      if (typeof YT !== 'undefined' && YT.Player) {
+        initWinampPlayer('winamp-yt-player');
+      }
+      // Wire playlist clicks
+      var list = document.getElementById('winamp-playlist-list');
+      if (list) {
+        list.addEventListener('dblclick', function(e) {
+          var item = e.target.closest('.winamp-pl-item');
+          if (item) winampLoadTrack(parseInt(item.getAttribute('data-index')));
+        });
+      }
+    }, 100);
+  }
+
+  function launchICQ() {
+    var icqFlowerSvg =
+      '<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">' +
+        '<g transform="translate(20,20)">' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#49B749" stroke="#000" stroke-width="1" />' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#49B749" stroke="#000" stroke-width="1" transform="rotate(45)" />' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#49B749" stroke="#000" stroke-width="1" transform="rotate(90)" />' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#CC0000" stroke="#000" stroke-width="1" transform="rotate(135)" />' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#49B749" stroke="#000" stroke-width="1" transform="rotate(180)" />' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#49B749" stroke="#000" stroke-width="1" transform="rotate(225)" />' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#49B749" stroke="#000" stroke-width="1" transform="rotate(270)" />' +
+          '<ellipse cx="0" cy="-10" rx="5" ry="10" fill="#49B749" stroke="#000" stroke-width="1" transform="rotate(315)" />' +
+          '<circle cx="0" cy="0" r="5" fill="#FFD700" stroke="#000" stroke-width="1" />' +
+        '</g>' +
+      '</svg>';
+
+    var icqHtml =
+      '<div class="icq-panel">' +
+        '<div class="icq-header">' +
+          '<div class="icq-flower-logo">' + icqFlowerSvg + '</div>' +
+          '<div class="icq-user-name">Mitch</div>' +
+          '<div class="icq-uin">UIN: 12345678</div>' +
+          '<div class="icq-status-dropdown"><span class="icq-status-dot"></span> Online</div>' +
+        '</div>' +
+        '<div class="icq-contacts">' +
+          '<div class="icq-section-header">Online (3)</div>' +
+          '<div class="icq-contact"><span class="icq-contact-icon online"></span><span class="icq-contact-name">CoolDude99</span></div>' +
+          '<div class="icq-contact"><span class="icq-contact-icon online"></span><span class="icq-contact-name">~*SuRfErGrL*~</span></div>' +
+          '<div class="icq-contact"><span class="icq-contact-icon online"></span><span class="icq-contact-name">hackerman_2600</span></div>' +
+          '<div class="icq-section-header">Offline (2)</div>' +
+          '<div class="icq-contact"><span class="icq-contact-icon offline"></span><span class="icq-contact-name">FutureBoy2000</span></div>' +
+          '<div class="icq-contact"><span class="icq-contact-icon offline"></span><span class="icq-contact-name">xX_WebMaster_Xx</span></div>' +
+        '</div>' +
+        '<div class="icq-toolbar">' +
+          '<button title="Add Contact">+</button>' +
+          '<button title="Menu">\u2261</button>' +
+          '<button title="Settings">\u2699</button>' +
+          '<button title="Help">?</button>' +
+        '</div>' +
+      '</div>';
+
+    createAppWindow('window-icq', 'ICQ', icqHtml, {
+      width: '170px',
+      height: '400px',
+      noResize: true,
+      bodyStyle: 'padding:0;overflow:hidden;display:flex;flex-direction:column;'
+    });
+
+    // Position toward the right side of the desktop
+    var win = document.getElementById('window-icq');
+    if (win) {
+      win.style.left = Math.max(0, window.innerWidth - 220) + 'px';
+      win.style.top = '40px';
+    }
   }
 
   // --- Init ---

@@ -1,0 +1,160 @@
+/* === ICQ Visual Shell === */
+
+/* Contact list panel */
+.icq-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #c0c0c0;
+  font-family: "Pixelated MS Sans Serif", "Microsoft Sans Serif", "MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  user-select: none;
+}
+
+/* User info header */
+.icq-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid #808080;
+  background: #c0c0c0;
+}
+
+.icq-header .icq-flower-logo {
+  margin-bottom: 4px;
+}
+
+.icq-header .icq-user-name {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 1px;
+}
+
+.icq-header .icq-uin {
+  color: #444;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.icq-status-dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #808080;
+  padding: 1px 4px;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: url('img/cursors/arrow.png') 0 0, default;
+  min-width: 80px;
+}
+
+.icq-status-dropdown .icq-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #49B749;
+}
+
+.icq-status-dropdown::after {
+  content: "\25BC";
+  font-size: 8px;
+  margin-left: auto;
+  color: #000;
+}
+
+/* Contact list area */
+.icq-contacts {
+  flex: 1;
+  background: #fff;
+  overflow-y: auto;
+  border-top: 1px solid #dfdfdf;
+  border-bottom: 1px solid #808080;
+}
+
+/* Section headers */
+.icq-section-header {
+  background: #e8e8e8;
+  padding: 2px 6px;
+  font-weight: bold;
+  font-size: 11px;
+  color: #000;
+  border-bottom: 1px solid #d0d0d0;
+  cursor: url('img/cursors/arrow.png') 0 0, default;
+}
+
+.icq-section-header::before {
+  content: "\25BC ";
+  font-size: 8px;
+}
+
+/* Contact rows */
+.icq-contact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 14px;
+  height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: url('img/cursors/arrow.png') 0 0, default;
+}
+
+.icq-contact:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.icq-contact .icq-contact-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.icq-contact .icq-contact-icon.online {
+  background: #49B749;
+  border: 1px solid #2d8b2d;
+}
+
+.icq-contact .icq-contact-icon.offline {
+  background: #cc0000;
+  border: 1px solid #990000;
+}
+
+.icq-contact .icq-contact-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bottom toolbar */
+.icq-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 3px 4px;
+  background: #c0c0c0;
+  border-top: 1px solid #dfdfdf;
+}
+
+.icq-toolbar button {
+  width: 22px;
+  height: 20px;
+  font-size: 11px;
+  padding: 0;
+  background: #c0c0c0;
+  border: 1px outset #dfdfdf;
+  cursor: url('img/cursors/arrow.png') 0 0, default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icq-toolbar button:active {
+  border-style: inset;
+}
