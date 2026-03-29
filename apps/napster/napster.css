@@ -9,7 +9,7 @@
   list-style: none;
 }
 
-.napster-tab {
+.napster-tabs [role="tab"] {
   padding: 4px 14px;
   font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
   font-size: 11px;
@@ -24,7 +24,7 @@
   user-select: none;
 }
 
-.napster-tab[aria-selected="true"] {
+.napster-tabs [role="tab"][aria-selected="true"] {
   background: var(--win98-white);
   border-bottom: 1px solid var(--win98-white);
   z-index: 1;
