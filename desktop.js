@@ -2370,34 +2370,77 @@
   function launchWinamp() {
     var html =
       '<div id="winamp-app">' +
-        '<div class="winamp-titlebar">WINAMP</div>' +
+        // Title bar with menu + minimize/shade/close
+        '<div class="winamp-titlebar">' +
+          '<span class="wa-tb-menu" title="Winamp Menu">&#9776;</span>' +
+          '<span class="wa-tb-title">WINAMP</span>' +
+          '<span class="wa-tb-buttons">' +
+            '<span class="wa-tb-btn" title="Minimize">&#9472;</span>' +
+            '<span class="wa-tb-btn" title="Window Shade">&#9644;</span>' +
+            '<span class="wa-tb-btn" title="Close">&#215;</span>' +
+          '</span>' +
+        '</div>' +
+        // Display/LCD area — authentic layout
         '<div class="winamp-display">' +
-          '<div class="winamp-title-scroll" id="winamp-title">1. Artist 1 - Track A</div>' +
-          '<div class="winamp-time" id="winamp-time">00:00</div>' +
+          // Clutterbar on far left
+          '<div class="wa-clutterbar">' +
+            '<div class="wa-cb-btn">O</div>' +
+            '<div class="wa-cb-btn">A</div>' +
+            '<div class="wa-cb-btn">I</div>' +
+            '<div class="wa-cb-btn">D</div>' +
+            '<div class="wa-cb-btn">V</div>' +
+          '</div>' +
+          '<div class="wa-display-main">' +
+            // Top: track title marquee
+            '<div class="winamp-title-scroll" id="winamp-title">1. Artist 1 - Track A</div>' +
+            // Middle: play state + time + mini-vis
+            '<div class="wa-display-mid">' +
+              '<div class="wa-play-state" id="winamp-play-state">&#9654;</div>' +
+              '<div class="winamp-time" id="winamp-time">00:00</div>' +
+              '<div class="wa-mini-vis" id="winamp-mini-vis"></div>' +
+            '</div>' +
+            // Bottom: kbps, kHz, stereo/mono
+            '<div class="wa-display-info">' +
+              '<span class="wa-kbps">128</span>' +
+              '<span class="wa-info-label">kbps</span>' +
+              '<span class="wa-khz">44</span>' +
+              '<span class="wa-info-label">kHz</span>' +
+              '<span class="wa-stereo">' +
+                '<span class="lit">stereo</span>' +
+                '<span>mono</span>' +
+              '</span>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
-        '<div class="winamp-info-row">' +
-          '<span>128 kbps</span><span>44 kHz</span>' +
+        // Slider row: volume + balance + EQ/PL buttons
+        '<div class="wa-slider-row">' +
+          '<input type="range" class="wa-volume" min="0" max="100" value="75" title="Volume" ' +
+            'oninput="if(winampPlayer)winampPlayer.setVolume(this.value)">' +
+          '<input type="range" class="wa-balance" min="-100" max="100" value="0" title="Balance">' +
+          '<button class="wa-eq-btn" title="Equalizer">EQ</button>' +
+          '<button class="wa-pl-btn active" title="Playlist">PL</button>' +
         '</div>' +
-        '<div class="winamp-stereo">' +
-          '<span class="lit">stereo</span><span>mono</span>' +
-        '</div>' +
+        // Seekbar/position bar
         '<div class="winamp-seekbar"><div class="winamp-seek-fill" id="winamp-seek-fill"></div></div>' +
+        // Transport row + shuffle/repeat
         '<div class="winamp-transport">' +
-          '<button class="winamp-btn" onclick="winampPrev()" title="Previous">&#9664;&#9664;</button>' +
-          '<button class="winamp-btn" onclick="winampPlay()" title="Play">&#9654;</button>' +
-          '<button class="winamp-btn" onclick="winampPause()" title="Pause">&#10074;&#10074;</button>' +
-          '<button class="winamp-btn" onclick="winampStop()" title="Stop">&#9632;</button>' +
-          '<button class="winamp-btn" onclick="winampNext()" title="Next">&#9654;&#9654;</button>' +
+          '<button class="winamp-btn wa-btn-prev" onclick="winampPrev()" title="Previous">&#9198;</button>' +
+          '<button class="winamp-btn wa-btn-play" onclick="winampPlay()" title="Play">&#9654;</button>' +
+          '<button class="winamp-btn wa-btn-pause" onclick="winampPause()" title="Pause">&#9646;&#9646;</button>' +
+          '<button class="winamp-btn wa-btn-stop" onclick="winampStop()" title="Stop">&#9632;</button>' +
+          '<button class="winamp-btn wa-btn-next" onclick="winampNext()" title="Next">&#9197;</button>' +
+          '<button class="winamp-btn wa-btn-eject" title="Open">&#9167;</button>' +
+          '<span class="wa-transport-gap"></span>' +
+          '<button class="wa-toggle-btn" id="winamp-shuffle" title="Shuffle">shuf</button>' +
+          '<button class="wa-toggle-btn" id="winamp-repeat" title="Repeat">rep</button>' +
         '</div>' +
-        '<div class="winamp-volume">' +
-          '<span>Vol:</span>' +
-          '<input type="range" min="0" max="100" value="75" oninput="if(winampPlayer)winampPlayer.setVolume(this.value)">' +
-        '</div>' +
-        '<div id="winamp-yt-container" style="width:200px;height:150px;margin:4px auto;border:1px solid #000;overflow:hidden;">' +
+        // YouTube player (visible per ToS)
+        '<div id="winamp-yt-container" style="width:200px;height:150px;margin:0 auto;border-top:1px solid #0A0A0A;overflow:hidden;background:#000;">' +
           '<div id="winamp-yt-player"></div>' +
         '</div>' +
+        // Playlist panel
         '<div class="winamp-playlist">' +
-          '<div class="winamp-pl-header">Playlist</div>' +
+          '<div class="winamp-pl-header">&#9654; Playlist Editor</div>' +
           '<div class="winamp-pl-list" id="winamp-playlist-list">' +
             buildPlaylistHTML() +
           '</div>' +
@@ -2405,19 +2448,36 @@
       '</div>';
 
     createAppWindow('window-winamp', 'Winamp', html,
-      { width: '280px', noResize: true, bodyStyle: 'padding:0;margin:0;background:#2B2B2B;overflow:auto;' });
+      { width: '275px', noResize: true, bodyStyle: 'padding:0;margin:0;background:#2B2B2B;overflow:hidden;' });
 
     // Init YouTube player after DOM is ready
     setTimeout(function() {
       if (typeof YT !== 'undefined' && YT.Player) {
         initWinampPlayer('winamp-yt-player');
       }
-      // Wire playlist clicks
+      // Wire playlist double-click
       var list = document.getElementById('winamp-playlist-list');
       if (list) {
         list.addEventListener('dblclick', function(e) {
           var item = e.target.closest('.winamp-pl-item');
           if (item) winampLoadTrack(parseInt(item.getAttribute('data-index')));
+        });
+      }
+      // Wire shuffle/repeat toggles
+      var shuffleBtn = document.getElementById('winamp-shuffle');
+      if (shuffleBtn) shuffleBtn.addEventListener('click', function() { this.classList.toggle('active'); });
+      var repeatBtn = document.getElementById('winamp-repeat');
+      if (repeatBtn) repeatBtn.addEventListener('click', function() { this.classList.toggle('active'); });
+      // Wire EQ/PL toggle buttons
+      var app = document.getElementById('winamp-app');
+      if (app) {
+        app.addEventListener('click', function(e) {
+          if (e.target.classList.contains('wa-eq-btn')) e.target.classList.toggle('active');
+          if (e.target.classList.contains('wa-pl-btn')) {
+            e.target.classList.toggle('active');
+            var pl = app.querySelector('.winamp-playlist');
+            if (pl) pl.style.display = e.target.classList.contains('active') ? '' : 'none';
+          }
         });
       }
     }, 100);

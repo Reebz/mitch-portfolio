@@ -125,6 +125,14 @@ function updateSeekbar(pct) {
 function updateWinampUI() {
   var titleEl = document.getElementById('winamp-title');
   if (titleEl) titleEl.textContent = (winampCurrentTrack + 1) + '. ' + WINAMP_PLAYLIST[winampCurrentTrack].title;
+  // Update play state indicator
+  var stateEl = document.getElementById('winamp-play-state');
+  if (stateEl && winampPlayer && winampPlayer.getPlayerState) {
+    var s = winampPlayer.getPlayerState();
+    if (s === 1) stateEl.innerHTML = '&#9654;';       // playing
+    else if (s === 2) stateEl.innerHTML = '&#9646;&#9646;'; // paused
+    else if (s === 0 || s === -1) stateEl.innerHTML = '&#9632;'; // stopped/unstarted
+  }
 }
 
 function highlightPlaylistTrack(index) {
