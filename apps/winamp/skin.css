@@ -6,11 +6,13 @@
 #winamp-app {
   font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
   font-size: 11px;
-  background: #2B2B2B;
+  background: #232323;
   color: #999;
   width: 275px;
   user-select: none;
   -webkit-user-select: none;
+  border: 1px solid #0A0A0A;
+  box-shadow: inset 1px 1px 0 #3A3A3A, inset -1px -1px 0 #0A0A0A;
 }
 
 /* --- Title bar --- */
@@ -75,13 +77,30 @@
 
 .winamp-time {
   color: #00FF00;
-  font-family: monospace;
-  font-size: 16px;
+  font-family: "Perfect DOS VGA 437", "Lucida Console", monospace;
+  font-size: 20px;
   font-weight: bold;
   text-align: right;
-  letter-spacing: 2px;
-  text-shadow: 0 0 4px #00AA00;
+  letter-spacing: 3px;
+  text-shadow: 0 0 6px rgba(0, 170, 0, 0.6);
   margin-top: 2px;
+}
+
+/* --- Bitrate / Sample rate info row (authentic Winamp detail) --- */
+.winamp-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 6px;
+  font-size: 8px;
+  color: #00BB00;
+  font-family: "Pixelated MS Sans Serif", monospace;
+  background: #0A0A14;
+  margin: 0 4px 2px;
+  border: 1px inset #1A1A2A;
+}
+
+.winamp-info-row span {
+  letter-spacing: 1px;
 }
 
 /* --- Seekbar --- */
