@@ -247,14 +247,6 @@
       if (matrixCanvas && matrixCanvas._rafId) cancelAnimationFrame(matrixCanvas._rafId);
     }
 
-    // Stop Winamp visualizer + YouTube player on close
-    if (id === 'window-winamp') {
-      var visCanvas = document.getElementById('winamp-vis');
-      if (visCanvas && visCanvas._rafId) cancelAnimationFrame(visCanvas._rafId);
-      if (typeof winampStop === 'function') winampStop();
-      if (typeof stopSeekUpdate === 'function') stopSeekUpdate();
-    }
-
     // Stop analogue clock if closing the clock window
     if (id === 'window-clock') stopAnalogueClock();
 
@@ -1213,8 +1205,8 @@
         launchNotepad();
       } else if (app === 'napster') {
         launchNapster();
-      } else if (app === 'winamp') {
-        launchWinamp();
+      } else if (app === 'webamp') {
+        launchWebamp();
       } else if (app === 'icq') {
         launchICQ();
       }
@@ -2375,163 +2367,88 @@
     });
   }
 
-  function launchWinamp() {
-    var eqBands = ['60', '170', '310', '600', '1K', '3K', '6K', '12K', '14K', '16K'];
-    var eqSlidersHTML = '';
-    for (var b = 0; b < eqBands.length; b++) {
-      eqSlidersHTML += '<div class="wa-eq-band"><input type="range" min="0" max="100" value="50" ' +
-        'orient="vertical" class="wa-eq-slider"><div class="wa-eq-band-label">' + eqBands[b] + '</div></div>';
+  // --- Webamp integration (lazy-loaded singleton) ---
+  var webampInstance = null;
+  var webampLoading = false;
+
+  function launchWebamp() {
+    // Reopen if already running
+    if (webampInstance) {
+      webampInstance.reopen();
+      return;
     }
+    // Prevent double-click spawning two instances
+    if (webampLoading) return;
+    webampLoading = true;
 
-    var html =
-      '<div id="winamp-app">' +
-
-        // ===== MAIN PLAYER WINDOW (275 x 116) =====
-        '<div class="wa-main">' +
-          '<div class="wa-titlebar">WINAMP</div>' +
-
-          // Display / LCD area — black panel
-          '<div class="wa-display">' +
-            // Clutterbar — left edge
-            '<div class="wa-clutterbar">' +
-              '<div>O</div><div>A</div><div>I</div><div>D</div><div>V</div>' +
-            '</div>' +
-            // Play state indicator
-            '<div class="wa-playpaus" id="winamp-play-state">&#9654;</div>' +
-            // Time digits
-            '<div class="wa-time" id="winamp-time">0:00</div>' +
-            // Track title marquee
-            '<div class="wa-marquee"><div class="wa-marquee-text" id="winamp-title">' +
-              '1. Artist 1 - Track A  ***  </div></div>' +
-            // Visualizer area
-            '<canvas class="wa-vis" id="winamp-vis" width="76" height="16"></canvas>' +
-            // Bitrate / sample rate
-            '<div class="wa-kbps">128</div>' +
-            '<div class="wa-kbps-label">kbps</div>' +
-            '<div class="wa-khz">44</div>' +
-            '<div class="wa-khz-label">kHz</div>' +
-            // Mono/Stereo
-            '<div class="wa-mono">mono</div>' +
-            '<div class="wa-stereo lit">stereo</div>' +
-          '</div>' +
-
-          // Volume slider
-          '<input type="range" class="wa-volume" min="0" max="100" value="75" title="Volume" ' +
-            'oninput="if(winampPlayer)winampPlayer.setVolume(this.value)">' +
-          // Balance slider
-          '<input type="range" class="wa-balance" min="-100" max="100" value="0" title="Balance">' +
-
-          // EQ / PL toggle buttons
-          '<button class="wa-eq-btn" title="Equalizer">EQ</button>' +
-          '<button class="wa-pl-btn active" title="Playlist">PL</button>' +
-
-          // Position / seek bar
-          '<input type="range" class="wa-seek" id="winamp-seek" min="0" max="1000" value="0" title="Seek">' +
-
-          // Transport buttons
-          '<button class="wa-tbtn wa-prev" onclick="winampPrev()" title="Previous"></button>' +
-          '<button class="wa-tbtn wa-play" onclick="winampPlay()" title="Play"></button>' +
-          '<button class="wa-tbtn wa-pause" onclick="winampPause()" title="Pause"></button>' +
-          '<button class="wa-tbtn wa-stop" onclick="winampStop()" title="Stop"></button>' +
-          '<button class="wa-tbtn wa-next" onclick="winampNext()" title="Next"></button>' +
-          '<button class="wa-tbtn wa-eject" title="Open"></button>' +
-
-          // Shuffle / Repeat
-          '<button class="wa-shuffle" id="winamp-shuffle">SHUFFLE</button>' +
-          '<button class="wa-repeat" id="winamp-repeat">REPEAT</button>' +
-        '</div>' +
-
-        // ===== EQUALIZER WINDOW (275 x 116) =====
-        '<div class="wa-eq-window" id="winamp-eq-window">' +
-          '<div class="wa-eq-titlebar">WINAMP EQUALIZER</div>' +
-          '<div class="wa-eq-body">' +
-            '<button class="wa-eq-on active">ON</button>' +
-            '<button class="wa-eq-auto">AUTO</button>' +
-            '<div class="wa-eq-graph" id="winamp-eq-graph"></div>' +
-            '<button class="wa-eq-presets">PRESETS</button>' +
-            // dB labels
-            '<div class="wa-eq-db wa-eq-db-plus">+12</div>' +
-            '<div class="wa-eq-db wa-eq-db-zero">0</div>' +
-            '<div class="wa-eq-db wa-eq-db-minus">-12</div>' +
-            // Preamp
-            '<div class="wa-eq-preamp">' +
-              '<input type="range" min="0" max="100" value="50" orient="vertical" class="wa-eq-slider">' +
-              '<div class="wa-eq-band-label">PREAMP</div>' +
-            '</div>' +
-            // 10 frequency bands
-            '<div class="wa-eq-bands">' + eqSlidersHTML + '</div>' +
-          '</div>' +
-        '</div>' +
-
-        // ===== YOUTUBE PLAYER (visible per ToS) =====
-        '<div id="winamp-yt-container">' +
-          '<div id="winamp-yt-player"></div>' +
-        '</div>' +
-
-        // ===== PLAYLIST WINDOW =====
-        '<div class="wa-pl-window" id="winamp-pl-window">' +
-          '<div class="wa-pl-titlebar">WINAMP PLAYLIST</div>' +
-          '<div class="wa-pl-tracks" id="winamp-playlist-list">' +
-            buildPlaylistHTML() +
-          '</div>' +
-          '<div class="wa-pl-bottom">' +
-            '<div class="wa-pl-buttons">' +
-              '<button class="wa-pl-action">ADD</button>' +
-              '<button class="wa-pl-action">REM</button>' +
-              '<button class="wa-pl-action">SEL</button>' +
-              '<button class="wa-pl-action">MISC</button>' +
-            '</div>' +
-            '<div class="wa-pl-status" id="winamp-pl-status">' +
-              WINAMP_PLAYLIST.length + ' items' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-      '</div>';
-
-    createAppWindow('window-winamp', 'Winamp', html,
-      { width: '275px', noResize: true, bodyStyle: 'padding:0;margin:0;background:#2B2B2B;overflow-y:auto;overflow-x:hidden;' });
-
-    // Init after DOM ready
-    setTimeout(function() {
-      if (typeof YT !== 'undefined' && YT.Player) {
-        initWinampPlayer('winamp-yt-player');
+    // Lazy-load the Webamp bundle
+    var script = document.createElement('script');
+    script.src = 'vendor/webamp.lazy-bundle.min.js';
+    script.onload = function() {
+      var Webamp = window.Webamp;
+      if (!Webamp || !Webamp.browserIsSupported()) {
+        webampLoading = false;
+        return;
       }
-      // Playlist double-click
-      var list = document.getElementById('winamp-playlist-list');
-      if (list) {
-        list.addEventListener('dblclick', function(e) {
-          var item = e.target.closest('.wa-pl-item');
-          if (item) winampLoadTrack(parseInt(item.getAttribute('data-index')));
-        });
-      }
-      // Shuffle/Repeat toggles
-      var shuffleBtn = document.getElementById('winamp-shuffle');
-      if (shuffleBtn) shuffleBtn.addEventListener('click', function() { this.classList.toggle('active'); });
-      var repeatBtn = document.getElementById('winamp-repeat');
-      if (repeatBtn) repeatBtn.addEventListener('click', function() { this.classList.toggle('active'); });
-      // EQ/PL toggle buttons
-      var app = document.getElementById('winamp-app');
-      if (app) {
-        app.addEventListener('click', function(e) {
-          if (e.target.classList.contains('wa-eq-btn')) {
-            e.target.classList.toggle('active');
-            var eqWin = document.getElementById('winamp-eq-window');
-            if (eqWin) eqWin.style.display = e.target.classList.contains('active') ? '' : 'none';
-          }
-          if (e.target.classList.contains('wa-pl-btn')) {
-            e.target.classList.toggle('active');
-            var plWin = document.getElementById('winamp-pl-window');
-            if (plWin) plWin.style.display = e.target.classList.contains('active') ? '' : 'none';
-          }
-          if (e.target.classList.contains('wa-eq-on')) e.target.classList.toggle('active');
-          if (e.target.classList.contains('wa-eq-auto')) e.target.classList.toggle('active');
-        });
-      }
-      // Start mini visualizer
-      startWinampVis();
-    }, 100);
+
+      webampInstance = new Webamp({
+        initialTracks: WEBAMP_TRACKS,
+        zIndex: 10000
+      });
+
+      webampInstance.renderWhenReady(elDesktop).then(function() {
+        webampLoading = false;
+      });
+
+      webampInstance.onClose(function() {
+        // Keep instance alive for reopen — don't dispose
+      });
+    };
+    script.onerror = function() {
+      webampLoading = false;
+    };
+    document.head.appendChild(script);
   }
+
+  // Placeholder tracks — CC-licensed chiptune/electronic from Internet Archive
+  // User will replace with their own picks later
+  var WEBAMP_TRACKS = [
+    {
+      metaData: { artist: 'Sabrepulse', title: 'Hell Division' },
+      url: 'https://archive.org/download/sabrepulse-says-hello/02%20Hell%20Division.mp3',
+      duration: 198
+    },
+    {
+      metaData: { artist: 'Sabrepulse', title: 'She Phases' },
+      url: 'https://archive.org/download/sabrepulse-says-hello/03%20She%20Phases.mp3',
+      duration: 215
+    },
+    {
+      metaData: { artist: 'Smiletron', title: 'Sleepyhead' },
+      url: 'https://archive.org/download/cedtm-002/01-Sleepyhead.mp3',
+      duration: 180
+    },
+    {
+      metaData: { artist: 'Smiletron', title: 'Reprise' },
+      url: 'https://archive.org/download/cedtm-002/04-Reprise.mp3',
+      duration: 145
+    },
+    {
+      metaData: { artist: 'Vincenzo', title: 'I Love C64' },
+      url: 'https://archive.org/download/DN.03/DN.03-a3-Vincenzo-I_Love_C64.mp3',
+      duration: 240
+    },
+    {
+      metaData: { artist: 'Vincenzo', title: 'Funkind 2' },
+      url: 'https://archive.org/download/DN.03/DN.03-a1-Vincenzo-Funkind_2.mp3',
+      duration: 210
+    },
+    {
+      metaData: { artist: 'Frazze', title: 'Scan' },
+      url: 'https://archive.org/download/foot029/foot029_01-frazze-scan.mp3',
+      duration: 195
+    }
+  ];
 
   function launchICQ() {
     var icqFlowerSvg =
