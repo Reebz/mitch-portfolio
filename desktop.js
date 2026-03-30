@@ -2416,37 +2416,52 @@
     {
       metaData: { artist: 'Sabrepulse', title: 'Hell Division' },
       url: 'https://archive.org/download/sabrepulse-says-hello/02%20Hell%20Division.mp3',
-      duration: 198
+      duration: 117
     },
     {
       metaData: { artist: 'Sabrepulse', title: 'She Phases' },
       url: 'https://archive.org/download/sabrepulse-says-hello/03%20She%20Phases.mp3',
-      duration: 215
+      duration: 177
     },
     {
       metaData: { artist: 'Smiletron', title: 'Sleepyhead' },
       url: 'https://archive.org/download/cedtm-002/01-Sleepyhead.mp3',
-      duration: 180
+      duration: 228
     },
     {
       metaData: { artist: 'Smiletron', title: 'Reprise' },
       url: 'https://archive.org/download/cedtm-002/04-Reprise.mp3',
-      duration: 145
+      duration: 73
     },
     {
       metaData: { artist: 'Vincenzo', title: 'I Love C64' },
       url: 'https://archive.org/download/DN.03/DN.03-a3-Vincenzo-I_Love_C64.mp3',
-      duration: 240
+      duration: 142
     },
     {
       metaData: { artist: 'Vincenzo', title: 'Funkind 2' },
       url: 'https://archive.org/download/DN.03/DN.03-a1-Vincenzo-Funkind_2.mp3',
-      duration: 210
+      duration: 72
     },
     {
       metaData: { artist: 'Frazze', title: 'Scan' },
       url: 'https://archive.org/download/foot029/foot029_01-frazze-scan.mp3',
-      duration: 195
+      duration: 162
+    },
+    {
+      metaData: { artist: 'Frazze', title: 'Ship' },
+      url: 'https://archive.org/download/foot029/foot029_03-frazze-ship.mp3',
+      duration: 123
+    },
+    {
+      metaData: { artist: 'dotCommunism', title: 'Bit' },
+      url: 'https://archive.org/download/bitsandbites/01_bit.mp3',
+      duration: 156
+    },
+    {
+      metaData: { artist: 'Tuveri', title: 'Yalla' },
+      url: 'https://archive.org/download/pj015/03_tuveri_yalla.mp3',
+      duration: 100
     }
   ];
 
